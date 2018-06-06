@@ -1,0 +1,26 @@
+{
+  "name": "impressive_ico",
+  "version": "1.0.0",
+  "description": "ico for Impressive service",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VanijaDev/impressive_ico.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VanijaDev/impressive_ico/issues"
+  },
+  "homepage": "https://github.com/VanijaDev/impressive_ico#readme",
+  "dependencies": {
+    "openzeppelin-solidity": "1.9.0"
+  }
+}
