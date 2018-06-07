@@ -21,6 +21,6 @@ contract("IMP_Token", (accounts) => {
   });
 
   it("should validate token totalSupply after migration", async () => {
-    assert.equal(await token.totalSupply.call(), 100000000, "wrong token totalSupply");
+    assert.equal(await token.totalSupply.call(), 1000000000000, "wrong token totalSupply");
   });
 });
