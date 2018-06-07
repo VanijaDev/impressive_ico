@@ -114,8 +114,8 @@ contract IMP_Crowdsale is WhitelistedCrowdsale {
        require(tokensMinted_preICO.add(pendingTokens) <= tokenLimitReserved_preICO);
      } else if(_crowdsaleType == CrowdsaleType.ico) {
        require(tokensMinted_ico.add(pendingTokens) <= tokenLimitReserved_ico);
+     } else {
+       revert();
      }
-
-     revert();
    }
 }
