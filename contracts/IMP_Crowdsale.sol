@@ -24,12 +24,12 @@ contract IMP_Crowdsale is WhitelistedCrowdsale {
   uint8 public tokenPercentageReserved_platform;  //  % of tokens reserved for platform 
   uint8 public tokenPercentageReserved_airdrops;  //  % of tokens reserved for airdrops
 
-  uint256 public tokenLimitTotalSupply;        //  tokens total supply for crowdsale
-  uint256 public tokenLimitReserved_preICO;    //  tokens reserved for pre_ICO
-  uint256 public tokenLimitReserved_ico;       //  tokens reserved for ICO
-  uint256 public tokenLimitReserved_team;      //  tokens reserved for team
-  uint256 public tokenLimitReserved_platform;  //  tokens reserved for platform 
-  uint256 public tokenLimitReserved_airdrops;  //  tokens reserved for airdrops
+  uint256 public tokenLimitTotalSupply_crowdsale; //  tokens total supply for crowdsale
+  uint256 public tokenLimitReserved_preICO;       //  tokens reserved for pre_ICO
+  uint256 public tokenLimitReserved_ico;          //  tokens reserved for ICO
+  uint256 public tokenLimitReserved_team;         //  tokens reserved for team
+  uint256 public tokenLimitReserved_platform;     //  tokens reserved for platform 
+  uint256 public tokenLimitReserved_airdrops;     //  tokens reserved for airdrops
 
   uint256 public tokensMinted_preICO;    //  tokens minted for pre_ICO
   uint256 public tokensMinted_ico;       //  tokens minted for ICO
