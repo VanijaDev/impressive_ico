@@ -59,18 +59,20 @@ contract IMP_Crowdsale is WhitelistedCrowdsale {
     crowdsaleType = _crowdsaleType;
     token = IMP_Token(_token);
 
+    uint8 decimals = token.decimals();
+    tokenLimitTotalSupply_crowdsale = _tokenLimitTotalSupply.mul(10**uint256(decimals));
+
     tokenPercentageReserved_preICO = _tokenPercentageReserved_preICO;
     tokenPercentageReserved_ico = _tokenPercentageReserved_ico;
     tokenPercentageReserved_team = _tokenPercentageReserved_team;
     tokenPercentageReserved_platform = _tokenPercentageReserved_platform;
     tokenPercentageReserved_airdrops = _tokenPercentageReserved_airdrops;
 
-    tokenLimitTotalSupply = _tokenLimitTotalSupply;
-    tokenLimitReserved_preICO = tokenLimitTotalSupply * _tokenPercentageReserved_preICO;
-    tokenLimitReserved_ico = tokenLimitTotalSupply * _tokenPercentageReserved_ico;
-    tokenLimitReserved_team = tokenLimitTotalSupply * _tokenPercentageReserved_team;
-    tokenLimitReserved_platform = tokenLimitTotalSupply * _tokenPercentageReserved_platform;
-    tokenLimitReserved_airdrops = tokenLimitTotalSupply * _tokenPercentageReserved_airdrops;
+    tokenLimitReserved_preICO = tokenLimitTotalSupply_crowdsale.mul(_tokenPercentageReserved_preICO).div(100);
+    tokenLimitReserved_ico = tokenLimitTotalSupply_crowdsale.mul(_tokenPercentageReserved_ico).div(100);
+    tokenLimitReserved_team = tokenLimitTotalSupply_crowdsale.mul(_tokenPercentageReserved_team).div(100);
+    tokenLimitReserved_platform = tokenLimitTotalSupply_crowdsale.mul(_tokenPercentageReserved_platform).div(100);
+    tokenLimitReserved_airdrops = tokenLimitTotalSupply_crowdsale.mul( _tokenPercentageReserved_airdrops).div(100);
   }
 
 
