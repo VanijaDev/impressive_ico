@@ -42,7 +42,7 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
       }), "should test not owner account");
     });
 
-    it.only("should prevent user not in whitelist form purchase", async () => {
+    it("should prevent user not in whitelist form purchase", async () => {
       await expectThrow(crowdsale.sendTransaction({
         from: ACC_1,
         value: web3.toWei(1, "ether")
