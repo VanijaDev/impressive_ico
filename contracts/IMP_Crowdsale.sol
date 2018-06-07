@@ -1,5 +1,10 @@
 pragma solidity ^0.4.23;
 
+// import "./IMP_Token.sol";
+// import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+// import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
+
+//  Remixd
 import "./IMP_Token.sol";
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
@@ -33,6 +38,11 @@ contract IMP_Crowdsale is WhitelistedCrowdsale {
   uint256 public tokensMinted_airdrops;  //  tokens minted for airdrops
 
   /**
+   * EVENTS
+   */
+
+
+  /**
    * MODIFIERS
    */
 
@@ -40,7 +50,6 @@ contract IMP_Crowdsale is WhitelistedCrowdsale {
   /**
    * PUBLIC
    */
-
 
   /**
    * @dev Constructor function.
@@ -75,9 +84,18 @@ contract IMP_Crowdsale is WhitelistedCrowdsale {
    * @param _weiAmount Value in wei involved in the purchase
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
-    validatePurchaceLimit(_weiAmount, crowdsaleType);
+    validateMintLimits(_weiAmount, crowdsaleType);
 
     super._preValidatePurchase(_beneficiary, _weiAmount);
+  }
+
+  /**
+   * @dev Executed when a purchase has been validated and is ready to be executed. Not necessarily emits/sends tokens.
+   * @param _beneficiary Address receiving the tokens
+   * @param _tokenAmount Number of tokens to be purchased
+   */
+  function _processPurchase(address _beneficiary, uint256 _tokenAmount) internal {
+    _deliverTokens(_beneficiary, _tokenAmount);
   }
    
   /**
@@ -107,7 +125,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale {
    * @param _weiAmount Value in wei to be calculated
    * @param _crowdsaleType Type of current crowdsale
    */
-   function validatePurchaceLimit(uint256 _weiAmount, CrowdsaleType _crowdsaleType) private view {
+   function validateMintLimits(uint256 _weiAmount, CrowdsaleType _crowdsaleType) private view {
       uint256 pendingTokens = _getTokenAmount(_weiAmount);
 
      if(_crowdsaleType == CrowdsaleType.preICO) {
