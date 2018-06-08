@@ -13,18 +13,18 @@ import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/Whi
 contract IMP_Crowdsale is WhitelistedCrowdsale {
 
   enum CrowdsaleType {preICO, ico}
-  enum MintPurpose {pre_ICO, ico, team, platform, airdrops} // Supplier.State.inactive
+  enum MintPurpose {preICO, ico, team, platform, airdrops} // Supplier.State.inactive
 
   IMP_Token public token;
   CrowdsaleType public crowdsaleType;
 
-  uint256 public tokenPercentageReserved_preICO;  //  % of tokens reserved for pre_ICO
+  uint8 public tokenPercentageReserved_preICO;  //  % of tokens reserved for pre_ICO
   uint8 public tokenPercentageReserved_ico;       //  % of tokens reserved for ICO
   uint8 public tokenPercentageReserved_team;      //  % of tokens reserved for team
   uint8 public tokenPercentageReserved_platform;  //  % of tokens reserved for platform 
   uint8 public tokenPercentageReserved_airdrops;  //  % of tokens reserved for airdrops
 
-  uint256 public tokenLimitTotalSupply_crowdsale; //  tokens total supply for crowdsale
+  uint256 public tokenLimitTotalSupply_crowdsale; //  tokens total supply for entire crowdsale
   uint256 public tokenLimitReserved_preICO;       //  tokens reserved for pre_ICO
   uint256 public tokenLimitReserved_ico;          //  tokens reserved for ICO
   uint256 public tokenLimitReserved_team;         //  tokens reserved for team
