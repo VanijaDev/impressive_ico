@@ -1,13 +1,13 @@
 pragma solidity ^0.4.23;
 
-// import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
-// import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
-// import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
-
-//  Remixd
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
+
+// //  Remixd
+// import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+// import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+// import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
 
 
 contract IMP_Token is MintableToken, DetailedERC20 {
