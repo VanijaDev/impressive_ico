@@ -19,6 +19,12 @@ contract("IMP_Crowdsale", (accounts) => {
     await Reverter.revert();
   });
 
+  describe("validate initial Crowdsaletype", () => {
+    it("should be preICO", async () => {
+      assert.equal(new BigNumber(await crowdsale.crowdsaleType.call()).toNumber(), 0, "should be 0 as preICO");
+    });
+  });
+
   describe("validate percents and values on start", () => {
     it("should validate percents", async () => {
       assert.equal(new BigNumber(await crowdsale.tokenPercentageReserved_preICO.call()).toNumber(), 30, "wrong percentage for preICO");
@@ -51,6 +57,10 @@ contract("IMP_Crowdsale", (accounts) => {
       let tokens_airdrops = totalSupply.dividedBy(100).multipliedBy(percents_airdrops).toNumber();
       assert.equal(tokens_airdrops, 20000000000, "wrong percentage for airdrops");
     });
+  });
+
+  describe("tokensAvailableToMint_ for diff purposes methods", () => {
+
   });
 
 });
