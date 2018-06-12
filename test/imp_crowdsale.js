@@ -109,7 +109,7 @@ contract("IMP_Crowdsale", (accounts) => {
       });
     });
 
-    it.only("wei should stay on crowdsale contract balance", async () => {
+    it("wei should stay on crowdsale contract balance", async () => {
       //  1
       await crowdsale.sendTransaction({
         from: ACC_1,
@@ -187,6 +187,55 @@ contract("IMP_Crowdsale", (accounts) => {
       tokens = new BigNumber(await crowdsale.calculateTokenAmount.call(wei)).toNumber();
       assert.equal(tokens, 150000, "wrong token amount for 1.5 ETH");
     });
+  });
+
+  describe("manual transfers", () => {
+    const ONE_FULL_TOKEN = 10000;
+
+    it("should reject manualMint_ functions if not owner", async () => {
+      await expectThrow(crowdsale.manualMint_team(ACC_1, ONE_FULL_TOKEN, {
+        from: ACC_1
+      }), "should not let manualMint_team if not owner");
+
+      await expectThrow(crowdsale.manualMint_platform(ACC_1, ONE_FULL_TOKEN, {
+        from: ACC_1
+      }), "should not let manualMint_platform if not owner");
+
+      await expectThrow(crowdsale.manualMint_airdrops(ACC_1, ONE_FULL_TOKEN, {
+        from: ACC_1
+      }), "should not let manualMint_airdrops if not owner");
+    });
+
+    it.only("should validate manualMint_team transfers tokens correctly", async () => {
+      await crowdsale.manualMint_team(ACC_1, ONE_FULL_TOKEN);
+      let balance = new BigNumber(await token.balanceOf.call(ACC_1)).toNumber();
+      assert.equal(balance, ONE_FULL_TOKEN, "wrong tokens after manualMint_team ONE_FULL_TOKEN");
+
+      await crowdsale.manualMint_team(ACC_1, ONE_FULL_TOKEN);
+      balance = new BigNumber(await token.balanceOf.call(ACC_1)).toNumber();
+      assert.equal(balance, ONE_FULL_TOKEN * 2, "wrong tokens after next manualMint_team ONE_FULL_TOKEN");
+    });
+
+    it.only("should validate manualMint_platform transfers tokens correctly", async () => {
+      await crowdsale.manualMint_platform(ACC_1, ONE_FULL_TOKEN);
+      let balance = new BigNumber(await token.balanceOf.call(ACC_1)).toNumber();
+      assert.equal(balance, ONE_FULL_TOKEN, "wrong tokens after manualMint_team ONE_FULL_TOKEN");
+
+      await crowdsale.manualMint_platform(ACC_1, ONE_FULL_TOKEN);
+      balance = new BigNumber(await token.balanceOf.call(ACC_1)).toNumber();
+      assert.equal(balance, ONE_FULL_TOKEN * 2, "wrong tokens after next manualMint_platform ONE_FULL_TOKEN");
+    });
+
+    it.only("should validate manualMint_airdrops transfers tokens correctly", async () => {
+      await crowdsale.manualMint_airdrops(ACC_1, ONE_FULL_TOKEN);
+      let balance = new BigNumber(await token.balanceOf.call(ACC_1)).toNumber();
+      assert.equal(balance, ONE_FULL_TOKEN, "wrong tokens after manualMint_team ONE_FULL_TOKEN");
+
+      await crowdsale.manualMint_airdrops(ACC_1, ONE_FULL_TOKEN);
+      balance = new BigNumber(await token.balanceOf.call(ACC_1)).toNumber();
+      assert.equal(balance, ONE_FULL_TOKEN * 2, "wrong tokens after next manualMint_airdrops ONE_FULL_TOKEN");
+    });
+
   });
 
 });

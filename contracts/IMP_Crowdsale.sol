@@ -61,18 +61,49 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, IMP_MultiPurposeCrowdsale {
    */
   function calculateTokenAmount(uint256 _weiAmount) public view returns (uint256) {
     require(_weiAmount >= minimumPurchaseWei, "minimum purchase wei not reached");
-    
+
     return _getTokenAmount(_weiAmount);
+  }
+
+  /**
+   *  MANUAL MINTING
+   */ 
+
+  /**
+   * @dev Manually token minting for team.
+   * @param _beneficiary Token receiver address
+   * @param _tokenAmount Number of tokens to be minted with decimals, eg. 1 token == 1 0000
+   */
+  function manualMint_team(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
+    manualMint(MintPurpose.team, _beneficiary, _tokenAmount);
+  }
+
+  /**
+   * @dev Manually token minting for platform.
+   * @param _beneficiary Token receiver address
+   * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
+   */
+  function manualMint_platform(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
+    manualMint(MintPurpose.platform, _beneficiary, _tokenAmount);
+  }
+
+  /**
+   * @dev Manually token minting for airdrops.
+   * @param _beneficiary Token receiver address
+   * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
+   */
+  function manualMint_airdrops(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
+    manualMint(MintPurpose.airdrops, _beneficiary, _tokenAmount);
   }
 
   /**
    * @dev Manually token minting.
    * @param _mintPurpose Purpose of minting
    * @param _beneficiary Token receiver address
-   * @param _tokenAmount Number of tokens to be minted
+   * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
    */
 
-  function manualMint(MintPurpose _mintPurpose, address _beneficiary, uint256 _tokenAmount) public onlyOwner {
+  function manualMint(MintPurpose _mintPurpose, address _beneficiary, uint256 _tokenAmount) internal {
     require(_mintPurpose != IMP_MultiPurposeCrowdsale.MintPurpose.preICO && _mintPurpose != IMP_MultiPurposeCrowdsale.MintPurpose.ico, "preICO and ICO purposes can not be used for manual minting");
 
     validateMintLimits(_tokenAmount, _mintPurpose);
