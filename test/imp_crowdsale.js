@@ -91,7 +91,7 @@ contract("IMP_Crowdsale", (accounts) => {
     });
   });
 
-  describe("minimum purchase wei value", async () => {
+  describe("purchase", () => {
     const MIN_ETH = 0.00001;
     const MIN_VALUE = web3.toWei(MIN_ETH, "ether");
 
@@ -101,11 +101,32 @@ contract("IMP_Crowdsale", (accounts) => {
         value: web3.toWei(MIN_ETH / 10, "ether")
       }), "should revert, because wei value is too low");
     });
+
     it("should pass if purchase wei value is > minimum", async () => {
       await crowdsale.sendTransaction({
         from: ACC_1,
         value: MIN_VALUE
       });
+    });
+
+    it.only("wei should stay on crowdsale contract balance", async () => {
+      //  1
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: web3.toWei(1, "ether")
+      });
+
+      let balance = new BigNumber(await web3.eth.getBalance(crowdsale.address)).toNumber();
+      assert.equal(balance, new BigNumber(web3.toWei(1, "ether")).toNumber(), "wrong contract balance after purchase 1 ETH");
+
+      //  2
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: web3.toWei(2.5, "ether")
+      });
+
+      balance = new BigNumber(await web3.eth.getBalance(crowdsale.address)).toNumber();
+      assert.equal(balance, new BigNumber(web3.toWei(3.5, "ether")).toNumber(), "wrong contract balance after purchase 2.5 ETH");
     });
   });
 
@@ -154,7 +175,7 @@ contract("IMP_Crowdsale", (accounts) => {
     });
   });
 
-  describe.only("diff", () => {
+  describe("diff", () => {
     it("should validate calculate token function", async () => {
       //  1
       let wei = web3.toWei(0.5, "ether");
