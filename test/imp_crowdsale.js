@@ -159,6 +159,8 @@ contract("IMP_Crowdsale", (accounts) => {
   });
 
   describe("tokensAvailableToMint_ for diff purposes methods", () => {
+    const ONE_FULL_TOKEN = 10000;
+
     it("should decrease preICO", async () => {
       let tokensAvailableToMint_preICO = new BigNumber(await crowdsale.tokensAvailableToMint_preICO.call());
 
@@ -172,10 +174,67 @@ contract("IMP_Crowdsale", (accounts) => {
 
       assert.equal(diff, 50000, "wrong decrease value for tokensAvailableToMint_preICO");
 
+      await crowdsale.tokensAvailableToMint_preICO.call({
+        from: ACC_1
+      }); //  any user can check
+
+    });
+
+    it("should decrease ico", async () => {
+      //  TODO
+
+      await crowdsale.tokensAvailableToMint_ico.call({
+        from: ACC_1
+      }); //  any user can check
+    });
+
+    it("should decrease team", async () => {
+      let tokensAvailableToMint_team = new BigNumber(await crowdsale.tokensAvailableToMint_team.call());
+
+      await crowdsale.manualMint_team(ACC_1, ONE_FULL_TOKEN);
+
+      let tokensAvailableToMint_team_after = new BigNumber(await crowdsale.tokensAvailableToMint_team.call());
+      let diff = tokensAvailableToMint_team.minus(tokensAvailableToMint_team_after).toNumber();
+
+      assert.equal(diff, 10000, "wrong decrease value for tokensAvailableToMint_team");
+
+      await expectThrow(crowdsale.tokensAvailableToMint_team.call({
+        from: ACC_1
+      }), "should not let anyone check tokensAvailableToMint_team");
+    });
+
+    it("should decrease platform", async () => {
+      let tokensAvailableToMint_platform = new BigNumber(await crowdsale.tokensAvailableToMint_platform.call());
+
+      await crowdsale.manualMint_platform(ACC_1, ONE_FULL_TOKEN * 2);
+
+      let tokensAvailableToMint_platform_after = new BigNumber(await crowdsale.tokensAvailableToMint_platform.call());
+      let diff = tokensAvailableToMint_platform.minus(tokensAvailableToMint_platform_after).toNumber();
+
+      assert.equal(diff, 20000, "wrong decrease value for tokensAvailableToMint_platform");
+
+      await expectThrow(crowdsale.tokensAvailableToMint_platform.call({
+        from: ACC_1
+      }), "should not let anyone check tokensAvailableToMint_platform");
+    });
+
+    it("should decrease airdrops", async () => {
+      let tokensAvailableToMint_airdrops = new BigNumber(await crowdsale.tokensAvailableToMint_airdrops.call());
+
+      await crowdsale.manualMint_airdrops(ACC_1, ONE_FULL_TOKEN);
+
+      let tokensAvailableToMint_airdrops_after = new BigNumber(await crowdsale.tokensAvailableToMint_airdrops.call());
+      let diff = tokensAvailableToMint_airdrops.minus(tokensAvailableToMint_airdrops_after).toNumber();
+
+      assert.equal(diff, 10000, "wrong decrease value for tokensAvailableToMint_airdrops");
+
+      await expectThrow(crowdsale.tokensAvailableToMint_airdrops.call({
+        from: ACC_1
+      }), "should not let anyone check tokensAvailableToMint_airdrops");
     });
   });
 
-  describe("diff", () => {
+  describe("different functionality", () => {
     it("should validate calculate token function", async () => {
       //  1
       let wei = web3.toWei(0.5, "ether");
@@ -206,7 +265,7 @@ contract("IMP_Crowdsale", (accounts) => {
       }), "should not let manualMint_airdrops if not owner");
     });
 
-    it.only("should validate manualMint_team transfers tokens correctly", async () => {
+    it("should validate manualMint_team transfers tokens correctly", async () => {
       await crowdsale.manualMint_team(ACC_1, ONE_FULL_TOKEN);
       let balance = new BigNumber(await token.balanceOf.call(ACC_1)).toNumber();
       assert.equal(balance, ONE_FULL_TOKEN, "wrong tokens after manualMint_team ONE_FULL_TOKEN");
@@ -216,7 +275,7 @@ contract("IMP_Crowdsale", (accounts) => {
       assert.equal(balance, ONE_FULL_TOKEN * 2, "wrong tokens after next manualMint_team ONE_FULL_TOKEN");
     });
 
-    it.only("should validate manualMint_platform transfers tokens correctly", async () => {
+    it("should validate manualMint_platform transfers tokens correctly", async () => {
       await crowdsale.manualMint_platform(ACC_1, ONE_FULL_TOKEN);
       let balance = new BigNumber(await token.balanceOf.call(ACC_1)).toNumber();
       assert.equal(balance, ONE_FULL_TOKEN, "wrong tokens after manualMint_team ONE_FULL_TOKEN");
@@ -226,7 +285,7 @@ contract("IMP_Crowdsale", (accounts) => {
       assert.equal(balance, ONE_FULL_TOKEN * 2, "wrong tokens after next manualMint_platform ONE_FULL_TOKEN");
     });
 
-    it.only("should validate manualMint_airdrops transfers tokens correctly", async () => {
+    it("should validate manualMint_airdrops transfers tokens correctly", async () => {
       await crowdsale.manualMint_airdrops(ACC_1, ONE_FULL_TOKEN);
       let balance = new BigNumber(await token.balanceOf.call(ACC_1)).toNumber();
       assert.equal(balance, ONE_FULL_TOKEN, "wrong tokens after manualMint_team ONE_FULL_TOKEN");
@@ -235,7 +294,96 @@ contract("IMP_Crowdsale", (accounts) => {
       balance = new BigNumber(await token.balanceOf.call(ACC_1)).toNumber();
       assert.equal(balance, ONE_FULL_TOKEN * 2, "wrong tokens after next manualMint_airdrops ONE_FULL_TOKEN");
     });
+  });
 
+  describe("tokensMinted_", () => {
+    const ONE_ETH_IN_WEI = web3.toWei(1, "ether");
+    const ONE_FULL_TOKEN = 10000;
+
+    it("should validate preICO updating", async () => {
+      let tokensMinted_preICO = new BigNumber(await crowdsale.tokensMinted_preICO.call());
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ONE_ETH_IN_WEI
+      });
+      let tokensMinted_preICO_after = new BigNumber(await crowdsale.tokensMinted_preICO.call());
+
+      let diff = tokensMinted_preICO_after.minus(tokensMinted_preICO).toNumber();
+      assert.equal(diff, 100000, "wrong tokensMinted_preICO");
+    });
+
+    it("should validate ico updating", async () => {
+      //  TODO
+    });
+
+    it("should validate team updating", async () => {
+      let tokensMinted_team = new BigNumber(await crowdsale.tokensMinted_team.call());
+      await crowdsale.manualMint_team(ACC_1, ONE_FULL_TOKEN * 2);
+      let tokensMinted_team_after = new BigNumber(await crowdsale.tokensMinted_team.call());
+
+      let diff = tokensMinted_team_after.minus(tokensMinted_team).toNumber();
+      assert.equal(diff, 20000, "wrong tokensMinted_team");
+    });
+
+    it("should validate platform updating", async () => {
+      let tokensMinted_platform = new BigNumber(await crowdsale.tokensMinted_platform.call());
+      await crowdsale.manualMint_platform(ACC_1, ONE_FULL_TOKEN);
+      let tokensMinted_platform_after = new BigNumber(await crowdsale.tokensMinted_platform.call());
+
+      let diff = tokensMinted_platform_after.minus(tokensMinted_platform).toNumber();
+      assert.equal(diff, 10000, "wrong tokensMinted_platform");
+    });
+
+    it("should validate airdrops updating", async () => {
+      let tokensMinted_airdrops = new BigNumber(await crowdsale.tokensMinted_airdrops.call());
+      await crowdsale.manualMint_airdrops(ACC_1, ONE_FULL_TOKEN);
+      let tokensMinted_airdrops_after = new BigNumber(await crowdsale.tokensMinted_airdrops.call());
+
+      let diff = tokensMinted_airdrops_after.minus(tokensMinted_airdrops).toNumber();
+      assert.equal(diff, 10000, "wrong tokensMinted_airdrops");
+    });
+  });
+
+  describe.only("validate token mint limits", () => {
+    const ACC_2 = accounts[2];
+
+    it("should validate preICO minting limits", async () => {
+      //  TODO
+    });
+
+    it("should validate ICO minting limits", async () => {
+      //  TODO
+    });
+
+    it("should validate team minting limits", async () => {
+      let maxTokens = new BigNumber(await crowdsale.tokenLimitReserved_team.call()).toNumber();
+
+      await expectThrow(crowdsale.manualMint_team(ACC_1, maxTokens + 1), "should not allow mint team tokens more than limit at once");
+
+      await crowdsale.manualMint_team(ACC_1, maxTokens - 1);
+      await crowdsale.manualMint_team(ACC_2, 1);
+      await expectThrow(crowdsale.manualMint_team(ACC_2, 1), "should not allow mint team tokens more than limit");
+    });
+
+    it("should validate platform minting limits", async () => {
+      let maxTokens = new BigNumber(await crowdsale.tokenLimitReserved_platform.call()).toNumber();
+
+      await expectThrow(crowdsale.manualMint_platform(ACC_1, maxTokens + 1), "should not allow mint platform tokens more than limit at once");
+
+      await crowdsale.manualMint_platform(ACC_1, maxTokens - 1);
+      await crowdsale.manualMint_platform(ACC_2, 1);
+      await expectThrow(crowdsale.manualMint_platform(ACC_2, 1), "should not allow mint platform tokens more than limit");
+    });
+
+    it("should validate airdrops minting limits", async () => {
+      let maxTokens = new BigNumber(await crowdsale.tokenLimitReserved_airdrops.call()).toNumber();
+
+      await expectThrow(crowdsale.manualMint_airdrops(ACC_1, maxTokens + 1), "should not allow mint airdrops tokens more than limit at once");
+
+      await crowdsale.manualMint_airdrops(ACC_1, maxTokens - 1);
+      await crowdsale.manualMint_airdrops(ACC_2, 1);
+      await expectThrow(crowdsale.manualMint_airdrops(ACC_2, 1), "should not allow mint airdrops tokens more than limit");
+    });
   });
 
 });
