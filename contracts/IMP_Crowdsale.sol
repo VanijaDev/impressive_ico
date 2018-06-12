@@ -104,6 +104,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, IMP_MultiPurposeCrowdsale {
    */
 
   function manualMint(MintPurpose _mintPurpose, address _beneficiary, uint256 _tokenAmount) internal {
+    require(_tokenAmount > 0, "0 tokens not alowed for minting");
     require(_mintPurpose != IMP_MultiPurposeCrowdsale.MintPurpose.preICO && _mintPurpose != IMP_MultiPurposeCrowdsale.MintPurpose.ico, "preICO and ICO purposes can not be used for manual minting");
 
     validateMintLimits(_tokenAmount, _mintPurpose);
