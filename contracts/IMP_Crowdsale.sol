@@ -4,6 +4,7 @@ pragma solidity ^0.4.23;
 import "./IMP_Token.sol";
 import "./IMP_MultiPurposeCrowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
+import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 //  Remixd
 // import "./IMP_Token.sol";
@@ -11,7 +12,7 @@ import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/Whi
 // import 'github.com/OpenZeppelin/zeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol';
 
 
-contract IMP_Crowdsale is WhitelistedCrowdsale, IMP_MultiPurposeCrowdsale {
+contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, IMP_MultiPurposeCrowdsale {
 
   IMP_Token internal token;
 
@@ -103,7 +104,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, IMP_MultiPurposeCrowdsale {
    * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
    */
 
-  function manualMint(MintPurpose _mintPurpose, address _beneficiary, uint256 _tokenAmount) internal {
+  function manualMint(MintPurpose _mintPurpose, address _beneficiary, uint256 _tokenAmount) internal whenNotPaused {
     require(_tokenAmount > 0, "0 tokens not alowed for minting");
     require(_mintPurpose != IMP_MultiPurposeCrowdsale.MintPurpose.preICO && _mintPurpose != IMP_MultiPurposeCrowdsale.MintPurpose.ico, "preICO and ICO purposes can not be used for manual minting");
 
@@ -123,7 +124,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, IMP_MultiPurposeCrowdsale {
    * @param _beneficiary Address performing the token purchase
    * @param _weiAmount Value in wei involved in the purchase
    */
-  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
+  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal whenNotPaused {
     require(_weiAmount >= minimumPurchaseWei, "minimum purchase wei not reached");
 
     pendingTokens = _getTokenAmount(_weiAmount);
