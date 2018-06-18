@@ -4,6 +4,7 @@ pragma solidity ^0.4.23;
 import "./IMP_Token.sol";
 import "./IMP_MultiPurposeCrowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
+import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 //  Remixd
@@ -12,7 +13,7 @@ import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 // import 'github.com/OpenZeppelin/zeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol';
 
 
-contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, IMP_MultiPurposeCrowdsale {
+contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, TimedCrowdsale, IMP_MultiPurposeCrowdsale {
 
   IMP_Token internal token;
 
@@ -45,8 +46,9 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, IMP_MultiPurposeCrowds
    * 3 - platform beginning period
    * 4 - airdrops and bounties
    */
-  constructor(CrowdsaleType _crowdsaleType, uint256 _minimumPurchaseWei, uint256 _rateETH, address _wallet, IMP_Token _token, uint8 _tokenDecimals, uint256 _tokenLimitTotalSupply, uint8[] _tokenPercentageReservations) 
-    Crowdsale(1, _wallet, _token) 
+  constructor(CrowdsaleType _crowdsaleType, uint256 _openingTime, uint256 _closingTime, uint256 _minimumPurchaseWei, uint256 _rateETH, address _wallet, IMP_Token _token, uint8 _tokenDecimals, uint256 _tokenLimitTotalSupply, uint8[] _tokenPercentageReservations) 
+    Crowdsale(1, _wallet, _token)
+    TimedCrowdsale(_openingTime, _closingTime)
     IMP_MultiPurposeCrowdsale(_tokenLimitTotalSupply, _tokenPercentageReservations, _tokenDecimals) 
     public {      
       crowdsaleType = _crowdsaleType;
@@ -112,6 +114,14 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, IMP_MultiPurposeCrowds
 
     _deliverTokens(_beneficiary, _tokenAmount);
     updateMintedTokenNumbers(_mintPurpose, _tokenAmount);
+  }
+
+  /**
+   * @dev Checks whether the period in which the crowdsale is open has already started.
+   * @return Whether crowdsale period has started
+   */
+  function hasOpened() public view returns (bool) {
+    return block.timestamp > openingTime;
   }
 
 

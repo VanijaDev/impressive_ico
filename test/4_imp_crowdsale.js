@@ -1,5 +1,5 @@
-let IMP_Crowdsale = artifacts.require("IMP_Crowdsale.sol");
-let IMP_Token = artifacts.require("IMP_Token.sol");
+let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale.sol");
+let IMP_Token = artifacts.require("./IMP_Token.sol");
 
 const expectThrow = require('./helpers/expectThrow');
 const Reverter = require('./helpers/reverter');
@@ -9,12 +9,8 @@ let crowdsale;
 let token;
 
 contract("IMP_Crowdsale", (accounts) => {
-
-  const OWNER = accounts[0];
   const ACC_1 = accounts[1];
   const WALLET = accounts[4];
-
-  const MIN_WEI = 0.00001;
 
   before("setup", async () => {
     crowdsale = await IMP_Crowdsale.deployed();
