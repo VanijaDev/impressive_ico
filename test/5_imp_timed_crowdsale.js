@@ -4,6 +4,7 @@ const IMP_Crowdsale = artifacts.require('./IMP_Crowdsale.sol');
 // const Asserts = require('./helpers/asserts');
 const Reverter = require('./helpers/reverter');
 const IncreaseTime = require('./helpers/increaseTime');
+const expectThrow = require('./helpers/expectThrow');
 const MockToken = require('./helpers/MockToken');
 const MockCrowdsale = require('./helpers/MockCrowdsale');
 var BigNumber = require('bignumber.js');
@@ -41,9 +42,39 @@ contract('TimedCrowdsale - new instance', (accounts) => {
     await Reverter.revert();
   });
 
-  describe.only('before Crowdsale started', () => {
+  describe('before Crowdsale started', () => {
     it('should be false for hasOpened', async () => {
       await assert.isFalse(await crowdsaleLocal.hasOpened.call(), "should not be started yet");
+    });
+
+    it("should fail on purchase", async () => {
+      await crowdsaleLocal.addToWhitelist(ACC_1);
+
+      await expectThrow(crowdsaleLocal.sendTransaction({
+        from: ACC_1,
+        value: web3.toWei(1, 'ether')
+      }));
+    });
+  });
+
+  describe.only("after Crowdsale finishes", () => {
+    it('should be false for hasOpened', async () => {
+      let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(111);
+      await IncreaseTime.increaseTimeTo(closeTime);
+
+      await assert.isTrue(await crowdsaleLocal.hasClosed.call(), "should be closed already");
+    });
+
+    it("should fail on purchase", async () => {
+      await crowdsaleLocal.addToWhitelist(ACC_1);
+
+      let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(111);
+      await IncreaseTime.increaseTimeTo(closeTime);
+
+      await expectThrow(crowdsaleLocal.sendTransaction({
+        from: ACC_1,
+        value: web3.toWei(1, 'ether')
+      }));
     });
   });
 });
