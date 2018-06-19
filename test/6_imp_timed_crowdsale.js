@@ -11,7 +11,6 @@ var BigNumber = require('bignumber.js');
 
 contract('TimedCrowdsale - new instance', (accounts) => {
   const ACC_1 = accounts[1];
-  const ACC_2 = accounts[2];
 
   let crowdsaleLocal;
   let tokenLocal;
