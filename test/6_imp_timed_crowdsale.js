@@ -1,7 +1,6 @@
 const IMP_Token = artifacts.require('./IMP_Token.sol');
 const IMP_Crowdsale = artifacts.require('./IMP_Crowdsale.sol');
 
-// const Asserts = require('./helpers/asserts');
 const Reverter = require('./helpers/reverter');
 const IncreaseTime = require('./helpers/increaseTime');
 const expectThrow = require('./helpers/expectThrow');
@@ -11,15 +10,9 @@ var BigNumber = require('bignumber.js');
 
 
 contract('TimedCrowdsale - new instance', (accounts) => {
-  const OWNER = accounts[0];
-
   const ACC_1 = accounts[1];
-  const ACC_1_WEI_SENT = new BigNumber(web3.toWei(1, 'ether'));
-
   const ACC_2 = accounts[2];
-  const ACC_2_WEI_SENT = new BigNumber(web3.toWei(2, 'ether'));
 
-  // const asserts = Asserts(assert);
   let crowdsaleLocal;
   let tokenLocal;
 
@@ -34,7 +27,6 @@ contract('TimedCrowdsale - new instance', (accounts) => {
     tokenLocal = await IMP_Token.new(mockToken.tokenName, mockToken.tokenSymbol, mockToken.tokenDecimals);
     crowdsaleLocal = await IMP_Crowdsale.new(mockCrowdsale.crowdsaleTypePreICO, CROWDSALE_OPENING, CROWDSALE_CLOSING, mockCrowdsale.minimumPurchaseWei, mockCrowdsale.crowdsaleRateEth, CROWDSALE_WALLET, tokenLocal.address, mockToken.tokenDecimals, mockCrowdsale.crowdsaleTotalSupplyLimit, [mockCrowdsale.tokenPercentageReservedPreICO, mockCrowdsale.tokenPercentageReservedICO, mockCrowdsale.tokenPercentageReservedTeam, mockCrowdsale.tokenPercentageReservedPlatform, mockCrowdsale.tokenPercentageReservedAirdrops]);
     await tokenLocal.transferOwnership(crowdsaleLocal.address);
-    // await IncreaseTime.increaseTimeTo(start + IncreaseTime.duration.seconds(12));
     await Reverter.snapshot();
   });
 
@@ -57,7 +49,7 @@ contract('TimedCrowdsale - new instance', (accounts) => {
     });
   });
 
-  describe.only("after Crowdsale finishes", () => {
+  describe("after Crowdsale finishes", () => {
     it('should be false for hasOpened', async () => {
       let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(111);
       await IncreaseTime.increaseTimeTo(closeTime);
