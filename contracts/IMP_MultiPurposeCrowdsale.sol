@@ -1,5 +1,7 @@
 pragma solidity ^0.4.23;
 
+import "./IMP_Token.sol";
+
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
@@ -9,7 +11,6 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 contract IMP_MultiPurposeCrowdsale is Ownable {
-
   using SafeMath for uint256;
 
   enum MintPurpose {preICO, ico, team, platform, airdrops} // Supplier.State.inactive
@@ -47,6 +48,7 @@ contract IMP_MultiPurposeCrowdsale is Ownable {
   
   /**
    * @dev Constructor function.
+   * @param _token                        Token used in Crowdsale
    * @param _tokenLimitTotalSupply        Token maximum supply
    * @param _tokenPercentageReservations  Token percentage reserved for different usage: 
    * 0 - pre ICO purchase
@@ -54,10 +56,9 @@ contract IMP_MultiPurposeCrowdsale is Ownable {
    * 2 - team members
    * 3 - platform beginning period
    * 4 - airdrops and bounties
-   * @param _tokenDecimals                Token decimals     
    */
-  constructor(uint256 _tokenLimitTotalSupply, uint8[] _tokenPercentageReservations, uint8 _tokenDecimals) public {
-      tokenLimitTotalSupply_crowdsale = _tokenLimitTotalSupply.mul(10**uint256(_tokenDecimals));
+  constructor(IMP_Token _token, uint256 _tokenLimitTotalSupply, uint8[] _tokenPercentageReservations) public {
+      tokenLimitTotalSupply_crowdsale = _tokenLimitTotalSupply.mul(10**uint256(_token.decimals()));
 
       tokenPercentageReserved_preICO = _tokenPercentageReservations[0];
       tokenPercentageReserved_ico = _tokenPercentageReservations[1];
