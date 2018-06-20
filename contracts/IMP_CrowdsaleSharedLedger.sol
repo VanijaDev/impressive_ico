@@ -99,6 +99,6 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
   }
 
   function calculateICOLimits() private {
-
+    //  TODO
   }
 }
