@@ -3,10 +3,6 @@ pragma solidity ^0.4.23;
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
 
-//  Remixd
-// import 'github.com/OpenZeppelin/zeppelin-solidity/contracts/token/ERC20/MintableToken.sol';
-// import 'github.com/OpenZeppelin/zeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol';
-
 
 contract IMP_Token is MintableToken, DetailedERC20 {
   using SafeMath for uint256;

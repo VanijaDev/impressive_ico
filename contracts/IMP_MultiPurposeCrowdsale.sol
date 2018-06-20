@@ -5,10 +5,6 @@ import "./IMP_Token.sol";
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-//  Remixd
-// import 'github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol';
-// import 'github.com/OpenZeppelin/zeppelin-solidity/contracts/ownership/Ownable.sol';
-
 
 contract IMP_MultiPurposeCrowdsale is Ownable {
   using SafeMath for uint256;

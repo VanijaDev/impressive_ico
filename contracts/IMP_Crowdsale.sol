@@ -7,11 +7,6 @@ import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/Whi
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
-//  Remixd
-// import "./IMP_Token.sol";
-// import "./IMP_MultiPurposeCrowdsale.sol";
-// import 'github.com/OpenZeppelin/zeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol';
-
 
 contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, TimedCrowdsale, IMP_MultiPurposeCrowdsale, IMP_DiscountCrowdsale {
 
