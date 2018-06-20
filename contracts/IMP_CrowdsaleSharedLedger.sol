@@ -56,7 +56,7 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
     crowdsaleType = CrowdsaleType.preICO;
     tokenLimitTotalSupply_crowdsale = _tokenLimitTotalSupply.mul(10**uint256(_token.decimals()));
 
-    calculateLimits(_tokenPercentageReservations);
+    calculatePreICOLimits(_tokenPercentageReservations);
   }
 
   function getTokenReservedLimits() public view returns(uint256 purchase, uint256 team, uint256 platform, uint256 airdrops) {
@@ -75,7 +75,16 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
    * PRIVATE
    */
 
-  function calculateLimits(uint8[] _tokenPercentageReservations) private {
+  /**
+   * @dev calculates limits for different usage purposes.
+   * @param _tokenPercentageReservations  Token percentage reserved for different usage purposes: 
+   * 0 - pre ICO purchase
+   * 1 - ICO purchase
+   * 2 - team members
+   * 3 - platform beginning period
+   * 4 - airdrops and bounties
+   */
+  function calculatePreICOLimits(uint8[] _tokenPercentageReservations) private {
     tokenPercentageReserved_preICO = _tokenPercentageReservations[0];
     tokenPercentageReserved_ico = _tokenPercentageReservations[1];
     tokenPercentageReserved_team = _tokenPercentageReservations[2];
@@ -87,5 +96,9 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
     tokenLimitReserved_team = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_team).div(100);
     tokenLimitReserved_platform = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_platform).div(100);
     tokenLimitReserved_airdrops = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_airdrops).div(100);
+  }
+
+  function calculateICOLimits() private {
+
   }
 }
