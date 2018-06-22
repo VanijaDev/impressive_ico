@@ -1,5 +1,6 @@
 const IMP_Token = artifacts.require('./IMP_Token.sol');
 const IMP_Crowdsale = artifacts.require('./IMP_Crowdsale.sol');
+let IMP_CrowdsaleSharedLedger = artifacts.require("IMP_CrowdsaleSharedLedger");
 
 const Reverter = require('./helpers/reverter');
 const IncreaseTime = require('./helpers/increaseTime');
@@ -12,19 +13,21 @@ var BigNumber = require('bignumber.js');
 contract('TimedCrowdsale - new instance', (accounts) => {
   const ACC_1 = accounts[1];
 
-  let crowdsaleLocal;
   let tokenLocal;
+  let crowdsaleSharedLedger;
+  let crowdsaleLocal;
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(1);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(3);
     const CROWDSALE_CLOSING = CROWDSALE_OPENING + IncreaseTime.duration.days(1);
 
     let mockToken = MockToken.getMock();
     let mockCrowdsale = MockCrowdsale.getMock();
 
     tokenLocal = await IMP_Token.new(mockToken.tokenName, mockToken.tokenSymbol, mockToken.tokenDecimals);
-    crowdsaleLocal = await IMP_Crowdsale.new(mockCrowdsale.crowdsaleTypePreICO, CROWDSALE_OPENING, CROWDSALE_CLOSING, mockCrowdsale.minimumPurchaseWei, mockCrowdsale.crowdsaleRateEth, CROWDSALE_WALLET, tokenLocal.address, mockToken.tokenDecimals, mockCrowdsale.crowdsaleTotalSupplyLimit, [mockCrowdsale.tokenPercentageReservedPreICO, mockCrowdsale.tokenPercentageReservedICO, mockCrowdsale.tokenPercentageReservedTeam, mockCrowdsale.tokenPercentageReservedPlatform, mockCrowdsale.tokenPercentageReservedAirdrops]);
+    crowdsaleSharedLedger = await IMP_CrowdsaleSharedLedger.new(tokenLocal.address, mockCrowdsale.crowdsaleTotalSupplyLimit, [mockCrowdsale.tokenPercentageReservedPreICO, mockCrowdsale.tokenPercentageReservedICO, mockCrowdsale.tokenPercentageReservedTeam, mockCrowdsale.tokenPercentageReservedPlatform, mockCrowdsale.tokenPercentageReservedAirdrops]);
+    crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedger.address, CROWDSALE_WALLET, [CROWDSALE_OPENING, CROWDSALE_CLOSING]);
     await tokenLocal.transferOwnership(crowdsaleLocal.address);
     await Reverter.snapshot();
   });
