@@ -15,7 +15,6 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 contract IMP_CrowdsaleSharedLedger is Ownable {
   using SafeMath for uint256;
 
-  // enum MintPurpose {preICO, ico, team, platform, airdrops} // Supplier.State.inactive
   enum CrowdsaleType {preICO, ico}
   
   CrowdsaleType public crowdsaleType;
