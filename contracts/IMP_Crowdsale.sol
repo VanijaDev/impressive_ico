@@ -4,11 +4,11 @@ pragma solidity ^0.4.23;
 import "./IMP_DiscountCrowdsale.sol";
 import "./IMP_TokenNumbersManagedCrowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
-import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
+import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/FinalizableCrowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 
-contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, TimedCrowdsale, IMP_TokenNumbersManagedCrowdsale {
+contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, FinalizableCrowdsale, IMP_TokenNumbersManagedCrowdsale {
 
   IMP_Token internal token;
 
@@ -152,6 +152,17 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, TimedCrowdsale, IMP_To
    * We should not forward funds.
    */
   function _forwardFunds() internal {}
+
+  /**
+   * @dev Can be overridden to add finalization logic. The overriding function
+   * should call super.finalization() to ensure the chain of finalization is
+   * executed entirely.
+   */
+  function finalization() internal {
+    finalizeCrowdsale();
+    
+    super.finalization();
+  }
 
   /**
    * PRIVATE

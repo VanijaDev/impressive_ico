@@ -84,6 +84,12 @@ contract IMP_TokenNumbersManagedCrowdsale is Ownable {
     return tokenLimitReserved_airdrops.sub(tokensMinted_airdrops);
   }
 
+  /**
+   * @dev Add finalization logic.
+   */
+  function finalizeCrowdsale() internal onlyOwner {
+     crowdsaleSharedLedger.finalizeCrowdsale();
+  }
 
   /**
    * INTERNAL
