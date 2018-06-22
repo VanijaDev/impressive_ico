@@ -44,6 +44,10 @@ contract IMP_TokenNumbersManagedCrowdsale is Ownable {
     return crowdsaleSharedLedger.crowdsaleType();
   }
 
+  function crowdsaleSharedLedgerAddress() public view onlyOwner returns(address) {
+    return crowdsaleSharedLedger;
+  }
+
   /**
    * @dev Calculate available amount of tokens to mint during purchase.
    * @return Number of tokens that can be minted during purchase
