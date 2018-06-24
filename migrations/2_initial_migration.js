@@ -37,7 +37,8 @@ module.exports = (deployer, network, accounts) => {
         await deployer.deploy(IMP_Crowdsale, token.address, sharedLedger.address, CROWDSALE_WALLET, [CROWDSALE_OPENING, CROWDSALE_CLOSING], CROWDSALE_RATE_ETH);
         let crowdsale = await IMP_Crowdsale.deployed();
 
+        //  transfer ownership to crowdsale contract
         await token.transferOwnership(crowdsale.address);
-
+        await sharedLedger.transferOwnership(crowdsale.address);
     });
 }

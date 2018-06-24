@@ -9,10 +9,7 @@ import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 
 contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, FinalizableCrowdsale, IMP_TokenNumbersManagedCrowdsale {
-
-  IMP_Token internal token;
-
-  uint256 pendingTokens;  //  tokens calculated for current tx
+  uint256 private pendingTokens;  //  tokens calculated for current tx
 
   /**
    * EVENTS
@@ -158,11 +155,12 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, FinalizableCrowdsale, 
    * should call super.finalization() to ensure the chain of finalization is
    * executed entirely.
    */
-   // TODO: test
   function finalization() internal {
-    finalizeCrowdsale();
-    
     super.finalization();
+    
+    finalizeCrowdsale();
+
+    selfdestruct(owner);
   }
 
   /**
