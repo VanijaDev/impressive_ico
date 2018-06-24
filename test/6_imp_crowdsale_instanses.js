@@ -9,9 +9,9 @@ const MockToken = require('./helpers/MockToken');
 const MockCrowdsale = require('./helpers/MockCrowdsale');
 var BigNumber = require('bignumber.js');
 
-
-contract('TimedCrowdsale - new instance', (accounts) => {
+contract("IMP_Crowdsale - test preICO purchase limits", (accounts) => {
   const ACC_1 = accounts[1];
+  const ACC_2 = accounts[2];
 
   let tokenLocal;
   let crowdsaleSharedLedger;
@@ -27,8 +27,10 @@ contract('TimedCrowdsale - new instance', (accounts) => {
 
     tokenLocal = await IMP_Token.new(mockToken.tokenName, mockToken.tokenSymbol, mockToken.tokenDecimals);
     crowdsaleSharedLedger = await IMP_CrowdsaleSharedLedger.new(tokenLocal.address, mockCrowdsale.crowdsaleTotalSupplyLimit, [mockCrowdsale.tokenPercentageReservedPreICO, mockCrowdsale.tokenPercentageReservedICO, mockCrowdsale.tokenPercentageReservedTeam, mockCrowdsale.tokenPercentageReservedPlatform, mockCrowdsale.tokenPercentageReservedAirdrops]);
-    crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedger.address, CROWDSALE_WALLET, [CROWDSALE_OPENING, CROWDSALE_CLOSING], mockCrowdsale.crowdsaleRateEth);
+    crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedger.address, CROWDSALE_WALLET, [CROWDSALE_OPENING, CROWDSALE_CLOSING], 200000);
     await tokenLocal.transferOwnership(crowdsaleLocal.address);
+
+    IncreaseTime.increaseTimeTo(CROWDSALE_OPENING);
 
     await Reverter.snapshot();
   });
@@ -37,39 +39,33 @@ contract('TimedCrowdsale - new instance', (accounts) => {
     await Reverter.revert();
   });
 
-  describe('before Crowdsale started', () => {
-    it('should be false for hasOpened', async () => {
-      await assert.isFalse(await crowdsaleLocal.hasOpened.call(), "should not be started yet");
-    });
+  describe.only("validate token mint limits", () => {
 
-    it("should fail on purchase", async () => {
-      await crowdsaleLocal.addToWhitelist(ACC_1);
+    it("should validate can mint maximum preICO limit", async () => {
+      // let maxTokens = new BigNumber(await crowdsaleLocal.tokenLimitReserved_purchase.call()).toNumber();
+      // console.log("maxTokens: ", maxTokens);
+
+      await crowdsaleLocal.addManyToWhitelist([ACC_1, ACC_2]);
+
+      await crowdsaleLocal.sendTransaction({
+        from: ACC_1,
+        value: web3.toWei(90, 'ether') //  == 180 000 0000 tokens
+      });
+      // let freeForPurchase = await crowdsaleLocal.tokensAvailableToMint_purchase.call();
+      // console.log("freeForPurchase: ", freeForPurchase.toFixed());
+
+      await crowdsaleLocal.sendTransaction({
+        from: ACC_2,
+        value: web3.toWei(45, 'ether') //  == 90 000 0000 tokens
+      });
+      // freeForPurchase = await crowdsaleLocal.tokensAvailableToMint_purchase.call();
+      // console.log("freeForPurchase: ", freeForPurchase.toFixed());
 
       await expectThrow(crowdsaleLocal.sendTransaction({
-        from: ACC_1,
-        value: web3.toWei(1, 'ether')
-      }));
-    });
-  });
+        from: ACC_2,
+        value: web3.toWei(30, 'ether') //  == 90 000 0000 tokens
+      }), "should throw, because exceeds maximum limit");
 
-  describe("after Crowdsale finishes", () => {
-    it('should be false for hasOpened', async () => {
-      let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(IncreaseTime.duration.seconds(1));
-      await IncreaseTime.increaseTimeTo(closeTime);
-
-      await assert.isTrue(await crowdsaleLocal.hasClosed.call(), "should be closed already");
-    });
-
-    it("should fail on purchase", async () => {
-      await crowdsaleLocal.addToWhitelist(ACC_1);
-
-      let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(IncreaseTime.duration.seconds(1));
-      await IncreaseTime.increaseTimeTo(closeTime);
-
-      await expectThrow(crowdsaleLocal.sendTransaction({
-        from: ACC_1,
-        value: web3.toWei(1, 'ether')
-      }));
     });
   });
 });
