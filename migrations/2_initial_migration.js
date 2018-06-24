@@ -14,6 +14,8 @@ module.exports = (deployer, network, accounts) => {
 
     const CROWDSALE_WALLET = accounts[4];
     const CROWDSALE_TOTAL_SUPPLY_LIMIT = 100000000; //  no decimals
+    const CROWDSALE_RATE_ETH = 200; // tokens per ETH, no decimals, TODO: correct values
+
     const CROWDSALE_OPENING = web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1);
     const CROWDSALE_CLOSING = CROWDSALE_OPENING + IncreaseTime.duration.weeks(6);
 
@@ -32,7 +34,7 @@ module.exports = (deployer, network, accounts) => {
         await deployer.deploy(IMP_CrowdsaleSharedLedger, token.address, CROWDSALE_TOTAL_SUPPLY_LIMIT, [TOKEN_PERCENTAGE_RESERVED_PRE_ICO, TOKEN_PERCENTAGE_RESERVED_ICO, TOKEN_PERCENTAGE_RESERVED_TEAM, TOKEN_PERCENTAGE_RESERVED_PLATFORM, TOKEN_PERCENTAGE_RESERVED_AIRDROPS]);
         let sharedLedger = await IMP_CrowdsaleSharedLedger.deployed();
 
-        await deployer.deploy(IMP_Crowdsale, token.address, sharedLedger.address, CROWDSALE_WALLET, [CROWDSALE_OPENING, CROWDSALE_CLOSING]);
+        await deployer.deploy(IMP_Crowdsale, token.address, sharedLedger.address, CROWDSALE_WALLET, [CROWDSALE_OPENING, CROWDSALE_CLOSING], CROWDSALE_RATE_ETH);
         let crowdsale = await IMP_Crowdsale.deployed();
 
         await token.transferOwnership(crowdsale.address);

@@ -33,10 +33,10 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, FinalizableCrowdsale, 
    * 0 - openingTimestamp
    * 1 - closingTimestamp
    */
-  constructor(IMP_Token _token, address _crowdsaleSharedLedger, address _wallet, uint256[] _timings) 
+  constructor(IMP_Token _token, address _crowdsaleSharedLedger, address _wallet, uint256[] _timings, uint256 _rateETH) 
     Crowdsale(1, _wallet, _token)
     TimedCrowdsale(_timings[0], _timings[1])
-    IMP_TokenNumbersManagedCrowdsale(_crowdsaleSharedLedger)
+    IMP_TokenNumbersManagedCrowdsale(_crowdsaleSharedLedger, _rateETH)
       public {      
         token = IMP_Token(_token);
   }
@@ -158,6 +158,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, FinalizableCrowdsale, 
    * should call super.finalization() to ensure the chain of finalization is
    * executed entirely.
    */
+   // TODO: test
   function finalization() internal {
     finalizeCrowdsale();
     
