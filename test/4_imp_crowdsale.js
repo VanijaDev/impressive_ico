@@ -175,7 +175,7 @@ contract("IMP_Crowdsale", (accounts) => {
         });
 
         it("should decrease ico", async () => {
-            //  TODO
+            //  Implemented separately
         });
 
         it("should decrease team", async () => {
@@ -303,7 +303,7 @@ contract("IMP_Crowdsale", (accounts) => {
         });
 
         it("should validate ico updating", async () => {
-            //  TODO
+            //  Implemented separately
         });
 
         it("should validate team updating", async () => {
