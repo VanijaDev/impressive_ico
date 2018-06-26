@@ -89,10 +89,10 @@ contract IMP_TokenNumbersManagedCrowdsale is Ownable {
    * @dev Add finalization logic.
    */
   function finalizeCrowdsale() internal onlyOwner {
-     crowdsaleSharedLedger.finalizeCrowdsale(tokensMinted_purchase, tokensMinted_team, tokensMinted_platform, tokensMinted_airdrops);
+    crowdsaleSharedLedger.finalizeCrowdsale(tokensMinted_purchase, tokensMinted_team, tokensMinted_platform, tokensMinted_airdrops);
 
-     crowdsaleSharedLedger.transferOwnership(owner);
-     token.transferOwnership(owner);
+    crowdsaleSharedLedger.transferOwnership(owner);
+    token.transferOwnership(owner);
 
     emit FinalizedWithResults(tokensMinted_purchase, tokensMinted_team, tokensMinted_platform, tokensMinted_airdrops);
   }
