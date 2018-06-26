@@ -19,7 +19,7 @@ contract("IMP_Crowdsale - test preICO purchase limits", (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(3);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(2);
     const CROWDSALE_CLOSING = CROWDSALE_OPENING + IncreaseTime.duration.days(1);
 
     let mockToken = MockToken.getMock();
@@ -30,7 +30,7 @@ contract("IMP_Crowdsale - test preICO purchase limits", (accounts) => {
     crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedger.address, CROWDSALE_WALLET, [CROWDSALE_OPENING, CROWDSALE_CLOSING], 200000);
     await tokenLocal.transferOwnership(crowdsaleLocal.address);
 
-    IncreaseTime.increaseTimeTo(CROWDSALE_OPENING);
+    IncreaseTime.increaseTimeTo(CROWDSALE_OPENING + IncreaseTime.duration.minutes(1));
 
     await Reverter.snapshot();
   });
@@ -40,10 +40,8 @@ contract("IMP_Crowdsale - test preICO purchase limits", (accounts) => {
   });
 
   describe("validate token mint limits", () => {
-
     it("should validate can not mint more tnan preICO limit", async () => {
-      // let maxTokens = new BigNumber(await crowdsaleLocal.tokenLimitReserved_purchase.call()).toNumber();
-      // console.log("maxTokens: ", maxTokens);
+      let maxTokens = new BigNumber(await crowdsaleLocal.tokenLimitReserved_purchase.call()).toNumber();
 
       await crowdsaleLocal.addManyToWhitelist([ACC_1, ACC_2]);
 
@@ -79,7 +77,7 @@ contract("IMP_Crowdsale - test finalization", (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(3);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(4);
     const CROWDSALE_CLOSING = CROWDSALE_OPENING + IncreaseTime.duration.days(1);
 
     let mockToken = MockToken.getMock();
@@ -114,13 +112,30 @@ contract("IMP_Crowdsale - test finalization", (accounts) => {
       await crowdsaleLocal.finalize();
 
       await assert.equal(await crowdsaleSharedLedgerLocal.owner.call(), accounts[0], "wrong owner of crowdsaleSharedLedger after finalization");
-      await expectThrow(await crowdsaleLocal.hasOpened.call(), "should fail, because crowdsale was selfdestructed");
+      await assert.equal(web3.eth.getCode(crowdsaleLocal.address), 0, "crowdsaleLocal should not exist");
+
+      //  new contract for ICO
+      const CROWDSALE_WALLET = accounts[4];
+      const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(6);
+      const CROWDSALE_CLOSING = CROWDSALE_OPENING + IncreaseTime.duration.days(1);
+      let mockCrowdsale = MockCrowdsale.getMock();
+
+      crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedgerLocal.address, CROWDSALE_WALLET, [CROWDSALE_OPENING, CROWDSALE_CLOSING], mockCrowdsale.crowdsaleRateEth);
+
+      await crowdsaleSharedLedgerLocal.transferOwnership(crowdsaleLocal.address);
+      await tokenLocal.transferOwnership(crowdsaleLocal.address);
+
+      await IncreaseTime.increaseTimeTo(CROWDSALE_CLOSING + IncreaseTime.duration.minutes(1));
+      await crowdsaleLocal.finalize();
+
+      await assert.equal(web3.eth.getCode(crowdsaleLocal.address), 0, "crowdsaleLocal should not exist after ICO finalized");
+      await assert.equal(web3.eth.getCode(crowdsaleSharedLedgerLocal.address), 0, "crowdsaleSharedLedgerLocal should not exist after ICO finalized");
     });
   });
 });
 
 
-contract("IMP_Crowdsale - test finalization", (accounts) => {
+contract("IMP_Crowdsale - test finalization calculations", (accounts) => {
   const ACC_1 = accounts[1];
   const ACC_2 = accounts[2];
 
@@ -130,7 +145,7 @@ contract("IMP_Crowdsale - test finalization", (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(3);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(13);
     const CROWDSALE_CLOSING = CROWDSALE_OPENING + IncreaseTime.duration.days(1);
 
     let mockToken = MockToken.getMock();
@@ -188,7 +203,14 @@ contract("IMP_Crowdsale - test finalization", (accounts) => {
 
       let closing = new BigNumber(await crowdsaleLocal.closingTime.call());
       await IncreaseTime.increaseTimeTo(closing.plus(IncreaseTime.duration.minutes(1)));
-      await crowdsaleLocal.finalize();
+      let finalizePreICOTx = await crowdsaleLocal.finalize();
+
+      //  event
+      let logs = finalizePreICOTx.logs;
+      assert.equal(logs.length, 3, "finalizePreICOTx should have 3 events");
+      let finalizeEvent = logs[2];
+      let finalizeEventName = finalizeEvent.event;
+      assert.equal(finalizeEventName, "FinalizedWithResults");
 
       //  new contract for ICO
       const CROWDSALE_WALLET = accounts[4];
@@ -230,7 +252,7 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(3);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(15);
     const CROWDSALE_CLOSING = CROWDSALE_OPENING + IncreaseTime.duration.days(1);
 
     let mockToken = MockToken.getMock();
@@ -251,7 +273,7 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
     await Reverter.revert();
   });
 
-  describe.only("validate correct calculations while ICO minting", () => {
+  describe("validate correct calculations while ICO minting", () => {
     const ONE_FULL_TOKEN = 10000;
 
     it("should decrease ICO", async () => {

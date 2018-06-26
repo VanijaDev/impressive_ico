@@ -63,7 +63,7 @@ contract('TimedCrowdsale - new instance', (accounts) => {
     it("should fail on purchase", async () => {
       await crowdsaleLocal.addToWhitelist(ACC_1);
 
-      let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(IncreaseTime.duration.seconds(1));
+      let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(IncreaseTime.duration.seconds(2));
       await IncreaseTime.increaseTimeTo(closeTime);
 
       await expectThrow(crowdsaleLocal.sendTransaction({
