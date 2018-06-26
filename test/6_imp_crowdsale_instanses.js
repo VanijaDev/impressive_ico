@@ -252,6 +252,8 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
   });
 
   describe.only("validate correct calculations while ICO minting", () => {
+    const ONE_FULL_TOKEN = 10000;
+
     it("should decrease ICO", async () => {
       //  finalize preICO and move to ICO period
       await crowdsaleLocal.finalize();
@@ -271,6 +273,7 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
       let tokensAvailableToMint_purchase = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_purchase.call());
       let tokensMinted_purchase = new BigNumber(await crowdsaleLocal.tokensMinted_purchase.call());
 
+      //  test purchase calculations
       await crowdsaleLocal.sendTransaction({
         from: ACC_1,
         value: web3.toWei(0.5, "ether")
@@ -284,6 +287,25 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
 
       assert.equal(tokensAvailableToMint_purchase_diff, 1000000, "wrong decrease value for tokensAvailableToMint_ICO");
       assert.equal(tokensMinted_purchase_diff, tokensAvailableToMint_purchase_diff, "tokensAvailableToMint_purchase_diff should be equal to tokensMinted_purchase_diff");
+
+      //  test manual mintings
+      let tokensMinted_team = new BigNumber(await crowdsaleLocal.tokensMinted_team.call());
+      await crowdsaleLocal.manualMint_team(ACC_1, ONE_FULL_TOKEN * 2);
+      let tokensMinted_team_after = new BigNumber(await crowdsaleLocal.tokensMinted_team.call());
+      let tokensMinted_team_Diff = tokensMinted_team_after.minus(tokensMinted_team).toNumber();
+      assert.equal(tokensMinted_team_Diff, 20000, "wrong tokensMinted_team");
+
+      let tokensMinted_platform = new BigNumber(await crowdsaleLocal.tokensMinted_platform.call());
+      await crowdsaleLocal.manualMint_platform(ACC_1, ONE_FULL_TOKEN);
+      let tokensMinted_platform_after = new BigNumber(await crowdsaleLocal.tokensMinted_platform.call());
+      let tokensMinted_platform_Diff = tokensMinted_platform_after.minus(tokensMinted_platform).toNumber();
+      assert.equal(tokensMinted_platform_Diff, 10000, "wrong tokensMinted_platform");
+
+      let tokensMinted_airdrops = new BigNumber(await crowdsaleLocal.tokensMinted_airdrops.call());
+      await crowdsaleLocal.manualMint_airdrops(ACC_1, ONE_FULL_TOKEN);
+      let tokensMinted_airdrops_after = new BigNumber(await crowdsaleLocal.tokensMinted_airdrops.call());
+      let tokensMinted_airdrops_Diff = tokensMinted_airdrops_after.minus(tokensMinted_airdrops).toNumber();
+      assert.equal(tokensMinted_airdrops_Diff, 10000, "wrong tokensMinted_airdrops");
     });
   });
 });
