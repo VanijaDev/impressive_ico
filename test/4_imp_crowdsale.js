@@ -322,11 +322,6 @@ contract("IMP_Crowdsale", (accounts) => {
 
     describe("validate token mint limits", () => {
         const ACC_2 = accounts[2];
-
-        it("should validate ICO minting limits", async () => {
-            //  TODO
-        });
-
         //  NOTE: preICO and ICO minting limits tested separately
 
         it("should validate team minting limits", async () => {
