@@ -20,14 +20,18 @@ contract('TimedCrowdsale - new instance', (accounts) => {
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
     const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(3);
-    const CROWDSALE_CLOSING = CROWDSALE_OPENING + IncreaseTime.duration.days(1);
+
+    let timings = [];
+    for (i = 0; i < 7; i++) {
+      timings[i] = CROWDSALE_OPENING + IncreaseTime.duration.hours(i);
+    }
 
     let mockToken = MockToken.getMock();
     let mockCrowdsale = MockCrowdsale.getMock();
 
     tokenLocal = await IMP_Token.new(mockToken.tokenName, mockToken.tokenSymbol, mockToken.tokenDecimals);
     crowdsaleSharedLedger = await IMP_CrowdsaleSharedLedger.new(tokenLocal.address, mockCrowdsale.crowdsaleTotalSupplyLimit, [mockCrowdsale.tokenPercentageReservedPreICO, mockCrowdsale.tokenPercentageReservedICO, mockCrowdsale.tokenPercentageReservedTeam, mockCrowdsale.tokenPercentageReservedPlatform, mockCrowdsale.tokenPercentageReservedAirdrops]);
-    crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedger.address, CROWDSALE_WALLET, [CROWDSALE_OPENING, CROWDSALE_CLOSING], mockCrowdsale.crowdsaleRateEth);
+    crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedger.address, CROWDSALE_WALLET, mockCrowdsale.crowdsaleRateEth, timings, mockCrowdsale.crowdsalePreICODiscounts);
     await tokenLocal.transferOwnership(crowdsaleLocal.address);
 
     await Reverter.snapshot();
