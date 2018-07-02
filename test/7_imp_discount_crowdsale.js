@@ -317,9 +317,6 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
 
       assert.equal(new BigNumber(await tokenLocal.balanceOf(ACC_2)).toNumber(), 40000, "wrong ACC_2 balance after manual transfers");
 
-      //  TODO: send more, than limits ^^^ all three
-
-
       //  test purchase calculations
       await crowdsaleLocal.addManyToWhitelist([ACC_1, ACC_2]);
 
