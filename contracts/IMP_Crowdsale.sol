@@ -164,8 +164,6 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, Pausable, FinalizableCrowdsale, 
     super.finalization();
     
     finalizeCrowdsale();
-
-    selfdestruct(owner);
   }
 
   function currentDiscount() public view onlyWhileOpen returns(uint256 discount) {
