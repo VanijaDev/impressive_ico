@@ -17,7 +17,7 @@ module.exports = (deployer, network, accounts) => {
     const CROWDSALE_RATE_ETH = 100; // tokens per ETH, no decimals, TODO: correct values
 
     const CROWDSALE_OPENING = web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1);
-    let timings = [];
+    let timings = []; //  [opening, stageEdges]
     for (i = 0; i < 7; i++) {
         timings[i] = CROWDSALE_OPENING + IncreaseTime.duration.weeks(i);
     }
