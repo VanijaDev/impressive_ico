@@ -1,6 +1,7 @@
 let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale.sol");
 let IMP_Token = artifacts.require("./IMP_Token.sol");
 let IMP_CrowdsaleSharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger.sol");
+let RefundVault = artifacts.require("../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/utils/RefundVault.sol");
 
 const IncreaseTime = require("./helpers/increaseTime.js");
 const expectThrow = require('./helpers/expectThrow');
@@ -103,15 +104,17 @@ contract("IMP_Crowdsale", (accounts) => {
             });
         });
 
-        it("wei should stay on crowdsale contract balance", async () => {
-            //  1
+        it("wei should be transferred to vault contract", async () => {
+            let vault = await crowdsaleSharedLedger.vault.call();
+
+            // 1
             await crowdsale.sendTransaction({
                 from: ACC_1,
                 value: web3.toWei(1, "ether")
             });
 
-            let balance = new BigNumber(await web3.eth.getBalance(crowdsale.address)).toNumber();
-            assert.equal(balance, new BigNumber(web3.toWei(1, "ether")).toNumber(), "wrong contract balance after purchase 1 ETH");
+            let balance = new BigNumber(await web3.eth.getBalance(vault)).toNumber();
+            assert.equal(balance, new BigNumber(web3.toWei(1, "ether")).toNumber(), "wrong vault balance after purchase 1 ETH");
 
             //  2
             await crowdsale.sendTransaction({
@@ -119,8 +122,8 @@ contract("IMP_Crowdsale", (accounts) => {
                 value: web3.toWei(2.5, "ether")
             });
 
-            balance = new BigNumber(await web3.eth.getBalance(crowdsale.address)).toNumber();
-            assert.equal(balance, new BigNumber(web3.toWei(3.5, "ether")).toNumber(), "wrong contract balance after purchase 2.5 ETH");
+            balance = new BigNumber(await web3.eth.getBalance(vault)).toNumber();
+            assert.equal(balance, new BigNumber(web3.toWei(3.5, "ether")).toNumber(), "wrong vault balance after purchase 2.5 ETH");
         });
     });
 

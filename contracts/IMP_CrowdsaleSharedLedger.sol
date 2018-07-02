@@ -5,6 +5,7 @@ import "./IMP_Token.sol";
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/utils/RefundVault.sol";
 
 
 /**
@@ -18,6 +19,12 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
   enum CrowdsaleType {preICO, ico}
   
   CrowdsaleType public crowdsaleType;
+
+  // minimum amount of funds to be raised in weis
+  uint256 public goal;
+
+  // refund vault used to hold funds while crowdsale is running
+  RefundVault public vault;
 
   uint8 public tokenPercentageReserved_preICO;    //  % of tokens reserved for pre_ICO
   uint8 public tokenPercentageReserved_ico;       //  % of tokens reserved for ICO
@@ -49,12 +56,19 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
    * 2 - team members
    * 3 - platform beginning period
    * 4 - airdrops and bounties
+   * @param _softCapETH                   soft cap for entire crowdsale
+   * @param _wallet                       wallet for funds
    */
-  constructor (IMP_Token _token, uint256 _tokenLimitTotalSupply, uint8[] _tokenPercentageReservations) public {
+  constructor (IMP_Token _token, uint256 _tokenLimitTotalSupply, uint8[] _tokenPercentageReservations, uint256 _softCapETH, address _wallet) public {
+    require(_softCapETH > 0);
+
+    goal = _softCapETH.mul(10**uint256(_token.decimals()));
     crowdsaleType = CrowdsaleType.preICO;
     tokenLimitTotalSupply_crowdsale = _tokenLimitTotalSupply.mul(10**uint256(_token.decimals()));
 
     calculatePreICOLimits(_tokenPercentageReservations);
+
+    vault = new RefundVault(_wallet);
   }
 
   function getTokenReservedLimits() public view returns(uint256 purchase, uint256 team, uint256 platform, uint256 airdrops) {
@@ -67,6 +81,21 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
     team = tokenLimitReserved_team.sub(tokensMinted_team);
     platform = tokenLimitReserved_platform.sub(tokensMinted_platform);
     airdrops = tokenLimitReserved_airdrops.sub(tokensMinted_airdrops);
+  }
+
+  /**
+   * @dev Checks whether funding goal was reached.
+   * @return Whether funding goal was reached
+   */
+  function goalReached() public view returns (bool) {
+    return address(vault).balance >= goal;
+  }
+
+  /**
+   * @dev Forwards purchase funds to vault.
+   */
+  function forwardFundsToVault(address _investor) public payable onlyOwner {
+    vault.deposit.value(msg.value)(_investor);
   }
 
   /**
@@ -83,6 +112,16 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
     } else {
       finalizeICO();
     }
+  }
+
+  /**
+   * @dev Investors can claim refunds here if crowdsale is unsuccessful
+   */
+  function claimRefund() public {
+    require(vault.state() == RefundVault.State.Refunding, "vault should be in Refunding state for refunds enabled");
+    require(!goalReached(), "goal was reached, so no refunds enabled");
+
+    vault.refund(msg.sender);
   }
 
   /**
@@ -136,6 +175,11 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
  * @dev ICO finalization logic
  */
   function finalizeICO() private {
-    selfdestruct(owner);
+    if (goalReached()) {
+      vault.close();
+      selfdestruct(owner);
+    } else {
+      vault.enableRefunds();
+    }
   }
 }

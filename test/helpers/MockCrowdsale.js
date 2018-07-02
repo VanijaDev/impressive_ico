@@ -1,6 +1,7 @@
 let mock = {
     minimumPurchaseWei: web3.toWei(0.00001, "ether"),
     crowdsaleRateEth: 100, // tokens per ETH, no decimals, TODO: correct values
+    crowdsaleSoftCapETH: 15000, //  in ETH
     crowdsaleWallet: 000000,
     crowdsaleTotalSupplyLimit: 100000000, //  no decimals
     crowdsalePreICODiscounts: [20, 18, 16, 14, 12, 10], //  including each edge

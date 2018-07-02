@@ -15,6 +15,7 @@ module.exports = (deployer, network, accounts) => {
     const CROWDSALE_WALLET = accounts[4];
     const CROWDSALE_TOTAL_SUPPLY_LIMIT = 100000000; //  no decimals
     const CROWDSALE_RATE_ETH = 100; // tokens per ETH, no decimals, TODO: correct values
+    const CROWDSALE_SOFT_CAP_ETH = 15000; //  in ETH
 
     const CROWDSALE_OPENING = web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1);
     let timings = []; //  [opening, stageEdges]
@@ -35,7 +36,7 @@ module.exports = (deployer, network, accounts) => {
     deployer.deploy(IMP_Token, TOKEN_NAME, TOKEN_SYMBOL, TOKEN_DECIMALS).then(async () => {
         let token = await IMP_Token.deployed();
 
-        await deployer.deploy(IMP_CrowdsaleSharedLedger, token.address, CROWDSALE_TOTAL_SUPPLY_LIMIT, [TOKEN_PERCENTAGE_RESERVED_PRE_ICO, TOKEN_PERCENTAGE_RESERVED_ICO, TOKEN_PERCENTAGE_RESERVED_TEAM, TOKEN_PERCENTAGE_RESERVED_PLATFORM, TOKEN_PERCENTAGE_RESERVED_AIRDROPS]);
+        await deployer.deploy(IMP_CrowdsaleSharedLedger, token.address, CROWDSALE_TOTAL_SUPPLY_LIMIT, [TOKEN_PERCENTAGE_RESERVED_PRE_ICO, TOKEN_PERCENTAGE_RESERVED_ICO, TOKEN_PERCENTAGE_RESERVED_TEAM, TOKEN_PERCENTAGE_RESERVED_PLATFORM, TOKEN_PERCENTAGE_RESERVED_AIRDROPS], CROWDSALE_SOFT_CAP_ETH, CROWDSALE_WALLET);
         let sharedLedger = await IMP_CrowdsaleSharedLedger.deployed();
 
         await deployer.deploy(IMP_Crowdsale, token.address, sharedLedger.address, CROWDSALE_WALLET, CROWDSALE_RATE_ETH, timings, PRE_ICO_DISCOUNTS);

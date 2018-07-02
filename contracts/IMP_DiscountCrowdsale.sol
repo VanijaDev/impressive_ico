@@ -27,7 +27,7 @@ contract IMP_DiscountCrowdsale {
    *  PUBLIC
    */
 
-  constructor(uint256[] _stageDiscounts, uint256[] _weekTimestamps) public {
+  constructor(uint256[] _weekTimestamps, uint256[] _stageDiscounts) public {
     require(_stageDiscounts.length > 0, "empty discounts");
     require(_stageDiscounts.length == _weekTimestamps.length.sub(1), "discounts count must be == stages count");
 
