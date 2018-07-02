@@ -260,7 +260,7 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
     await Reverter.revert();
   });
 
-  describe.only("validate correct calculations while ICO minting", () => {
+  describe("validate correct calculations while ICO minting", () => {
     const ONE_FULL_TOKEN = 10000;
 
     it("should decrease ICO", async () => {
