@@ -1,7 +1,6 @@
 let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale.sol");
 let IMP_Token = artifacts.require("./IMP_Token.sol");
 let IMP_CrowdsaleSharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger.sol");
-let RefundVault = artifacts.require("../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/utils/RefundVault.sol");
 
 const IncreaseTime = require("./helpers/increaseTime.js");
 const expectThrow = require('./helpers/expectThrow');
@@ -124,6 +123,9 @@ contract("IMP_Crowdsale", (accounts) => {
 
             balance = new BigNumber(await web3.eth.getBalance(vault)).toNumber();
             assert.equal(balance, new BigNumber(web3.toWei(3.5, "ether")).toNumber(), "wrong vault balance after purchase 2.5 ETH");
+
+            let crowdsaleWeiRaised = new BigNumber(await crowdsale.crowdsaleWeiRaised.call()).toNumber();
+            assert.equal(crowdsaleWeiRaised, new BigNumber(web3.toWei(3.5, "ether")).toNumber(), "wrong crowdsaleWeiRaised value");
         });
     });
 

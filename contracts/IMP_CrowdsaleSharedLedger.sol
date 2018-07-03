@@ -23,6 +23,8 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
   // minimum amount of funds to be raised in weis
   uint256 public goal;
 
+  uint256 public crowdsaleWeiRaised;
+
   // refund vault used to hold funds while crowdsale is running
   RefundVault public vault;
 
@@ -62,7 +64,7 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
   constructor (IMP_Token _token, uint256 _tokenLimitTotalSupply, uint8[] _tokenPercentageReservations, uint256 _softCapETH, address _wallet) public {
     require(_softCapETH > 0);
 
-    goal = _softCapETH.mul(10**uint256(_token.decimals()));
+    goal = _softCapETH.mul(10**18);
     crowdsaleType = CrowdsaleType.preICO;
     tokenLimitTotalSupply_crowdsale = _tokenLimitTotalSupply.mul(10**uint256(_token.decimals()));
 
@@ -88,7 +90,7 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
    * @return Whether funding goal was reached
    */
   function goalReached() public view returns (bool) {
-    return address(vault).balance >= goal;
+    return crowdsaleWeiRaised >= goal;
   }
 
   /**
@@ -96,6 +98,7 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
    */
   function forwardFundsToVault(address _investor) public payable onlyOwner {
     vault.deposit.value(msg.value)(_investor);
+    crowdsaleWeiRaised = crowdsaleWeiRaised.add(msg.value);
   }
 
   /**
@@ -122,6 +125,10 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
     require(!goalReached(), "goal was reached, so no refunds enabled");
 
     vault.refund(msg.sender);
+  }
+
+  function kill() public onlyOwner {
+    selfdestruct(owner);
   }
 
   /**
@@ -177,7 +184,6 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
   function finalizeICO() private {
     if (goalReached()) {
       vault.close();
-      selfdestruct(owner);
     } else {
       vault.enableRefunds();
     }

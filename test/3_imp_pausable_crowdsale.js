@@ -2,7 +2,6 @@ let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale.sol");
 
 const expectThrow = require('./helpers/expectThrow');
 const Reverter = require('./helpers/reverter');
-const IncreaseTime = require("./helpers/increaseTime.js");
 
 let crowdsale;
 

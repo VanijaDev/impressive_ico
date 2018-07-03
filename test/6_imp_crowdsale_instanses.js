@@ -1,6 +1,6 @@
 const IMP_Token = artifacts.require('./IMP_Token.sol');
 const IMP_Crowdsale = artifacts.require('./IMP_Crowdsale.sol');
-let IMP_CrowdsaleSharedLedger = artifacts.require("IMP_CrowdsaleSharedLedger");
+const IMP_CrowdsaleSharedLedger = artifacts.require("IMP_CrowdsaleSharedLedger");
 
 const Reverter = require('./helpers/reverter');
 const IncreaseTime = require('./helpers/increaseTime');
