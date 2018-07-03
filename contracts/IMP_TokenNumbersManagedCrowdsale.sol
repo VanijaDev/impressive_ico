@@ -8,11 +8,12 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/FinalizableCrowdsale.sol";
+import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Destructible.sol";
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
-contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, FinalizableCrowdsale, IMP_DiscountCrowdsale {
+contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, FinalizableCrowdsale, IMP_DiscountCrowdsale, Destructible {
   using SafeMath for uint256;  
 
   enum MintPurpose {preICO, ico, team, platform, airdrops} // Supplier.State.inactive
@@ -128,6 +129,10 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Final
     tokens = basicTokens.add(bonusTokens);
   }
 
+  function refundsEnabled() public view returns(bool) {
+    return crowdsaleSharedLedger.refundsEnabled();
+  }
+
   /**
    * @dev Determines if soft cap was reached.
    * @return Whether soft cap goal was reached
@@ -145,13 +150,6 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Final
   }
 
   /**
-   * @dev Investors can claim refunds here if crowdsale is unsuccessful
-   */
-  function claimRefund() public {
-    crowdsaleSharedLedger.claimRefund();
-  }
-
-  /**
    * INTERNAL
    */
 
@@ -162,13 +160,23 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Final
     IMP_CrowdsaleSharedLedger.CrowdsaleType crowdsaleType = crowdsaleSharedLedger.crowdsaleType();
 
     crowdsaleSharedLedger.finalizeCrowdsale(tokensMinted_purchase, tokensMinted_team, tokensMinted_platform, tokensMinted_airdrops);
-    crowdsaleSharedLedger.transferOwnership(owner);
-    token.transferOwnership(owner);
 
     emit FinalizedWithResults(tokensMinted_purchase, tokensMinted_team, tokensMinted_platform, tokensMinted_airdrops);
 
     if(crowdsaleType == IMP_CrowdsaleSharedLedger.CrowdsaleType.preICO) {
+      crowdsaleSharedLedger.transferOwnership(owner);
+      token.transferOwnership(owner);
+
       selfdestruct(owner);
+    } else {
+      if(crowdsaleSharedLedger.goalReached()) {
+        crowdsaleSharedLedger.transferOwnership(owner);
+        token.transferOwnership(owner);
+
+        selfdestruct(owner);
+      } else {
+        token.transferOwnership(owner);
+      }
     }
   }
 

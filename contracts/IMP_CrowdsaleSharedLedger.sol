@@ -6,6 +6,7 @@ import "./IMP_Token.sol";
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/utils/RefundVault.sol";
+import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Destructible.sol";
 
 
 /**
@@ -13,7 +14,7 @@ import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/u
  * @dev IMP_CrowdsaleSharedLedger is used to keep shared data between preICO and ICO contracts.
  */
 
-contract IMP_CrowdsaleSharedLedger is Ownable {
+contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
   using SafeMath for uint256;
 
   enum CrowdsaleType {preICO, ico}
@@ -121,14 +122,10 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
    * @dev Investors can claim refunds here if crowdsale is unsuccessful
    */
   function claimRefund() public {
-    require(vault.state() == RefundVault.State.Refunding, "vault should be in Refunding state for refunds enabled");
+    require(refundsEnabled(), "vault should be in Refunding state for refunds enabled");
     require(!goalReached(), "goal was reached, so no refunds enabled");
 
     vault.refund(msg.sender);
-  }
-
-  function kill() public onlyOwner {
-    selfdestruct(owner);
   }
 
   /**
@@ -156,6 +153,10 @@ contract IMP_CrowdsaleSharedLedger is Ownable {
     tokenLimitReserved_team = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_team).div(100);
     tokenLimitReserved_platform = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_platform).div(100);
     tokenLimitReserved_airdrops = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_airdrops).div(100);
+  }
+
+  function refundsEnabled() public view returns(bool) {
+    return vault.state() == RefundVault.State.Refunding;
   }
 
 /**
