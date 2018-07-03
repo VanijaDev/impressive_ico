@@ -129,6 +129,22 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Final
   }
 
   /**
+   * @dev Determines if soft cap was reached.
+   * @return Whether soft cap goal was reached
+   */
+  function softCapReached() public view returns(bool) {
+    return crowdsaleSharedLedger.goalReached();
+  }
+  
+  /**
+   * @dev Total wei raised in crowdsale.
+   * @return Vault balance
+   */
+  function crowdsaleWeiRaised() public view returns(uint256) {
+    return crowdsaleSharedLedger.crowdsaleWeiRaised();
+  }
+
+  /**
    * @dev Investors can claim refunds here if crowdsale is unsuccessful
    */
   function claimRefund() public {
