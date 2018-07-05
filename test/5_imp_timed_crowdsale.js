@@ -19,7 +19,7 @@ contract('TimedCrowdsale - new instance', (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(3);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(1);
 
     let timings = [];
     for (i = 0; i < 7; i++) {
@@ -48,7 +48,7 @@ contract('TimedCrowdsale - new instance', (accounts) => {
       await assert.isFalse(await crowdsaleLocal.hasOpened.call(), "should not be started yet");
     });
 
-    it("should fail on purchase", async () => {
+    it("should fail on purchase before", async () => {
       await crowdsaleLocal.addToWhitelist(ACC_1);
 
       await expectThrow(crowdsaleLocal.sendTransaction({
@@ -59,28 +59,19 @@ contract('TimedCrowdsale - new instance', (accounts) => {
   });
 
   describe("after Crowdsale finishes", () => {
-    it('should be false for hasOpened', async () => {
-      let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(IncreaseTime.duration.seconds(1));
-      await IncreaseTime.increaseTimeTo(closeTime);
-
-      await assert.isTrue(await crowdsaleLocal.hasClosed.call(), "should be closed already");
-    });
-
-    it.only("should fail on purchase", async () => {
+    it('should validate hasClosed', async () => {
+      await IncreaseTime.increaseTimeTo(new BigNumber(await crowdsaleLocal.openingTime.call()).plus(IncreaseTime.duration.seconds(1)));
       await crowdsaleLocal.addToWhitelist(ACC_1);
 
-      let balanceBefore = new BigNumber(await web3.eth.getBalance(ACC_1)).toNumber();
-      console.log(balanceBefore);
-
-      let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(IncreaseTime.duration.seconds(2));
-      await IncreaseTime.increaseTimeTo(closeTime);
-
-      //  first time to finalize
       await crowdsaleLocal.sendTransaction({
         from: ACC_1,
         value: web3.toWei(1, 'ether')
       });
-      await assert.equal(web3.eth.getCode(crowdsaleLocal.address), 0, "crowdsaleLocal should not exist");
+
+      let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(IncreaseTime.duration.seconds(1));
+      await IncreaseTime.increaseTimeTo(closeTime);
+
+      await assert.isTrue(await crowdsaleLocal.hasClosed.call(), "should be closed already");
     });
   });
 });

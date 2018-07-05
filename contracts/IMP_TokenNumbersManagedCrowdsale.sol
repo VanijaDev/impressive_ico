@@ -155,7 +155,7 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
    * @return Whether crowdsale period has started
    */
   function hasOpened() public view returns (bool) {
-    return block.timestamp > openingTime;
+    return block.timestamp >= openingTime;
   }
 
 
@@ -231,8 +231,8 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
     require(!isFinalized, "is already finalized");
     
     if (shouldFinalize()) {
-      finalize();
       msg.sender.transfer(msg.value);
+      finalize();
       return;
     }
     

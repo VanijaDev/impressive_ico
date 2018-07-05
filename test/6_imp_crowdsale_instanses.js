@@ -58,7 +58,7 @@ contract("IMP_Crowdsale - test preICO purchase limits", (accounts) => {
         from: ACC_1,
         value: web3.toWei(30, 'ether')
       });
-      console.log("freeForPurchase: ", (await crowdsaleLocal.tokensAvailableToMint_purchase.call()).toFixed());
+      // console.log("freeForPurchase: ", (await crowdsaleLocal.tokensAvailableToMint_purchase.call()).toFixed());
 
       await crowdsaleLocal.sendTransaction({
         from: ACC_2,
@@ -77,78 +77,6 @@ contract("IMP_Crowdsale - test preICO purchase limits", (accounts) => {
   //  Note: ICO minitng limits tested in 7_imp_discount_crowdsale.js
 });
 
-// contract("IMP_Crowdsale - test finalization", (accounts) => {
-//   const ACC_1 = accounts[1];
-
-//   let tokenLocal;
-//   let crowdsaleSharedLedgerLocal;
-//   let crowdsaleLocal;
-
-//   before('setup', async () => {
-//     const CROWDSALE_WALLET = accounts[4];
-//     const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(4);
-
-//     let timings = [];
-//     for (i = 0; i < 7; i++) {
-//       timings[i] = CROWDSALE_OPENING + IncreaseTime.duration.hours(i);
-//     }
-
-//     let mockToken = MockToken.getMock();
-//     let mockCrowdsale = MockCrowdsale.getMock();
-
-//     tokenLocal = await IMP_Token.new(mockToken.tokenName, mockToken.tokenSymbol, mockToken.tokenDecimals);
-//     crowdsaleSharedLedgerLocal = await IMP_CrowdsaleSharedLedger.new(tokenLocal.address, mockCrowdsale.crowdsaleTotalSupplyLimit, [mockCrowdsale.tokenPercentageReservedPreICO, mockCrowdsale.tokenPercentageReservedICO, mockCrowdsale.tokenPercentageReservedTeam, mockCrowdsale.tokenPercentageReservedPlatform, mockCrowdsale.tokenPercentageReservedAirdrops], mockCrowdsale.crowdsaleSoftCapETH, CROWDSALE_WALLET);
-//     crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedgerLocal.address, CROWDSALE_WALLET, mockCrowdsale.crowdsaleRateEth, timings, mockCrowdsale.crowdsalePreICODiscounts);
-
-//     await crowdsaleSharedLedgerLocal.transferOwnership(crowdsaleLocal.address);
-//     await tokenLocal.transferOwnership(crowdsaleLocal.address);
-
-//     IncreaseTime.increaseTimeTo(CROWDSALE_OPENING);
-//     await Reverter.snapshot();
-//   });
-
-//   afterEach('revert', async () => {
-//     await Reverter.revert();
-//   });
-
-//   describe.only("validate finalize function call allowance", () => {
-//     it("should validate finalize can be called after crowdsale finished by owner only", async () => {
-//       assert.isFalse(await crowdsaleLocal.isFinalized.call(), "should not be finalized yet");
-
-//       let closing = new BigNumber(await crowdsaleLocal.closingTime.call());
-//       await IncreaseTime.increaseTimeTo(closing.plus(IncreaseTime.duration.minutes(1)));
-
-//       await crowdsaleLocal.sendTransaction({
-//         from: ACC_1,
-//         value: web3.toWei(1, 'ether')
-//       });
-
-//       await assert.equal(await crowdsaleSharedLedgerLocal.owner.call(), accounts[0], "wrong owner of crowdsaleSharedLedger after finalization");
-//       // await assert.equal(web3.eth.getCode(crowdsaleLocal.address), 0, "crowdsaleLocal should not exist");
-
-//       // //  new contract for ICO
-//       // const CROWDSALE_WALLET = accounts[4];
-//       // const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(4);
-
-//       // let timings = [];
-//       // for (i = 0; i < 4; i++) {
-//       //   timings[i] = CROWDSALE_OPENING + IncreaseTime.duration.hours(i);
-//       // }
-
-//       // let mockCrowdsale = MockCrowdsale.getMock();
-
-//       // crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedgerLocal.address, CROWDSALE_WALLET, mockCrowdsale.crowdsaleRateEth, timings, mockCrowdsale.crowdsaleICODiscounts);
-
-//       // await crowdsaleSharedLedgerLocal.transferOwnership(crowdsaleLocal.address);
-//       // await tokenLocal.transferOwnership(crowdsaleLocal.address);
-
-//       // await IncreaseTime.increaseTimeTo(timings[timings.length - 1] + IncreaseTime.duration.minutes(1));
-//       // await crowdsaleLocal.finalize();
-//     });
-//   });
-// });
-
-
 contract("IMP_Crowdsale - test finalization calculations", (accounts) => {
   const ACC_1 = accounts[1];
   const ACC_2 = accounts[2];
@@ -159,7 +87,7 @@ contract("IMP_Crowdsale - test finalization calculations", (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(13);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(4);
 
     let timings = [];
     for (i = 0; i < 7; i++) {
@@ -176,7 +104,7 @@ contract("IMP_Crowdsale - test finalization calculations", (accounts) => {
     await crowdsaleSharedLedgerLocal.transferOwnership(crowdsaleLocal.address);
     await tokenLocal.transferOwnership(crowdsaleLocal.address);
 
-    IncreaseTime.increaseTimeTo(CROWDSALE_OPENING);
+    await IncreaseTime.increaseTimeTo(CROWDSALE_OPENING);
     await Reverter.snapshot();
   });
 
@@ -184,7 +112,7 @@ contract("IMP_Crowdsale - test finalization calculations", (accounts) => {
     await Reverter.revert();
   });
 
-  describe.only("validate finalize function", () => {
+  describe("validate finalize function", () => {
     it("should validate limits are being recalculated after finalization", async () => {
       await crowdsaleLocal.addManyToWhitelist([ACC_1, ACC_2]);
 
@@ -194,80 +122,80 @@ contract("IMP_Crowdsale - test finalization calculations", (accounts) => {
         value: web3.toWei(90, 'ether') //  == 180 000 0000 tokens
       });
 
-      // // 2. team
-      // const teamSent = new BigNumber(50000000); //  5000
-      // await crowdsaleLocal.manualMint_team(ACC_2, teamSent.toNumber());
+      // 2. team
+      const teamSent = new BigNumber(50000000); //  5000
+      await crowdsaleLocal.manualMint_team(ACC_2, teamSent.toNumber());
 
 
-      // //  3. platform
-      // const platformSent = new BigNumber(40000000); //  4000
-      // await crowdsaleLocal.manualMint_platform(ACC_2, platformSent.toNumber());
+      //  3. platform
+      const platformSent = new BigNumber(40000000); //  4000
+      await crowdsaleLocal.manualMint_platform(ACC_2, platformSent.toNumber());
 
 
-      // //  4. airdrops
-      // const airdropsSent = new BigNumber(30000000); //  3000
-      // await crowdsaleLocal.manualMint_airdrops(ACC_2, airdropsSent.toNumber());
+      //  4. airdrops
+      const airdropsSent = new BigNumber(30000000); //  3000
+      await crowdsaleLocal.manualMint_airdrops(ACC_2, airdropsSent.toNumber());
 
-      // let unspentPurchase = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_purchase.call()); //  currently preICO
-      // let unspentTeam = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_team.call());
-      // let unspentPlatform = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_platform.call());
-      // let unspentAirdrops = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_airdrops.call());
-      // let unspentPurchase_ICO = new BigNumber(await crowdsaleSharedLedgerLocal.tokenLimitReserved_ico.call());
-      // // console.log("unspentPurchase: ", unspentPurchase.toNumber());
-      // // console.log("unspentTeam: ", unspentTeam.toNumber());
-      // // console.log("unspentPlatform: ", unspentPlatform.toNumber());
-      // // console.log("unspentAirdrops: ", unspentAirdrops.toNumber());
-      // // console.log("unspentPurchase_ICO: ", unspentPurchase_ICO.toNumber());
+      let unspentPurchase = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_purchase.call()); //  currently preICO
+      let unspentTeam = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_team.call());
+      let unspentPlatform = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_platform.call());
+      let unspentAirdrops = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_airdrops.call());
+      let unspentPurchase_ICO = new BigNumber(await crowdsaleSharedLedgerLocal.tokenLimitReserved_ico.call());
+      // console.log("unspentPurchase: ", unspentPurchase.toNumber());
+      // console.log("unspentTeam: ", unspentTeam.toNumber());
+      // console.log("unspentPlatform: ", unspentPlatform.toNumber());
+      // console.log("unspentAirdrops: ", unspentAirdrops.toNumber());
+      // console.log("unspentPurchase_ICO: ", unspentPurchase_ICO.toNumber());
 
-      // let closing = new BigNumber(await crowdsaleLocal.closingTime.call());
-      // await IncreaseTime.increaseTimeTo(closing.plus(IncreaseTime.duration.minutes(1)));
+      let closing = new BigNumber(await crowdsaleLocal.closingTime.call());
+      await IncreaseTime.increaseTimeTo(closing.plus(IncreaseTime.duration.minutes(1)));
 
-      // // tx to finalize preICO
-      // assert.isFalse(await crowdsaleLocal.isFinalized.call(), "should not be finalized yet");
-      // let finalizePreICOTx = await crowdsaleLocal.sendTransaction({
-      //   from: ACC_1,
-      //   value: web3.toWei(1, 'ether') //  == 180 000 0000 tokens
-      // });
-      // await assert.equal(web3.eth.getCode(crowdsaleLocal.address), 0, "crowdsaleLocal should not exist");
+      // tx to finalize preICO
+      assert.isFalse(await crowdsaleLocal.isFinalized.call(), "should not be finalized yet");
+      let finalizePreICOTx = await crowdsaleLocal.sendTransaction({
+        from: ACC_1,
+        value: web3.toWei(1, 'ether') //  == 180 000 0000 tokens
+      });
+      await assert.equal(web3.eth.getCode(crowdsaleLocal.address), 0, "crowdsaleLocal should not exist");
 
       // event
-      // let logs = finalizePreICOTx.logs;
-      // // console.log(logs);
-      // assert.equal(logs.length, 3, "finalizePreICOTx should have 3 events");
-      // let finalizeEvent = logs[0];
-      // let finalizeEventName = finalizeEvent.event;
-      // assert.equal(finalizeEventName, "FinalizedWithResults");
+      let logs = finalizePreICOTx.logs;
+      // console.log(logs);
+      assert.equal(logs.length, 3, "finalizePreICOTx should have 3 events");
+      let finalizeEvent = logs[0];
+      let finalizeEventName = finalizeEvent.event;
+      assert.equal(finalizeEventName, "FinalizedWithResults");
 
-      // //  new contract for ICO
-      // const CROWDSALE_WALLET = accounts[4];
-      // const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(3);
+      //  new contract for ICO
+      const CROWDSALE_WALLET = accounts[4];
+      const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(3);
 
-      // let timings = [];
-      // for (i = 0; i < 4; i++) {
-      //   timings[i] = CROWDSALE_OPENING + IncreaseTime.duration.hours(i);
-      // }
+      let timings = [];
+      for (i = 0; i < 4; i++) {
+        timings[i] = CROWDSALE_OPENING + IncreaseTime.duration.hours(i);
+      }
 
-      // let mockCrowdsale = MockCrowdsale.getMock();
+      let mockCrowdsale = MockCrowdsale.getMock();
 
-      // crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedgerLocal.address, CROWDSALE_WALLET, mockCrowdsale.crowdsaleRateEth, timings, mockCrowdsale.crowdsaleICODiscounts);
+      crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedgerLocal.address, CROWDSALE_WALLET, mockCrowdsale.crowdsaleRateEth, timings, mockCrowdsale.crowdsaleICODiscounts);
 
-      // await crowdsaleSharedLedgerLocal.transferOwnership(crowdsaleLocal.address);
-      // await tokenLocal.transferOwnership(crowdsaleLocal.address);
+      await crowdsaleSharedLedgerLocal.transferOwnership(crowdsaleLocal.address);
+      await tokenLocal.transferOwnership(crowdsaleLocal.address);
 
-      // let unspentPurchaseUpdated = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_purchase.call());
-      // let unspentTeamUpdated = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_team.call());
-      // let unspentPlatformUpdated = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_platform.call());
-      // let unspentAirdropsUpdated = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_airdrops.call());
-      // // console.log("\n\n\nunspentPurchaseUpdated: ", unspentPurchaseUpdated.toNumber());
-      // // console.log("unspentTeamUpdated: ", unspentTeamUpdated.toNumber());
-      // // console.log("unspentPlatformUpdated: ", unspentPlatformUpdated.toNumber());
-      // // console.log("unspentAirdropsUpdated: ", unspentAirdropsUpdated.toNumber());
+      let unspentPurchaseUpdated = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_purchase.call());
+      let unspentTeamUpdated = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_team.call());
+      let unspentPlatformUpdated = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_platform.call());
+      let unspentAirdropsUpdated = new BigNumber(await crowdsaleLocal.tokensAvailableToMint_airdrops.call());
+      // console.log("\n\n\nunspentPurchaseUpdated: ", unspentPurchaseUpdated.toNumber());
+      // console.log("unspentTeamUpdated: ", unspentTeamUpdated.toNumber());
+      // console.log("unspentPlatformUpdated: ", unspentPlatformUpdated.toNumber());
+      // console.log("unspentAirdropsUpdated: ", unspentAirdropsUpdated.toNumber());
 
-      // //  test ICO values
-      // assert.equal(unspentPurchaseUpdated.toNumber(), unspentPurchase_ICO.plus(unspentPurchase).toNumber(), "wrong token purchase limit for ICO");
-      // assert.equal(unspentTeamUpdated.toNumber(), unspentTeam.toNumber(), "wrong token purchase limit for team");
-      // assert.equal(unspentPlatformUpdated.toNumber(), unspentPlatform.toNumber(), "wrong token purchase limit for platform");
-      // assert.equal(unspentAirdropsUpdated.toNumber(), unspentAirdrops.toNumber(), "wrong token purchase limit for airdrops");
+      //  test ICO values
+      assert.equal(unspentPurchaseUpdated.toNumber(), unspentPurchase_ICO.plus(unspentPurchase).toNumber(), "wrong token purchase limit for ICO");
+      assert.equal(unspentTeamUpdated.toNumber(), unspentTeam.toNumber(), "wrong token purchase limit for team");
+      assert.equal(unspentPlatformUpdated.toNumber(), unspentPlatform.toNumber(), "wrong token purchase limit for platform");
+      assert.equal(unspentAirdropsUpdated.toNumber(), unspentAirdrops.toNumber(), "wrong token purchase limit for airdrops");
     });
   });
 });
