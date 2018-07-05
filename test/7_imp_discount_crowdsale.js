@@ -19,7 +19,7 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(6);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(14);
 
     let timings = [];
     for (i = 0; i < 7; i++) {
@@ -47,6 +47,7 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
 
   describe("validate discounts and mintedTokens", () => {
     it("should validate discounts and mintedTokens are calculated correctly", async () => {
+      console.log("ACC_2    1: ", new BigNumber(await web3.eth.getBalance(ACC_2)).toNumber());
       await crowdsaleLocal.addManyToWhitelist([ACC_1, ACC_2]);
 
       //  stage 1
@@ -121,7 +122,6 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
         from: ACC_2,
         value: web3.toWei(2, "ether")
       });
-
       assert.equal(new BigNumber(await tokenLocal.balanceOf.call(ACC_2)).toNumber(), 2320000, "3 - wrong balance of ACC_2");
 
       //  minted
@@ -236,7 +236,7 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(8);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(16);
 
     let timings = [];
     for (i = 0; i < 7; i++) {
@@ -266,6 +266,7 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
     const ONE_FULL_TOKEN = 10000;
 
     it("should decrease ICO", async () => {
+      console.log("ACC_2    3: ", new BigNumber(await web3.eth.getBalance(ACC_2)).toNumber());
       await crowdsaleLocal.addManyToWhitelist([ACC_1, ACC_2]);
 
       await crowdsaleLocal.sendTransaction({
@@ -286,7 +287,7 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
 
       //  new contract for ICO
       const CROWDSALE_WALLET = accounts[4];
-      const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(3);
+      const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.minutes(18);
 
       let timings = [];
       for (i = 0; i < 4; i++) {
@@ -418,6 +419,7 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
 
       assert.equal(availableToMintDiff, 16200000000, "3 - wrong decrease value for tokensAvailableToMint_ICO");
 
+      console.log("ACC_2    4: ", new BigNumber(await web3.eth.getBalance(ACC_2)).toNumber());
 
       //  exceed limit
       await crowdsaleLocal.sendTransaction({

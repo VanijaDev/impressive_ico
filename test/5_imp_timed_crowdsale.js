@@ -19,7 +19,7 @@ contract('TimedCrowdsale - new instance', (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(1);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(2);
 
     let timings = [];
     for (i = 0; i < 7; i++) {

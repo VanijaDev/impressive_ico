@@ -179,10 +179,6 @@ contract("IMP_Crowdsale", (accounts) => {
 
         });
 
-        it("should decrease ico", async () => {
-            //  Implemented separately
-        });
-
         it("should decrease team", async () => {
             let tokensAvailableToMint_team = new BigNumber(await crowdsale.tokensAvailableToMint_team.call());
 
