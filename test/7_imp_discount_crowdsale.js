@@ -19,7 +19,7 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(15);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(6);
 
     let timings = [];
     for (i = 0; i < 7; i++) {
@@ -236,7 +236,7 @@ contract("IMP_Crowdsale - ICO minting limits", (accounts) => {
 
   before('setup', async () => {
     const CROWDSALE_WALLET = accounts[4];
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(17);
+    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(8);
 
     let timings = [];
     for (i = 0; i < 7; i++) {

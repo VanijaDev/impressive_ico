@@ -22,7 +22,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, IMP_TokenNumbersManagedCrowdsale
   constructor(IMP_Token _token, address _crowdsaleSharedLedger, address _wallet, uint256 _rateETH, uint256[] _timings, uint256[] _stageDiscounts)
     TimedCrowdsale(_timings[0], _timings[_timings.length.sub(1)])
     IMP_TokenNumbersManagedCrowdsale(_token, _crowdsaleSharedLedger, _wallet, _rateETH, _timings, _stageDiscounts)
-      public {      
+      public {       
         token = IMP_Token(_token);
   }
   

@@ -123,10 +123,10 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
 
     //  TODO: calculate properly
     uint256 basicTokens = _weiAmount.mul(rateETH).mul(10**4).div(10**18);
-    
+      
     uint256 discount = currentDiscount();
     uint256 bonusTokens = basicTokens.div(100).mul(discount);
-    
+      
     tokens = basicTokens.add(bonusTokens);
   }
 
@@ -233,14 +233,13 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
     if (shouldFinalize()) {
       msg.sender.transfer(msg.value);
       finalize();
-      return;
+      pendingTokens = 0;
+    } else {
+      pendingTokens = calculateTokenAmount(_weiAmount);
+      validateMintLimitsForPurchase(pendingTokens);
+
+      super._preValidatePurchase(_beneficiary, _weiAmount);
     }
-    
-    pendingTokens = calculateTokenAmount(_weiAmount);
-
-    validateMintLimitsForPurchase(pendingTokens);
-
-    super._preValidatePurchase(_beneficiary, _weiAmount);
   }
 
   /**
@@ -259,7 +258,9 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
    * @param _tokenAmount Number of tokens to be emitted
    */
   function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
-    token.mint(_beneficiary, _tokenAmount);
+    if(!isFinalized) {
+      token.mint(_beneficiary, _tokenAmount);
+    }
   }
 
   /**
@@ -279,7 +280,9 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
    * We should not forward funds.
    */
   function _forwardFunds() internal {
-    crowdsaleSharedLedger.forwardFundsToVault.value(msg.value)(msg.sender);
+    if(!isFinalized) {
+      crowdsaleSharedLedger.forwardFundsToVault.value(msg.value)(msg.sender);
+    }
   }
 
 
@@ -324,10 +327,10 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
     } else {
         token.transferOwnership(owner);
       
-      if(crowdsaleSharedLedger.goalReached()) {
-        crowdsaleSharedLedger.destroy();
-        selfdestruct(owner);
-      }
+        if(crowdsaleSharedLedger.goalReached()) {
+          crowdsaleSharedLedger.destroy();
+          selfdestruct(owner);
+        }
     }
   }
 }
