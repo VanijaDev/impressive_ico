@@ -96,7 +96,7 @@ contract("MP_Crowdsale - refundable", (accounts) => {
       }), "soft cap was, so can not claim refund");
     });
 
-    it.only("should test refunds if soft cap not reached", async () => {
+    it("should test refunds if soft cap not reached", async () => {
       await crowdsaleLocal.addToWhitelist(ACC_1);
 
       await crowdsaleLocal.sendTransaction({

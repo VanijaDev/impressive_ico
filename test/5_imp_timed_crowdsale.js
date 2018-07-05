@@ -66,16 +66,21 @@ contract('TimedCrowdsale - new instance', (accounts) => {
       await assert.isTrue(await crowdsaleLocal.hasClosed.call(), "should be closed already");
     });
 
-    it("should fail on purchase", async () => {
+    it.only("should fail on purchase", async () => {
       await crowdsaleLocal.addToWhitelist(ACC_1);
+
+      let balanceBefore = new BigNumber(await web3.eth.getBalance(ACC_1)).toNumber();
+      console.log(balanceBefore);
 
       let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(IncreaseTime.duration.seconds(2));
       await IncreaseTime.increaseTimeTo(closeTime);
 
-      await expectThrow(crowdsaleLocal.sendTransaction({
+      //  first time to finalize
+      await crowdsaleLocal.sendTransaction({
         from: ACC_1,
         value: web3.toWei(1, 'ether')
-      }));
+      });
+      await assert.equal(web3.eth.getCode(crowdsaleLocal.address), 0, "crowdsaleLocal should not exist");
     });
   });
 });

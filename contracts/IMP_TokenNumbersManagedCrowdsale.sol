@@ -7,13 +7,12 @@ import "./IMP_CrowdsaleSharedLedger.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
-import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/FinalizableCrowdsale.sol";
-import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Destructible.sol";
+import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
-contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, FinalizableCrowdsale, IMP_DiscountCrowdsale, Destructible {
+contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, TimedCrowdsale, IMP_DiscountCrowdsale {
   using SafeMath for uint256;  
 
   enum MintPurpose {preICO, ico, team, platform, airdrops} // Supplier.State.inactive
@@ -38,6 +37,8 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Final
   uint256 internal pendingTokens;  //  tokens calculated for current tx
 
   IMP_CrowdsaleSharedLedger private crowdsaleSharedLedger;
+
+  bool public isFinalized;
 
 
   /**
@@ -150,35 +151,17 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Final
   }
 
   /**
-   * INTERNAL
+   * @dev Checks whether the period in which the crowdsale is open has already started.
+   * @return Whether crowdsale period has started
    */
+  function hasOpened() public view returns (bool) {
+    return block.timestamp > openingTime;
+  }
+
 
   /**
-   * @dev Add finalization logic.
+   * INTERNAL
    */
-  function finalizeCrowdsale() internal onlyOwner {
-    IMP_CrowdsaleSharedLedger.CrowdsaleType crowdsaleType = crowdsaleSharedLedger.crowdsaleType();
-
-    crowdsaleSharedLedger.finalizeCrowdsale(tokensMinted_purchase, tokensMinted_team, tokensMinted_platform, tokensMinted_airdrops);
-
-    emit FinalizedWithResults(tokensMinted_purchase, tokensMinted_team, tokensMinted_platform, tokensMinted_airdrops);
-
-    if(crowdsaleType == IMP_CrowdsaleSharedLedger.CrowdsaleType.preICO) {
-      crowdsaleSharedLedger.transferOwnership(owner);
-      token.transferOwnership(owner);
-
-      selfdestruct(owner);
-    } else {
-      if(crowdsaleSharedLedger.goalReached()) {
-        crowdsaleSharedLedger.transferOwnership(owner);
-        token.transferOwnership(owner);
-
-        selfdestruct(owner);
-      } else {
-        token.transferOwnership(owner);
-      }
-    }
-  }
 
    /**
    * @dev Validation of crowdsale limits for preICO and ICO only.
@@ -244,7 +227,15 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Final
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal whenNotPaused {
     require(_weiAmount >= minimumPurchaseWei, "minimum purchase wei not reached");
-
+    require(hasOpened(), "crowdsale has not opened yet");
+    require(!isFinalized, "is already finalized");
+    
+    if (shouldFinalize()) {
+      finalize();
+      msg.sender.transfer(msg.value);
+      return;
+    }
+    
     pendingTokens = calculateTokenAmount(_weiAmount);
 
     validateMintLimitsForPurchase(pendingTokens);
@@ -291,17 +282,6 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Final
     crowdsaleSharedLedger.forwardFundsToVault.value(msg.value)(msg.sender);
   }
 
-  /**
-   * @dev Can be overridden to add finalization logic. The overriding function
-   * should call super.finalization() to ensure the chain of finalization is
-   * executed entirely.
-   */
-  function finalization() internal {
-    super.finalization();
-    
-    finalizeCrowdsale();
-  }
-
 
   /**
    * PRIVATE
@@ -312,5 +292,42 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Final
    */
   function getTokenReservedLimits() private {
     (tokenLimitReserved_purchase, tokenLimitReserved_team, tokenLimitReserved_platform, tokenLimitReserved_airdrops) = crowdsaleSharedLedger.getTokenReservedLimits();
+  }
+  
+  /**
+   * @dev Check if Crowdsale should be finalized.
+   * return Whether shoould be finalized
+   */
+  function shouldFinalize() private view returns(bool) {
+    return hasClosed();
+  }
+  
+  /**
+   * @dev Add finalization logic.
+   */
+  function finalize() private {
+    require(!isFinalized, "is already finalized");
+    require(hasClosed(), "finalize can be called after closing time");
+
+    isFinalized = true;
+
+    IMP_CrowdsaleSharedLedger.CrowdsaleType crowdsaleType = crowdsaleSharedLedger.crowdsaleType();
+    crowdsaleSharedLedger.finalize(tokensMinted_purchase, tokensMinted_team, tokensMinted_platform, tokensMinted_airdrops);
+
+    emit FinalizedWithResults(tokensMinted_purchase, tokensMinted_team, tokensMinted_platform, tokensMinted_airdrops);
+
+    if(crowdsaleType == IMP_CrowdsaleSharedLedger.CrowdsaleType.preICO) {
+      crowdsaleSharedLedger.transferOwnership(owner);
+      token.transferOwnership(owner);
+
+      selfdestruct(owner);
+    } else {
+        token.transferOwnership(owner);
+      
+      if(crowdsaleSharedLedger.goalReached()) {
+        crowdsaleSharedLedger.destroy();
+        selfdestruct(owner);
+      }
+    }
   }
 }

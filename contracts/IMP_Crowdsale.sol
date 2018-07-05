@@ -5,7 +5,7 @@ import "./IMP_TokenNumbersManagedCrowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 
 
-contract IMP_Crowdsale is WhitelistedCrowdsale, FinalizableCrowdsale, IMP_TokenNumbersManagedCrowdsale {
+contract IMP_Crowdsale is WhitelistedCrowdsale, IMP_TokenNumbersManagedCrowdsale {
 
   /**
    * @dev Constructor function.
@@ -24,14 +24,6 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, FinalizableCrowdsale, IMP_TokenN
     IMP_TokenNumbersManagedCrowdsale(_token, _crowdsaleSharedLedger, _wallet, _rateETH, _timings, _stageDiscounts)
       public {      
         token = IMP_Token(_token);
-  }
-
-  /**
-   * @dev Checks whether the period in which the crowdsale is open has already started.
-   * @return Whether crowdsale period has started
-   */
-  function hasOpened() public view returns (bool) {
-    return block.timestamp > openingTime;
   }
   
 

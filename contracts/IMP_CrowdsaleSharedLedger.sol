@@ -109,7 +109,7 @@ contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
    * @param _tokensMinted_platform    Tokens minted for platform needs
    * @param _tokensMinted_airdrops    Tokens minted for airdrops
    */
-  function finalizeCrowdsale(uint256 _tokensMinted_purchase, uint256 _tokensMinted_team, uint256 _tokensMinted_platform, uint256 _tokensMinted_airdrops) public onlyOwner {
+  function finalize(uint256 _tokensMinted_purchase, uint256 _tokensMinted_team, uint256 _tokensMinted_platform, uint256 _tokensMinted_airdrops) public onlyOwner {
     if(crowdsaleType == CrowdsaleType.preICO) {
       finalizePreICO(_tokensMinted_purchase, _tokensMinted_team, _tokensMinted_platform, _tokensMinted_airdrops);
       crowdsaleType = CrowdsaleType.ico;
@@ -127,6 +127,24 @@ contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
 
     vault.refund(msg.sender);
   }
+
+  /**
+   * OVERRIDEN
+   */
+  
+  /**
+   * @dev Transfers the current balance to the owner and terminates the contract.
+   */
+  function destroy() onlyOwner public {
+    require(vault.state() == RefundVault.State.Closed, "destoy can be done after crowdsale is finished");
+    selfdestruct(owner);
+  }
+
+  function destroyAndSend(address _recipient) onlyOwner public {
+    require(vault.state() == RefundVault.State.Closed, "destoy can be done after crowdsale is finished");
+    selfdestruct(_recipient);
+  }
+
 
   /**
    * PRIVATE

@@ -2,6 +2,7 @@ let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale.sol");
 
 const expectThrow = require('./helpers/expectThrow');
 const Reverter = require('./helpers/reverter');
+const IncreaseTime = require('./helpers/increaseTime');
 
 let crowdsale;
 
@@ -10,6 +11,7 @@ contract("Pausable", (accounts) => {
 
   before("setup", async () => {
     crowdsale = await IMP_Crowdsale.deployed();
+    IncreaseTime.increaseTimeWith(IncreaseTime.duration.minutes(1));
 
     await Reverter.snapshot();
   });
@@ -45,6 +47,11 @@ contract("Pausable", (accounts) => {
     });
 
     it("should not allow purchase while crowdsale is paused", async () => {
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: web3.toWei(1, "ether")
+      });
+
       await crowdsale.pause();
 
       await expectThrow(crowdsale.sendTransaction({
