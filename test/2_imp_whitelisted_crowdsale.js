@@ -7,8 +7,6 @@ import mockCrowdsaleData from "./helpers/mocks/MockCrowdsale";
 import expectThrow from './helpers/expectThrow';
 
 import {
-  increaseTime,
-  increaseTimeTo,
   duration
 } from './helpers/increaseTime';
 import latestTime from './helpers/latestTime';
@@ -29,13 +27,13 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
   });
 
   beforeEach("create crowdsale inst", async () => {
-    const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp;
+    let crowdsaleOpening = latestTime();
 
     let mockToken = mockTokenData();
     let mockCrowdsale = mockCrowdsaleData();
     let timings = [];
     for (let i = 0; i < 7; i++) {
-      timings[i] = CROWDSALE_OPENING + duration.hours(i);
+      timings[i] = crowdsaleOpening + duration.hours(i);
     }
 
     let token = await IMP_Token.new(mockToken.tokenName, mockToken.tokenSymbol, mockToken.tokenDecimals);
