@@ -80,45 +80,4 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
       });
     });
   });
-
-
-
-  // describe("should validate whitelisted functional", () => {
-  // it("should validate address can be whitelisted by owner only", async () => {
-  //   assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted yet");
-
-  //   crowdsale.addToWhitelist(ACC_1);
-  //   assert.isTrue(await crowdsale.whitelist(ACC_1), "ACC_1 should be whitelisted");
-
-  //   await expectThrow(crowdsale.addToWhitelist(ACC_1, {
-  //     from: ACC_1
-  //   }), "should test not owner account");
-  // });
-
-  // it("should validate address can be removed from whitelist by owner only", async () => {
-  //   assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted yet");
-
-  //   crowdsale.removeFromWhitelist(ACC_1);
-  //   assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted");
-
-  //   await expectThrow(crowdsale.removeFromWhitelist(ACC_1, {
-  //     from: ACC_1
-  //   }), "should test not owner account");
-  // });
-
-  // it("should prevent user not in whitelist from purchase", async () => {
-  //   await expectThrow(crowdsale.sendTransaction({
-  //     from: ACC_1,
-  //     value: web3.toWei(1, "ether")
-  //   }, "should fail, because ACC_1 is not in whitelist"));
-
-  //   await crowdsale.addToWhitelist(ACC_1);
-
-  //   await crowdsale.sendTransaction({
-  //     from: ACC_1,
-  //     value: web3.toWei(1, 'ether')
-  //   });
-  // });
-  // });
-
 });
