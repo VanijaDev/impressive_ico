@@ -43,11 +43,11 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
     await crowdsaleSharedLedger.transferOwnership(crowdsale.address);
   });
 
-  describe.only("should validate whitelisted functional", () => {
+  describe("should validate whitelisted functional", () => {
     it("should validate address can be whitelisted by owner only", async () => {
       assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted yet");
 
-      crowdsale.addToWhitelist(ACC_1);
+      await crowdsale.addToWhitelist(ACC_1);
       assert.isTrue(await crowdsale.whitelist(ACC_1), "ACC_1 should be whitelisted");
 
       await expectThrow(crowdsale.addToWhitelist(ACC_1, {
@@ -58,7 +58,7 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
     it("should validate address can be removed from whitelist by owner only", async () => {
       assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted yet");
 
-      crowdsale.removeFromWhitelist(ACC_1);
+      await crowdsale.removeFromWhitelist(ACC_1);
       assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted");
 
       await expectThrow(crowdsale.removeFromWhitelist(ACC_1, {
