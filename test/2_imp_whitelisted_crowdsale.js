@@ -15,10 +15,9 @@ import {
   advanceBlock
 } from './helpers/advanceToBlock';
 
-
-let crowdsale;
-
 contract("IMP_WhitelistedCrowdsale", (accounts) => {
+  let crowdsale;
+
   const ACC_1 = accounts[1];
   const CROWDSALE_WALLET = accounts[9];
 
@@ -44,7 +43,6 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
     await crowdsaleSharedLedger.transferOwnership(crowdsale.address);
   });
 
-  //  test ./test/2_imp_whitelisted_crowdsale.js
   describe.only("should validate whitelisted functional", () => {
     it("should validate address can be whitelisted by owner only", async () => {
       assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted yet");
