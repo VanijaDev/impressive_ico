@@ -4,6 +4,6 @@ let mock = {
     tokenDecimals: 4
 };
 
-exports.getMock = () => {
+export default function mockTokenData() {
     return mock;
 }
