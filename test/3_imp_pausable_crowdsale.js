@@ -1,38 +1,52 @@
-let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale.sol");
+let IMP_Token = artifacts.require("./IMP_Token");
+let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale");
+let IMP_CrowdsaleSharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger");
 
-const expectThrow = require('./helpers/expectThrow');
-const Reverter = require('./helpers/reverter');
-const IncreaseTime = require('./helpers/increaseTime');
+import mockTokenData from "./helpers/mocks/MockToken";
+import mockCrowdsaleData from "./helpers/mocks/MockCrowdsale";
+import expectThrow from './helpers/expectThrow';
 
-let crowdsale;
+import {
+  duration
+} from './helpers/increaseTime';
+import latestTime from './helpers/latestTime';
 
+import {
+  advanceBlock
+} from './helpers/advanceToBlock';
+
+// test ./test/3_imp_pausable_crowdsale.js
 contract("Pausable", (accounts) => {
+  let crowdsale;
+
   const ACC_1 = accounts[1];
+  const CROWDSALE_WALLET = accounts[9];
 
-  before("setup", async () => {
-    crowdsale = await IMP_Crowdsale.deployed();
-    IncreaseTime.increaseTimeWith(IncreaseTime.duration.minutes(1));
+  let mockToken = mockTokenData();
+  let mockCrowdsale = mockCrowdsaleData();
 
-    await Reverter.snapshot();
-  });
 
-  beforeEach("add to whitelist", async () => {
-    await crowdsale.addToWhitelist(ACC_1);
-  });
+  beforeEach("create crowdsale inst", async () => {
+    await advanceBlock();
 
-  afterEach("revert", async () => {
-    await Reverter.revert();
+    let crowdsaleOpening = latestTime();
+
+    let timings = [];
+    for (let i = 0; i < 7; i++) {
+      timings[i] = crowdsaleOpening + duration.hours(i);
+    }
+
+    let token = await IMP_Token.new(mockToken.tokenName, mockToken.tokenSymbol, mockToken.tokenDecimals);
+    let crowdsaleSharedLedger = await IMP_CrowdsaleSharedLedger.new(token.address, mockCrowdsale.crowdsaleTotalSupplyLimit, [mockCrowdsale.tokenPercentageReservedPreICO, mockCrowdsale.tokenPercentageReservedICO, mockCrowdsale.tokenPercentageReservedTeam, mockCrowdsale.tokenPercentageReservedPlatform, mockCrowdsale.tokenPercentageReservedAirdrops], mockCrowdsale.crowdsaleSoftCapETH, CROWDSALE_WALLET);
+    crowdsale = await IMP_Crowdsale.new(token.address, crowdsaleSharedLedger.address, CROWDSALE_WALLET, mockCrowdsale.crowdsaleRateEth, timings, mockCrowdsale.crowdsalePreICODiscounts);
+
+    await token.transferOwnership(crowdsale.address);
+    await crowdsaleSharedLedger.transferOwnership(crowdsale.address);
   });
 
   describe("pausable functional", () => {
     it("should allow owner to pause / unpause crowdsale", async () => {
       await crowdsale.pause();
-
-      await expectThrow(crowdsale.sendTransaction({
-        from: ACC_1,
-        value: web3.toWei(1, "ether")
-      }), "should not be available for purchase");
-
       await crowdsale.unpause();
     });
 
@@ -47,6 +61,8 @@ contract("Pausable", (accounts) => {
     });
 
     it("should not allow purchase while crowdsale is paused", async () => {
+      await crowdsale.addToWhitelist(ACC_1);
+
       await crowdsale.sendTransaction({
         from: ACC_1,
         value: web3.toWei(1, "ether")
