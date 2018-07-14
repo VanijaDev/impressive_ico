@@ -1,77 +1,85 @@
-// const IMP_Token = artifacts.require('./IMP_Token.sol');
-// const IMP_Crowdsale = artifacts.require('./IMP_Crowdsale.sol');
-// const IMP_CrowdsaleSharedLedger = artifacts.require("IMP_CrowdsaleSharedLedger");
+let IMP_Token = artifacts.require("./IMP_Token");
+let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale");
+let IMP_sharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger");
+let BigNumber = require('bignumber.js');
 
-// const Reverter = require('./helpers/reverter');
-// const IncreaseTime = require('./helpers/increaseTime');
-// const expectThrow = require('./helpers/expectThrow');
-// const MockToken = require('./helpers/MockToken');
-// const MockCrowdsale = require('./helpers/MockCrowdsale');
-// var BigNumber = require('bignumber.js');
+import mockToken from "./helpers/mocks/mockToken";
+import mockCrowdsale from "./helpers/mocks/mockCrowdsale";
+import expectThrow from './helpers/expectThrow';
+
+import {
+    duration,
+    increaseTimeTo
+} from './helpers/increaseTime';
+import latestTime from './helpers/latestTime';
+
+import {
+    advanceBlock
+} from './helpers/advanceToBlock';
 
 
-// contract('TimedCrowdsale - new instance', (accounts) => {
-//   const ACC_1 = accounts[1];
+contract('TimedCrowdsale', (accounts) => {
+    let token;
+    let crowdsale;
+    let sharedLedger;
 
-//   let tokenLocal;
-//   let crowdsaleSharedLedger;
-//   let crowdsaleLocal;
+    const ACC_1 = accounts[1];
 
-//   before('setup', async () => {
-//     const CROWDSALE_WALLET = accounts[4];
-//     const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(2);
+    before("setup", async () => {
+        advanceBlock();
+    });
 
-//     let timings = [];
-//     for (i = 0; i < 7; i++) {
-//       timings[i] = CROWDSALE_OPENING + IncreaseTime.duration.hours(i);
-//     }
+    beforeEach("create crowdsale inst", async function () {
+        let mockTokenData = mockToken();
+        let mockCrowdsaleData = mockCrowdsale();
 
-//     let mockToken = MockToken.getMock();
-//     let mockCrowdsale = MockCrowdsale.getMock();
+        const CROWDSALE_WALLET = accounts[4];
 
-//     tokenLocal = await IMP_Token.new(mockToken.tokenName, mockToken.tokenSymbol, mockToken.tokenDecimals);
-//     crowdsaleSharedLedger = await IMP_CrowdsaleSharedLedger.new(tokenLocal.address, mockCrowdsale.crowdsaleTotalSupplyLimit, [mockCrowdsale.tokenPercentageReservedPreICO, mockCrowdsale.tokenPercentageReservedICO, mockCrowdsale.tokenPercentageReservedTeam, mockCrowdsale.tokenPercentageReservedPlatform, mockCrowdsale.tokenPercentageReservedAirdrops], mockCrowdsale.crowdsaleSoftCapETH, CROWDSALE_WALLET);
-//     crowdsaleLocal = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedger.address, CROWDSALE_WALLET, mockCrowdsale.crowdsaleRateEth, timings, mockCrowdsale.crowdsalePreICODiscounts);
+        let openingTime = latestTime() + duration.minutes(1);
+        let timings = []; //  [opening, stageEdges]
+        for (let i = 0; i < 7; i++) {
+            timings[i] = openingTime + duration.weeks(i);
+        }
 
-//     await tokenLocal.transferOwnership(crowdsaleLocal.address);
-//     await crowdsaleSharedLedger.transferOwnership(crowdsaleLocal.address);
+        token = await IMP_Token.new(mockTokenData.tokenName, mockTokenData.tokenSymbol, mockTokenData.tokenDecimals);
+        sharedLedger = await IMP_sharedLedger.new(token.address, mockCrowdsaleData.crowdsaleTotalSupplyLimit, [mockCrowdsaleData.tokenPercentageReservedPreICO, mockCrowdsaleData.tokenPercentageReservedICO, mockCrowdsaleData.tokenPercentageReservedTeam, mockCrowdsaleData.tokenPercentageReservedPlatform, mockCrowdsaleData.tokenPercentageReservedAirdrops], mockCrowdsaleData.crowdsaleSoftCapETH, CROWDSALE_WALLET);
+        crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth, timings, mockCrowdsaleData.crowdsalePreICODiscounts);
 
-//     await Reverter.snapshot();
-//   });
+        await token.transferOwnership(crowdsale.address);
+        await sharedLedger.transferOwnership(crowdsale.address);
 
-//   afterEach('revert', async () => {
-//     await Reverter.revert();
-//   });
+        await crowdsale.addToWhitelist(ACC_1);
+    });
 
-//   describe('before Crowdsale started', () => {
-//     it('should be false for hasOpened', async () => {
-//       await assert.isFalse(await crowdsaleLocal.hasOpened.call(), "should not be started yet");
-//     });
+    describe('before Crowdsale started', () => {
+        it('should be false for hasOpened', async () => {
+            await assert.isFalse(await crowdsale.hasOpened.call(), "should not be started yet");
+        });
 
-//     it("should fail on purchase before", async () => {
-//       await crowdsaleLocal.addToWhitelist(ACC_1);
+        it("should fail on purchase before", async () => {
+            await crowdsale.addToWhitelist(ACC_1);
 
-//       await expectThrow(crowdsaleLocal.sendTransaction({
-//         from: ACC_1,
-//         value: web3.toWei(1, 'ether')
-//       }));
-//     });
-//   });
+            await expectThrow(crowdsale.sendTransaction({
+                from: ACC_1,
+                value: web3.toWei(1, 'ether')
+            }));
+        });
+    });
 
-//   describe("after Crowdsale finishes", () => {
-//     it('should validate hasClosed', async () => {
-//       await IncreaseTime.increaseTimeTo(new BigNumber(await crowdsaleLocal.openingTime.call()).plus(IncreaseTime.duration.seconds(1)));
-//       await crowdsaleLocal.addToWhitelist(ACC_1);
+    describe("after Crowdsale finishes", () => {
+        it('should validate hasClosed', async () => {
+            await increaseTimeTo(new BigNumber(await crowdsale.openingTime.call()).plus(duration.seconds(1)));
+            await crowdsale.addToWhitelist(ACC_1);
 
-//       await crowdsaleLocal.sendTransaction({
-//         from: ACC_1,
-//         value: web3.toWei(1, 'ether')
-//       });
+            await crowdsale.sendTransaction({
+                from: ACC_1,
+                value: web3.toWei(1, 'ether')
+            });
 
-//       let closeTime = new BigNumber(await crowdsaleLocal.closingTime.call()).plus(IncreaseTime.duration.seconds(1));
-//       await IncreaseTime.increaseTimeTo(closeTime);
+            let closeTime = new BigNumber(await crowdsale.closingTime.call()).plus(duration.seconds(1));
+            await increaseTimeTo(closeTime);
 
-//       await assert.isTrue(await crowdsaleLocal.hasClosed.call(), "should be closed already");
-//     });
-//   });
-// });
+            await assert.isTrue(await crowdsale.hasClosed.call(), "should be closed already");
+        });
+    });
+});
