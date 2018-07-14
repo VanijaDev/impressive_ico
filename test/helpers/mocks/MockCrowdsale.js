@@ -1,5 +1,5 @@
 let mock = {
-    minimumPurchaseWei: web3.toWei(0.00001, "ether"),
+    minimumPurchaseWei: 10000000000000,
     crowdsaleRateEth: 100, // tokens per ETH, no decimals, TODO: correct values
     crowdsaleSoftCapETH: 15000, //  in ETH
     crowdsaleTotalSupplyLimit: 100000000, //  no decimals
@@ -12,6 +12,6 @@ let mock = {
     tokenPercentageReservedAirdrops: 2
 };
 
-export default function mockCrowdsaleData() {
+export default function mockCrowdsale() {
     return mock;
 }
