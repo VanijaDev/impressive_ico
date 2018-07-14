@@ -403,7 +403,7 @@ contract("IMP_Crowdsale", function (accounts) {
             let unspentTeam = new BigNumber(await crowdsale.tokensAvailableToMint_team.call());
             let unspentPlatform = new BigNumber(await crowdsale.tokensAvailableToMint_platform.call());
             let unspentAirdrops = new BigNumber(await crowdsale.tokensAvailableToMint_airdrops.call());
-            let unspentPurchase_ICO = new BigNumber(await crowdsaleSharedLedgerLocal.tokenLimitReserved_ico.call());
+            let unspentPurchase_ICO = new BigNumber(await sharedLedger.tokenLimitReserved_ico.call());
             // console.log("unspentPurchase: ", unspentPurchase.toNumber());
             // console.log("unspentTeam: ", unspentTeam.toNumber());
             // console.log("unspentPlatform: ", unspentPlatform.toNumber());
@@ -434,16 +434,16 @@ contract("IMP_Crowdsale", function (accounts) {
             const CROWDSALE_OPENING = latestTime() + duration.days(8);
 
             let timings = [];
-            for (i = 0; i < 4; i++) {
+            for (let i = 0; i < 4; i++) {
                 timings[i] = CROWDSALE_OPENING + duration.hours(i);
             }
 
-            let mockCrowdsale = MockCrowdsale.getMock();
+            let mockCrowdsaleData = mockCrowdsale();
 
-            crowdsale = await IMP_Crowdsale.new(tokenLocal.address, crowdsaleSharedLedgerLocal.address, CROWDSALE_WALLET, mockCrowdsale.crowdsaleRateEth, timings, mockCrowdsale.crowdsaleICODiscounts);
+            crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth, timings, mockCrowdsaleData.crowdsaleICODiscounts);
 
-            await crowdsaleSharedLedgerLocal.transferOwnership(crowdsale.address);
-            await tokenLocal.transferOwnership(crowdsale.address);
+            await sharedLedger.transferOwnership(crowdsale.address);
+            await token.transferOwnership(crowdsale.address);
 
             let unspentPurchaseUpdated = new BigNumber(await crowdsale.tokensAvailableToMint_purchase.call());
             let unspentTeamUpdated = new BigNumber(await crowdsale.tokensAvailableToMint_team.call());

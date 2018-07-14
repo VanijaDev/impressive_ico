@@ -27,7 +27,7 @@
 //     let CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(20);
 
 //     let timings = [];
-//     for (i = 0; i < 7; i++) {
+//     for (let i = 0; i < 7; i++) {
 //       timings[i] = CROWDSALE_OPENING + IncreaseTime.duration.hours(i);
 //     }
 
@@ -68,7 +68,7 @@
 //     //  new contract for ICO
 //     CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(26);
 //     timings = [];
-//     for (i = 0; i < 4; i++) {
+//     for (let i = 0; i < 4; i++) {
 //       timings[i] = CROWDSALE_OPENING + IncreaseTime.duration.hours(i);
 //     }
 
