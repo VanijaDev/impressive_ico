@@ -38,8 +38,8 @@ contract("MP_Crowdsale - refundable, soft cap NOT REACHED", (accounts) => {
 
     beforeEach('create crowdsale inst', async function () {
         const CROWDSALE_WALLET = accounts[9];
-        let openingTime = latestTime() + duration.minutes(1);
 
+        let openingTime = latestTime() + duration.minutes(1);
         let timings = [];
         for (let i = 0; i < 7; i++) {
             timings[i] = openingTime + duration.hours(i);
