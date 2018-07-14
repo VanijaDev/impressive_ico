@@ -18,7 +18,6 @@ import {
     advanceBlock
 } from './helpers/advanceToBlock';
 
-// test ./test/4_imp_crowdsale.js
 contract("IMP_Crowdsale", function (accounts) {
     let token;
     let crowdsale;
