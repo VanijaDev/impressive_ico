@@ -384,14 +384,12 @@ contract("IMP_Crowdsale", function (accounts) {
         it("should validate limits are being recalculated after finalization", async () => {
             const ACC_2 = accounts[2];
             await crowdsale.addManyToWhitelist([ACC_1, ACC_2]);
-            console.log("111:  ", new BigNumber(await web3.eth.getBalance(ACC_1)).toNumber());
 
             //  1. purchase
             await crowdsale.sendTransaction({
                 from: ACC_1,
                 value: ether(90) //  == 180 000 0000 tokens
             });
-            console.log("112:  ", new BigNumber(await web3.eth.getBalance(ACC_1)).toNumber());
 
             // 2. team
             const teamSent = new BigNumber(50000000); //  5000
