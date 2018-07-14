@@ -20,7 +20,7 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
   IMP_Token public token;
 
   //  minimum wei amount for purchase, TODO: calculate proper value
-  uint256 public minimumPurchaseWei = 10000000000000; //  web3.toWei(0.00001, "ether")
+  uint256 public minimumPurchaseWei = 1000000000000; //  web3.toWei(0.000001, "ether")
   uint256 public rateETH; // tokens per ETH, no decimals, TODO: correct values
 
 

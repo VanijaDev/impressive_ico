@@ -5,6 +5,7 @@ let IMP_CrowdsaleSharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger")
 import mockToken from "./helpers/mocks/mockToken";
 import mockCrowdsale from "./helpers/mocks/mockCrowdsale";
 import expectThrow from './helpers/expectThrow';
+import ether from "./helpers/ether";
 
 import {
     duration,
@@ -73,14 +74,14 @@ contract("IMP_WhitelistedCrowdsale", function (accounts) {
         it("should prevent user not in whitelist from purchase", async function () {
             await expectThrow(crowdsale.sendTransaction({
                 from: ACC_1,
-                value: web3.toWei(1, "ether")
+                value: ether(1)
             }, "should fail, because ACC_1 is not in whitelist"));
 
             await crowdsale.addToWhitelist(ACC_1);
 
             await crowdsale.sendTransaction({
                 from: ACC_1,
-                value: web3.toWei(1, 'ether')
+                value: ether(1)
             });
         });
     });

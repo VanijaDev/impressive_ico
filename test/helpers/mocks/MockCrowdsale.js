@@ -1,5 +1,5 @@
 let mock = {
-    minimumPurchaseWei: 10000000000000,
+    minimumPurchaseWei: 1000000000000, // == 00.0001 token
     crowdsaleRateEth: 100, // tokens per ETH, no decimals, TODO: correct values
     crowdsaleSoftCapETH: 15000, //  in ETH
     crowdsaleTotalSupplyLimit: 100000000, //  no decimals

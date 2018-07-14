@@ -5,6 +5,7 @@ let IMP_CrowdsaleSharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger")
 import mockToken from "./helpers/mocks/mockToken";
 import mockCrowdsale from "./helpers/mocks/mockCrowdsale";
 import expectThrow from './helpers/expectThrow';
+import ether from "./helpers/ether";
 
 import {
     duration,
@@ -69,21 +70,21 @@ contract("Pausable", function (accounts) {
 
             await crowdsale.sendTransaction({
                 from: ACC_1,
-                value: web3.toWei(1, "ether")
+                value: ether(1)
             });
 
             await crowdsale.pause();
 
             await expectThrow(crowdsale.sendTransaction({
                 from: ACC_1,
-                value: web3.toWei(1, "ether")
+                value: ether(1)
             }), "should not be available for purchase");
 
             await crowdsale.unpause();
 
             await crowdsale.sendTransaction({
                 from: ACC_1,
-                value: web3.toWei(1, "ether")
+                value: ether(1)
             });
         });
 
