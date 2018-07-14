@@ -22,6 +22,7 @@ import {
 contract("IMP_Crowdsale - ICO calculations", (accounts) => {
   let token;
   let crowdsale;
+
   let sharedLedger;
 
   const ACC_1 = accounts[1];
@@ -67,7 +68,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
 
       await crowdsale.sendTransaction({
         from: ACC_1,
-        value: web3.toWei(5, "ether")
+        value: ether(5)
       });
       // let tokensMinted_purchasePreICO = new BigNumber(await crowdsale.tokensMinted_purchase.call());
 
@@ -78,7 +79,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
       //  tx to finish preICO
       await crowdsale.sendTransaction({
         from: ACC_1,
-        value: web3.toWei(5, "ether")
+        value: ether(5)
       });
 
       //  new contract for ICO
@@ -134,7 +135,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
 
       await crowdsale.sendTransaction({
         from: ACC_1,
-        value: web3.toWei(1, "ether")
+        value: ether(1)
       });
 
       assert.equal(new BigNumber(await token.balanceOf.call(ACC_1)).toNumber(), 5506000000, "1 - wrong balance of ACC_1");
@@ -166,7 +167,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
 
       await crowdsale.sendTransaction({
         from: ACC_1,
-        value: web3.toWei(2, "ether")
+        value: ether(2)
       });
 
       assert.equal(new BigNumber(await token.balanceOf.call(ACC_1)).toNumber(), 16406000000, "2 - wrong balance of ACC_1");
@@ -198,7 +199,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
 
       await crowdsale.sendTransaction({
         from: ACC_1,
-        value: web3.toWei(3, "ether")
+        value: ether(3)
       });
 
       assert.equal(new BigNumber(await token.balanceOf.call(ACC_1)).toNumber(), 32606000000, "3 - wrong balance of ACC_1");
@@ -220,12 +221,12 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
       //  exceed limit
       await crowdsale.sendTransaction({
         from: ACC_2,
-        value: web3.toWei(99, "ether")
+        value: ether(99)
       });
 
       await expectThrow(crowdsale.sendTransaction({
         from: ACC_1,
-        value: web3.toWei(88, "ether")
+        value: ether(88)
       }), "should not exceed purchase limit");
     });
   });
