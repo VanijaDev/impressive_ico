@@ -1,6 +1,7 @@
 let IMP_Token = artifacts.require("./IMP_Token");
 let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale");
 let IMP_sharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger");
+const Reverter = require('./helpers/reverter');
 let BigNumber = require('bignumber.js');
 
 import mockToken from "./helpers/mocks/mockToken";
@@ -50,6 +51,11 @@ contract("IMP_Crowdsale", function (accounts) {
 
         increaseTimeTo(openingTime);
         await crowdsale.addToWhitelist(ACC_1);
+        await Reverter.snapshot();
+    });
+
+    afterEach('revert', async () => {
+        await Reverter.revert();
     });
 
     describe("validate initial Crowdsaletype", function () {
@@ -378,12 +384,14 @@ contract("IMP_Crowdsale", function (accounts) {
         it("should validate limits are being recalculated after finalization", async () => {
             const ACC_2 = accounts[2];
             await crowdsale.addManyToWhitelist([ACC_1, ACC_2]);
+            console.log("111:  ", new BigNumber(await web3.eth.getBalance(ACC_1)).toNumber());
 
             //  1. purchase
             await crowdsale.sendTransaction({
                 from: ACC_1,
-                value: web3.toWei(90, 'ether') //  == 180 000 0000 tokens
+                value: ether(90) //  == 180 000 0000 tokens
             });
+            console.log("112:  ", new BigNumber(await web3.eth.getBalance(ACC_1)).toNumber());
 
             // 2. team
             const teamSent = new BigNumber(50000000); //  5000
