@@ -12,7 +12,7 @@ module.exports = (deployer, network, accounts) => {
     const TOKEN_SYMBOL = "IMP";
     const TOKEN_DECIMALS = 4;
 
-    const CROWDSALE_WALLET = accounts[4];
+    const CROWDSALE_WALLET = accounts[9];
     const CROWDSALE_TOTAL_SUPPLY_LIMIT = 100000000; //  no decimals
     const CROWDSALE_RATE_ETH = 100; // tokens per ETH, no decimals, TODO: correct values
     const CROWDSALE_SOFT_CAP_ETH = 15000; //  in ETH

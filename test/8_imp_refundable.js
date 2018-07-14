@@ -23,7 +23,7 @@
 //   let crowdsaleLocal;
 
 //   before('setup', async () => {
-//     const CROWDSALE_WALLET = accounts[4];
+//     const CROWDSALE_WALLET = accounts[9];
 //     let CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + IncreaseTime.duration.days(20);
 
 //     let timings = [];

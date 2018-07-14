@@ -23,14 +23,14 @@ contract("IMP_WhitelistedCrowdsale", function (accounts) {
     const ACC_1 = accounts[1];
 
     before("setup", async () => {
-        advanceBlock();
+        await advanceBlock();
     });
 
     beforeEach("create crowdsale inst", async function () {
         let mockTokenData = mockToken();
         let mockCrowdsaleData = mockCrowdsale();
 
-        const CROWDSALE_WALLET = accounts[4];
+        const CROWDSALE_WALLET = accounts[9];
 
         let openingTime = latestTime() + duration.minutes(1);
         let timings = []; //  [opening, stageEdges]
