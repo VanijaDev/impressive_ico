@@ -18,7 +18,7 @@ import {
 } from './helpers/advanceToBlock';
 
 
-contract("Pausable", function (accounts) {
+contract("Pausable", (accounts) => {
     let crowdsale;
 
     const ACC_1 = accounts[1];
@@ -27,7 +27,7 @@ contract("Pausable", function (accounts) {
         await advanceBlock();
     });
 
-    beforeEach("create crowdsale inst", async function () {
+    beforeEach("create crowdsale inst", async () => {
         let mockTokenData = mockToken();
         let mockCrowdsaleData = mockCrowdsale();
 
@@ -49,13 +49,13 @@ contract("Pausable", function (accounts) {
         increaseTimeTo(openingTime);
     });
 
-    describe("pausable functional", function () {
-        it("should allow owner to pause / unpause crowdsale", async function () {
+    describe("pausable functional", () => {
+        it("should allow owner to pause / unpause crowdsale", async () => {
             await crowdsale.pause();
             await crowdsale.unpause();
         });
 
-        it("should not allow not owner to pause / unpause crowdsale", async function () {
+        it("should not allow not owner to pause / unpause crowdsale", async () => {
             await expectThrow(crowdsale.pause({
                 from: ACC_1
             }), "should not allow not owner to pause");
@@ -65,7 +65,7 @@ contract("Pausable", function (accounts) {
             }), "should not allow not owner to unpause");
         });
 
-        it("should not allow purchase while crowdsale is paused", async function () {
+        it("should not allow purchase while crowdsale is paused", async () => {
             await crowdsale.addToWhitelist(ACC_1);
 
             await crowdsale.sendTransaction({
@@ -90,7 +90,7 @@ contract("Pausable", function (accounts) {
 
         const ONE_FULL_TOKEN = 10000;
 
-        it("should not allow manualMint_team while paused", async function () {
+        it("should not allow manualMint_team while paused", async () => {
             await crowdsale.pause();
             await expectThrow(crowdsale.manualMint_team(ACC_1, ONE_FULL_TOKEN), "manualMint_team not allowed while paused");
 
@@ -99,7 +99,7 @@ contract("Pausable", function (accounts) {
             await crowdsale.manualMint_team(ACC_1, ONE_FULL_TOKEN);
         });
 
-        it("should not allow manualMint_platform while paused", async function () {
+        it("should not allow manualMint_platform while paused", async () => {
             await crowdsale.pause();
             await expectThrow(crowdsale.manualMint_platform(ACC_1, ONE_FULL_TOKEN), "manualMint_platform not allowed while paused");
 
@@ -108,7 +108,7 @@ contract("Pausable", function (accounts) {
             await crowdsale.manualMint_platform(ACC_1, ONE_FULL_TOKEN);
         });
 
-        it("should not allow manualMint_airdrops while paused", async function () {
+        it("should not allow manualMint_airdrops while paused", async () => {
             await crowdsale.pause();
             await expectThrow(crowdsale.manualMint_airdrops(ACC_1, ONE_FULL_TOKEN), "manualMint_airdrops not allowed while paused");
 

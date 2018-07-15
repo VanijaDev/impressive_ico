@@ -17,7 +17,7 @@ import {
     advanceBlock
 } from './helpers/advanceToBlock';
 
-contract("IMP_WhitelistedCrowdsale", function (accounts) {
+contract("IMP_WhitelistedCrowdsale", (accounts) => {
     let crowdsale;
 
     const ACC_1 = accounts[1];
@@ -26,7 +26,7 @@ contract("IMP_WhitelistedCrowdsale", function (accounts) {
         await advanceBlock();
     });
 
-    beforeEach("create crowdsale inst", async function () {
+    beforeEach("create crowdsale inst", async () => {
         let mockTokenData = mockToken();
         let mockCrowdsaleData = mockCrowdsale();
 
@@ -48,8 +48,8 @@ contract("IMP_WhitelistedCrowdsale", function (accounts) {
         increaseTimeTo(openingTime);
     });
 
-    describe("should validate whitelisted functional", async function () {
-        it("should validate address can be whitelisted by owner only", async function () {
+    describe("should validate whitelisted functional", async () => {
+        it("should validate address can be whitelisted by owner only", async () => {
             assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted yet");
 
             await crowdsale.addToWhitelist(ACC_1);
@@ -60,7 +60,7 @@ contract("IMP_WhitelistedCrowdsale", function (accounts) {
             }), "should test not owner account");
         });
 
-        it("should validate address can be removed from whitelist by owner only", async function () {
+        it("should validate address can be removed from whitelist by owner only", async () => {
             assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted yet");
 
             await crowdsale.removeFromWhitelist(ACC_1);
@@ -71,7 +71,7 @@ contract("IMP_WhitelistedCrowdsale", function (accounts) {
             }), "should test not owner account");
         });
 
-        it("should prevent user not in whitelist from purchase", async function () {
+        it("should prevent user not in whitelist from purchase", async () => {
             await expectThrow(crowdsale.sendTransaction({
                 from: ACC_1,
                 value: ether(1)

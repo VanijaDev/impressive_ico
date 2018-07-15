@@ -30,7 +30,7 @@ contract('TimedCrowdsale', (accounts) => {
         await advanceBlock();
     });
 
-    beforeEach("create crowdsale inst", async function () {
+    beforeEach("create crowdsale inst", async () => {
         let mockTokenData = mockToken();
         let mockCrowdsaleData = mockCrowdsale();
 

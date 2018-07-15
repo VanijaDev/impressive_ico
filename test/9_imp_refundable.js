@@ -18,7 +18,6 @@ import {
     advanceBlock
 } from './helpers/advanceToBlock';
 
-//  test ./test/9_imp_refundable.js
 contract("MP_Crowdsale - refundable, soft cap NOT REACHED", (accounts) => {
     const SOFT_CAP_ETH = 2;
     const ACC_1 = accounts[1];
@@ -36,7 +35,7 @@ contract("MP_Crowdsale - refundable, soft cap NOT REACHED", (accounts) => {
         await advanceBlock();
     });
 
-    beforeEach('create crowdsale inst', async function () {
+    beforeEach('create crowdsale inst', async () => {
         const CROWDSALE_WALLET = accounts[9];
 
         let openingTime = latestTime() + duration.minutes(1);
