@@ -8,11 +8,12 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
+import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
-contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, TimedCrowdsale, IMP_DiscountCrowdsale {
+contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, TimedCrowdsale, WhitelistedCrowdsale, IMP_DiscountCrowdsale {
   using SafeMath for uint256;  
 
   enum MintPurpose {preICO, ico, team, platform, airdrops} // Supplier.State.inactive
@@ -156,6 +157,50 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
    */
   function hasOpened() public view returns (bool) {
     return block.timestamp >= openingTime;
+  }
+
+  /**
+   * OVERRIDEN
+   */
+
+  /**
+   * WHITELIST functional
+   */
+
+  /**
+   * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
+   */
+  modifier isWhitelisted(address _beneficiary) {
+    require(crowdsaleSharedLedger.whitelist(_beneficiary));
+    _;
+  }
+
+  function addressWhitelisted(address _beneficiary) public view returns(bool) {
+    return crowdsaleSharedLedger.whitelist(_beneficiary);
+  }
+
+  /**
+   * @dev Adds single address to whitelist.
+   * @param _beneficiary Address to be added to the whitelist
+   */
+  function addToWhitelist(address _beneficiary) external onlyOwner {
+    crowdsaleSharedLedger.addToWhitelist(_beneficiary);
+  }
+
+  /**
+   * @dev Adds list of addresses to whitelist. Not overloaded due to limitations with truffle testing.
+   * @param _beneficiaries Addresses to be added to the whitelist
+   */
+  function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
+    crowdsaleSharedLedger.addManyToWhitelist(_beneficiaries);
+  }
+
+  /**
+   * @dev Removes single address from whitelist.
+   * @param _beneficiary Address to be removed to the whitelist
+   */
+  function removeFromWhitelist(address _beneficiary) external onlyOwner {
+      crowdsaleSharedLedger.removeFromWhitelist(_beneficiary);
   }
 
 

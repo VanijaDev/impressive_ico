@@ -2,10 +2,9 @@ pragma solidity ^0.4.23;
 
 
 import "./IMP_TokenNumbersManagedCrowdsale.sol";
-import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 
 
-contract IMP_Crowdsale is WhitelistedCrowdsale, IMP_TokenNumbersManagedCrowdsale {
+contract IMP_Crowdsale is IMP_TokenNumbersManagedCrowdsale {
 
   /**
    * @dev Constructor function.

@@ -50,10 +50,10 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
 
     describe("should validate whitelisted functional", async () => {
         it("should validate address can be whitelisted by owner only", async () => {
-            assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted yet");
+            assert.isFalse(await crowdsale.addressWhitelisted(ACC_1), "ACC_1 should not be whitelisted yet");
 
             await crowdsale.addToWhitelist(ACC_1);
-            assert.isTrue(await crowdsale.whitelist(ACC_1), "ACC_1 should be whitelisted");
+            assert.isTrue(await crowdsale.addressWhitelisted(ACC_1), "ACC_1 should be whitelisted");
 
             await expectThrow(crowdsale.addToWhitelist(ACC_1, {
                 from: ACC_1
@@ -61,10 +61,10 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
         });
 
         it("should validate address can be removed from whitelist by owner only", async () => {
-            assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted yet");
+            assert.isFalse(await crowdsale.addressWhitelisted(ACC_1), "ACC_1 should not be whitelisted yet");
 
             await crowdsale.removeFromWhitelist(ACC_1);
-            assert.isFalse(await crowdsale.whitelist(ACC_1), "ACC_1 should not be whitelisted");
+            assert.isFalse(await crowdsale.addressWhitelisted(ACC_1), "ACC_1 should not be whitelisted");
 
             await expectThrow(crowdsale.removeFromWhitelist(ACC_1, {
                 from: ACC_1
