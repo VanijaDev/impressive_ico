@@ -61,7 +61,7 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
             let currentDiscount = new BigNumber(await crowdsale.currentDiscount.call()).toNumber();
             assert.equal(currentDiscount, 20, "1 - should be 20%");
 
-            let calculatedTokenAmount = new BigNumber(await crowdsale.calculateTokenAmount.call(web3.toWei(0.5, "ether"))).toNumber();
+            let calculatedTokenAmount = new BigNumber(await crowdsale.calculateTokenAmount.call(ether(0.5))).toNumber();
             assert.equal(calculatedTokenAmount, 600000, "1 - should be 60 tokens");
 
             let tokensMinted_purchase = new BigNumber(await crowdsale.tokensMinted_purchase.call());
@@ -69,7 +69,7 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
 
             await crowdsale.sendTransaction({
                 from: ACC_1,
-                value: web3.toWei(0.5, "ether")
+                value: ether(0.5)
             });
 
             assert.equal(new BigNumber(await token.balanceOf.call(ACC_1)).toNumber(), 600000, "1 - wrong balance of ACC_1");
@@ -98,7 +98,7 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
 
             await crowdsale.sendTransaction({
                 from: ACC_1,
-                value: web3.toWei(1.5, "ether")
+                value: ether(1.5)
             });
 
             assert.equal(new BigNumber(await token.balanceOf.call(ACC_1)).toNumber(), 2370000, "2 - wrong balance of ACC_1");
@@ -122,12 +122,12 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
             currentDiscount = new BigNumber(await crowdsale.currentDiscount.call()).toNumber();
             assert.equal(currentDiscount, 16, "3 - should be 16%");
 
-            calculatedTokenAmount = new BigNumber(await crowdsale.calculateTokenAmount.call(web3.toWei(2, "ether"))).toNumber();
+            calculatedTokenAmount = new BigNumber(await crowdsale.calculateTokenAmount.call(ether(2))).toNumber();
             assert.equal(calculatedTokenAmount, 2320000, "3 - should be 2320000 tokens");
 
             await crowdsale.sendTransaction({
                 from: ACC_2,
-                value: web3.toWei(2, "ether")
+                value: ether(2)
             });
             assert.equal(new BigNumber(await token.balanceOf.call(ACC_2)).toNumber(), 2320000, "3 - wrong balance of ACC_2");
 
@@ -150,12 +150,12 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
             currentDiscount = new BigNumber(await crowdsale.currentDiscount.call()).toNumber();
             assert.equal(currentDiscount, 14, "4 - should be 14%");
 
-            calculatedTokenAmount = new BigNumber(await crowdsale.calculateTokenAmount.call(web3.toWei(3, "ether"))).toNumber();
+            calculatedTokenAmount = new BigNumber(await crowdsale.calculateTokenAmount.call(ether(3))).toNumber();
             assert.equal(calculatedTokenAmount, 3420000, "4 - should be 3420000 tokens");
 
             await crowdsale.sendTransaction({
                 from: ACC_2,
-                value: web3.toWei(3, "ether")
+                value: ether(3)
             });
 
             assert.equal(new BigNumber(await token.balanceOf.call(ACC_2)).toNumber(), 5740000, "4 - wrong balance of ACC_2");
@@ -179,12 +179,12 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
             currentDiscount = new BigNumber(await crowdsale.currentDiscount.call()).toNumber();
             assert.equal(currentDiscount, 12, "5 - should be 12%");
 
-            calculatedTokenAmount = new BigNumber(await crowdsale.calculateTokenAmount.call(web3.toWei(4, "ether"))).toNumber();
+            calculatedTokenAmount = new BigNumber(await crowdsale.calculateTokenAmount.call(ether(4))).toNumber();
             assert.equal(calculatedTokenAmount, 4480000, "5 - should be 4480000 tokens");
 
             await crowdsale.sendTransaction({
                 from: ACC_2,
-                value: web3.toWei(4, "ether")
+                value: ether(4)
             });
 
             assert.equal(new BigNumber(await token.balanceOf.call(ACC_2)).toNumber(), 10220000, "5 - wrong balance of ACC_2");
@@ -208,12 +208,12 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
             currentDiscount = new BigNumber(await crowdsale.currentDiscount.call()).toNumber();
             assert.equal(currentDiscount, 10, "6 - should be 10%");
 
-            calculatedTokenAmount = new BigNumber(await crowdsale.calculateTokenAmount.call(web3.toWei(5, "ether"))).toNumber();
+            calculatedTokenAmount = new BigNumber(await crowdsale.calculateTokenAmount.call(ether(5))).toNumber();
             assert.equal(calculatedTokenAmount, 5500000, "6 - should be 5500000 tokens");
 
             await crowdsale.sendTransaction({
                 from: ACC_2,
-                value: web3.toWei(5, "ether")
+                value: ether(5)
             });
 
             assert.equal(new BigNumber(await token.balanceOf.call(ACC_2)).toNumber(), 15720000, "6 - wrong balance of ACC_2");
