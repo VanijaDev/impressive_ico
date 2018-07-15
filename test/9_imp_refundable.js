@@ -1,13 +1,16 @@
 let IMP_Token = artifacts.require("./IMP_Token");
 let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale");
 let IMP_CrowdsaleSharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger");
-let Reverter = require('./helpers/reverter');
 let BigNumber = require('bignumber.js');
 
 import mockToken from "./helpers/mocks/mockToken";
 import mockCrowdsale from "./helpers/mocks/mockCrowdsale";
 import ether from "./helpers/ether";
 
+import {
+    snapshot,
+    revert
+} from "./helpers/reverter";
 import {
     duration,
     increaseTimeTo
@@ -93,11 +96,11 @@ contract("MP_Crowdsale - refundable, soft cap NOT REACHED", (accounts) => {
         await token.transferOwnership(crowdsale.address);
         await increaseTimeTo(closing.plus(duration.minutes(1)));
 
-        await Reverter.snapshot();
+        await snapshot();
     });
 
     afterEach('revert', async () => {
-        await Reverter.revert();
+        await revert();
     });
 
     describe("tests for soft cap not reached", () => {

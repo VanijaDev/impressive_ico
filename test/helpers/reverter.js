@@ -1,6 +1,6 @@
 let snapshotId;
 
-exports.snapshot = function () {
+export function snapshot() {
     return new Promise((resolve, reject) => {
         web3.currentProvider.sendAsync({
             jsonrpc: '2.0',
@@ -16,7 +16,7 @@ exports.snapshot = function () {
     });
 }
 
-exports.revert = function () {
+export function revert() {
     return new Promise((resolve, reject) => {
         web3.currentProvider.sendAsync({
             jsonrpc: '2.0',
@@ -27,7 +27,7 @@ exports.revert = function () {
             if (err) {
                 return reject(err);
             }
-            return resolve(this.snapshot());
+            return resolve(snapshot());
         });
     });
 }

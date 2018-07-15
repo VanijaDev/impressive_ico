@@ -1,13 +1,16 @@
 let IMP_Token = artifacts.require("./IMP_Token");
 let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale");
 let IMP_sharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger");
-let Reverter = require('./helpers/reverter');
 let BigNumber = require('bignumber.js');
 
 import mockToken from "./helpers/mocks/mockToken";
 import mockCrowdsale from "./helpers/mocks/mockCrowdsale";
 import expectThrow from './helpers/expectThrow';
 
+import {
+    snapshot,
+    revert
+} from "./helpers/reverter";
 import {
     duration,
     increaseTimeTo
@@ -50,11 +53,11 @@ contract("TimedCrowdsale", (accounts) => {
 
         await crowdsale.addToWhitelist(ACC_1);
 
-        await Reverter.snapshot();
+        await snapshot();
     });
 
     afterEach('revert', async () => {
-        await Reverter.revert();
+        await revert();
     });
 
     describe('before Crowdsale started', () => {

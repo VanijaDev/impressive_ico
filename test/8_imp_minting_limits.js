@@ -1,7 +1,6 @@
 let IMP_Token = artifacts.require("./IMP_Token");
 let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale");
 let IMP_CrowdsaleSharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger");
-let Reverter = require('./helpers/reverter');
 let BigNumber = require('bignumber.js');
 
 import mockToken from "./helpers/mocks/mockToken";
@@ -52,12 +51,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
     await sharedLedger.transferOwnership(crowdsale.address);
 
     increaseTimeTo(openingTime);
-    // await Reverter.snapshot();
   });
-
-  // afterEach('revert', async () => {
-  //   await Reverter.revert();
-  // });
 
   describe("validate correct calculations while ICO minting", () => {
     const ONE_FULL_TOKEN = 10000;
