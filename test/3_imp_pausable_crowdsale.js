@@ -17,7 +17,6 @@ import {
     advanceBlock
 } from './helpers/advanceToBlock';
 
-
 contract("Pausable", (accounts) => {
     let crowdsale;
 

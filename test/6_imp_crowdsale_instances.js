@@ -18,7 +18,6 @@ import {
     advanceBlock
 } from './helpers/advanceToBlock';
 
-
 contract("IMP_Crowdsale - test preICO purchase limits", (accounts) => {
     let crowdsale;
 
@@ -79,7 +78,6 @@ contract("IMP_Crowdsale - test preICO purchase limits", (accounts) => {
     //  Note: ICO minitng limits tested in 7_imp_discount_crowdsale.js
 });
 
-// //  test ./test/6_imp_crowdsale_instances.js
 contract("MP_Crowdsale - soft cap REACHED", (accounts) => {
     const ACC_1 = accounts[1];
     const CROWDSALE_WALLET = accounts[9];

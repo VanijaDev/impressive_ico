@@ -18,8 +18,7 @@ import {
     advanceBlock
 } from './helpers/advanceToBlock';
 
-
-contract('TimedCrowdsale', (accounts) => {
+contract("TimedCrowdsale", (accounts) => {
     let token;
     let crowdsale;
     let sharedLedger;
