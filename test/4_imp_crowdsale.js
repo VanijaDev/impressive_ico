@@ -440,11 +440,11 @@ contract("IMP_Crowdsale", (accounts) => {
 
             //  new contract for ICO
             const CROWDSALE_WALLET = accounts[9];
-            const CROWDSALE_OPENING = latestTime() + duration.days(8);
+            let opening = latestTime() + duration.days(8);
 
             let timings = [];
             for (let i = 0; i < 4; i++) {
-                timings[i] = CROWDSALE_OPENING + duration.hours(i);
+                timings[i] = opening + duration.hours(i);
             }
 
             let mockCrowdsaleData = mockCrowdsale();

@@ -17,10 +17,10 @@ module.exports = (deployer, network, accounts) => {
     const CROWDSALE_RATE_ETH = 100; // tokens per ETH, no decimals, TODO: correct values
     const CROWDSALE_SOFT_CAP_ETH = 15000; //  in ETH
 
-    const CROWDSALE_OPENING = web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1);
+    let opening = web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1);
     let timings = []; //  [opening, stageEdges]
     for (i = 0; i < 7; i++) {
-        timings[i] = CROWDSALE_OPENING + IncreaseTime.duration.weeks(i);
+        timings[i] = opening + IncreaseTime.duration.weeks(i);
     }
 
     const TOKEN_PERCENTAGE_RESERVED_PRE_ICO = 30;

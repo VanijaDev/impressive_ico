@@ -1,6 +1,7 @@
 let IMP_Token = artifacts.require("./IMP_Token");
 let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale");
 let IMP_CrowdsaleSharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger");
+let BigNumber = require('bignumber.js');
 
 import mockToken from "./helpers/mocks/mockToken";
 import mockCrowdsale from "./helpers/mocks/mockCrowdsale";
@@ -18,9 +19,14 @@ import {
 } from './helpers/advanceToBlock';
 
 contract("IMP_WhitelistedCrowdsale", (accounts) => {
+    let token;
     let crowdsale;
+    let sharedLedger;
 
     const ACC_1 = accounts[1];
+    const ACC_2 = accounts[2];
+
+    const CROWDSALE_WALLET = accounts[9];
 
     before("setup", async () => {
         await advanceBlock();
@@ -30,16 +36,14 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
         let mockTokenData = mockToken();
         let mockCrowdsaleData = mockCrowdsale();
 
-        const CROWDSALE_WALLET = accounts[9];
-
         let openingTime = latestTime() + duration.minutes(1);
         let timings = []; //  [opening, stageEdges]
         for (let i = 0; i < 7; i++) {
             timings[i] = openingTime + duration.weeks(i);
         }
 
-        let token = await IMP_Token.new(mockTokenData.tokenName, mockTokenData.tokenSymbol, mockTokenData.tokenDecimals);
-        let sharedLedger = await IMP_CrowdsaleSharedLedger.new(token.address, mockCrowdsaleData.crowdsaleTotalSupplyLimit, [mockCrowdsaleData.tokenPercentageReservedPreICO, mockCrowdsaleData.tokenPercentageReservedICO, mockCrowdsaleData.tokenPercentageReservedTeam, mockCrowdsaleData.tokenPercentageReservedPlatform, mockCrowdsaleData.tokenPercentageReservedAirdrops], mockCrowdsaleData.crowdsaleSoftCapETH, CROWDSALE_WALLET);
+        token = await IMP_Token.new(mockTokenData.tokenName, mockTokenData.tokenSymbol, mockTokenData.tokenDecimals);
+        sharedLedger = await IMP_CrowdsaleSharedLedger.new(token.address, mockCrowdsaleData.crowdsaleTotalSupplyLimit, [mockCrowdsaleData.tokenPercentageReservedPreICO, mockCrowdsaleData.tokenPercentageReservedICO, mockCrowdsaleData.tokenPercentageReservedTeam, mockCrowdsaleData.tokenPercentageReservedPlatform, mockCrowdsaleData.tokenPercentageReservedAirdrops], mockCrowdsaleData.crowdsaleSoftCapETH, CROWDSALE_WALLET);
         crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth, timings, mockCrowdsaleData.crowdsalePreICODiscounts);
 
         await token.transferOwnership(crowdsale.address);
@@ -48,7 +52,7 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
         increaseTimeTo(openingTime);
     });
 
-    describe("should validate whitelisted functional", async () => {
+    describe("should validate whitelisted functional", () => {
         it("should validate address can be whitelisted by owner only", async () => {
             assert.isFalse(await crowdsale.addressWhitelisted(ACC_1), "ACC_1 should not be whitelisted yet");
 
@@ -84,5 +88,47 @@ contract("IMP_WhitelistedCrowdsale", (accounts) => {
                 value: ether(1)
             });
         });
+    });
+
+    describe("whitelist set in preICO available in ICO", () => {
+        it("validate whitelisted addresses in preICO are present in ICO", async () => {
+            //  add in preICO 
+            assert.isFalse(await crowdsale.addressWhitelisted(ACC_1), "ACC_1 should not be whitelisted yet");
+            assert.isFalse(await crowdsale.addressWhitelisted(ACC_2), "ACC_2 should not be whitelisted yet");
+
+            await crowdsale.addManyToWhitelist([ACC_1, ACC_2]);
+            assert.isTrue(await crowdsale.addressWhitelisted(ACC_1), "ACC_1 should be whitelisted in preICO");
+            assert.isTrue(await crowdsale.addressWhitelisted(ACC_2), "ACC_2 should be whitelisted in preICO");
+
+            //  finalize preICO and move to ICO period
+            let closing = new BigNumber(await crowdsale.closingTime.call());
+            await increaseTimeTo(closing.plus(duration.minutes(1)));
+
+            //  tx to finish preICO
+            await crowdsale.sendTransaction({
+                from: ACC_1,
+                value: ether(1)
+            });
+
+            //  new contract for ICO
+            let opening = latestTime() + duration.minutes(1);
+
+            let timings = [];
+            for (let i = 0; i < 4; i++) {
+                timings[i] = opening + duration.hours(i);
+            }
+
+            let mockCrowdsaleData = mockCrowdsale();
+            crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth * 5000, timings, mockCrowdsaleData.crowdsaleICODiscounts);
+
+            closing = new BigNumber(await crowdsale.closingTime.call());
+
+            await sharedLedger.transferOwnership(crowdsale.address);
+            await token.transferOwnership(crowdsale.address);
+            await increaseTimeTo(closing.plus(duration.minutes(1)));
+
+            assert.isTrue(await crowdsale.addressWhitelisted(ACC_1), "ACC_1 should be whitelisted in ICO");
+            assert.isTrue(await crowdsale.addressWhitelisted(ACC_2), "ACC_2 should be whitelisted in ICO");
+        })
     });
 });

@@ -54,7 +54,7 @@ contract("IMP_Crowdsale - discounts testing", (accounts) => {
 
     describe("validate discounts and mintedTokens", () => {
         it("should validate discounts and mintedTokens are calculated correctly", async () => {
-            console.log("ACC_2    1: ", new BigNumber(await web3.eth.getBalance(ACC_2)).toNumber());
+            // console.log("ACC_2    1: ", new BigNumber(await web3.eth.getBalance(ACC_2)).toNumber());
             await crowdsale.addManyToWhitelist([ACC_1, ACC_2]);
 
             //  stage 1

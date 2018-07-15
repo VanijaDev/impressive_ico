@@ -94,13 +94,13 @@ contract("MP_Crowdsale - soft cap REACHED", (accounts) => {
     });
 
     beforeEach('setup', async () => {
-        let CROWDSALE_OPENING = latestTime() + duration.days(10);
+        let opening = latestTime() + duration.days(10);
 
         walletFundsBefore = new BigNumber(await web3.eth.getBalance(CROWDSALE_WALLET));
 
         let timings = [];
         for (let i = 0; i < 7; i++) {
-            timings[i] = CROWDSALE_OPENING + duration.hours(i);
+            timings[i] = opening + duration.hours(i);
         }
 
         let mockTokenData = mockToken();
@@ -113,7 +113,7 @@ contract("MP_Crowdsale - soft cap REACHED", (accounts) => {
         await token.transferOwnership(crowdsale.address);
         await sharedLedger.transferOwnership(crowdsale.address);
 
-        increaseTimeTo(CROWDSALE_OPENING + duration.minutes(1));
+        increaseTimeTo(opening + duration.minutes(1));
 
         await crowdsale.addToWhitelist(ACC_1);
         await crowdsale.sendTransaction({
@@ -132,11 +132,11 @@ contract("MP_Crowdsale - soft cap REACHED", (accounts) => {
         });
 
         //  new contract for ICO
-        CROWDSALE_OPENING = latestTime() + duration.minutes(1);
+        opening = latestTime() + duration.minutes(1);
 
         timings = [];
         for (let i = 0; i < 4; i++) {
-            timings[i] = CROWDSALE_OPENING + duration.hours(i);
+            timings[i] = opening + duration.hours(i);
         }
 
         crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth * 5000, timings, mockCrowdsaleData.crowdsaleICODiscounts);

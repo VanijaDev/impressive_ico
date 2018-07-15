@@ -57,7 +57,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
     const ONE_FULL_TOKEN = 10000;
 
     it("should decrease ICO", async () => {
-      console.log("ACC_2    3: ", new BigNumber(await web3.eth.getBalance(ACC_2)).toNumber());
+      // console.log("ACC_2    3: ", new BigNumber(await web3.eth.getBalance(ACC_2)).toNumber());
       await crowdsale.addManyToWhitelist([ACC_1, ACC_2]);
 
       await crowdsale.sendTransaction({
@@ -78,11 +78,11 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
 
       //  new contract for ICO
       const CROWDSALE_WALLET = accounts[4];
-      const CROWDSALE_OPENING = web3.eth.getBlock('latest').timestamp + duration.minutes(18);
+      let opening = latestTime() + duration.minutes(18);
 
       let timings = [];
       for (let i = 0; i < 4; i++) {
-        timings[i] = CROWDSALE_OPENING + duration.hours(i);
+        timings[i] = opening + duration.hours(i);
       }
 
       let mockCrowdsaleData = mockCrowdsale();
@@ -90,7 +90,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
 
       await sharedLedger.transferOwnership(crowdsale.address);
       await token.transferOwnership(crowdsale.address);
-      increaseTimeTo(CROWDSALE_OPENING);
+      increaseTimeTo(opening);
 
 
       //  test manual mintings
@@ -210,7 +210,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
 
       assert.equal(availableToMintDiff, 16200000000, "3 - wrong decrease value for tokensAvailableToMint_ICO");
 
-      console.log("ACC_2    4: ", new BigNumber(await web3.eth.getBalance(ACC_2)).toNumber());
+      // console.log("ACC_2    4: ", new BigNumber(await web3.eth.getBalance(ACC_2)).toNumber());
 
       //  exceed limit
       await crowdsale.sendTransaction({
