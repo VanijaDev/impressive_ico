@@ -11,7 +11,7 @@ contract IMP_Crowdsale is IMP_TokenNumbersManagedCrowdsale {
    * @param _token                        Token used for crowdsale
    * @param _crowdsaleSharedLedger        IMP_CrowdsaleSharedLedger for keeping shared crowdsale info 
    * @param _wallet                       Wallet used for crowdsale
-   * @param _rateETH                      Rate in ETH
+   * @param _rateETH                      Rate in ETH, used instead of rate in Crowdsale
    * @param _timings                      Crowdsale timings:
    * first idx - openingTimestamp
    * middle idxs - discount week closing timestamps
