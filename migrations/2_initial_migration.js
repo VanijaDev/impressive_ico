@@ -9,12 +9,12 @@ let IncreaseTime = require("../test/helpers/increaseTime.js");
 
 module.exports = (deployer, network, accounts) => {
     const TOKEN_NAME = "Impressive Token";
-    const TOKEN_SYMBOL = "IMP";
+    const TOKEN_SYMBOL = "IMP"; //  TODO: change before deploy
     const TOKEN_DECIMALS = 4;
 
-    const CROWDSALE_WALLET = accounts[9];
+    const CROWDSALE_WALLET = accounts[9]; //  TODO: change before deploy
     const CROWDSALE_TOTAL_SUPPLY_LIMIT = 100000000; //  no decimals
-    const CROWDSALE_RATE_ETH = 100; // tokens per ETH, no decimals, TODO: correct values
+    const CROWDSALE_RATE_ETH = 100; // tokens per ETH, no decimals, TODO: change before deploy
     const CROWDSALE_SOFT_CAP_ETH = 15000; //  in ETH
 
     let opening = web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1);
@@ -32,6 +32,9 @@ module.exports = (deployer, network, accounts) => {
     const PRE_ICO_DISCOUNTS = [20, 18, 16, 14, 12, 10]; //  including each edge
     const ICO_DISCOUNTS = [10, 9, 8, 7, 6, 5, 4, 3]; //  including each edge
 
+    // console.log(TOKEN_NAME, TOKEN_SYMBOL, TOKEN_DECIMALS);
+    // console.log(CROWDSALE_WALLET, CROWDSALE_TOTAL_SUPPLY_LIMIT, CROWDSALE_RATE_ETH, CROWDSALE_SOFT_CAP_ETH);
+    // console.log(timings);
 
     deployer.deploy(IMP_Token, TOKEN_NAME, TOKEN_SYMBOL, TOKEN_DECIMALS).then(async () => {
         let token = await IMP_Token.deployed();
