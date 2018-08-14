@@ -238,7 +238,7 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
    * @param _mintPurpose Purpose of minting
    * @param _tokenAmount Number of tokens were minted
    */
-  function updateMintedTokenNumbers(MintPurpose _mintPurpose, uint256 _tokenAmount) internal {
+  function updateMintedTokenNumbers(uint256 _tokenAmount, MintPurpose _mintPurpose) internal {
     if (_mintPurpose == MintPurpose.team) {
       tokensMinted_team = tokensMinted_team.add(_tokenAmount);
     } else if (_mintPurpose == MintPurpose.platform) {
@@ -256,7 +256,7 @@ contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, Timed
    */
   function updateMintedTokenNumbersForCrowdsale(uint256 _tokenAmount) internal {
     MintPurpose mintPurpose = (crowdsaleSharedLedger.crowdsaleType() == IMP_CrowdsaleSharedLedger.CrowdsaleType.preICO) ? MintPurpose.preICO : MintPurpose.ico;
-    updateMintedTokenNumbers(mintPurpose, _tokenAmount);
+    updateMintedTokenNumbers(_tokenAmount, mintPurpose);
   }
 
 

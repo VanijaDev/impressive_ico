@@ -78,7 +78,7 @@ contract IMP_Crowdsale is IMP_TokenNumbersManagedCrowdsale {
     validateMintLimits(_tokenAmount, _mintPurpose);
 
     _deliverTokens(_beneficiary, _tokenAmount);
-    updateMintedTokenNumbers(_mintPurpose, _tokenAmount);
+    updateMintedTokenNumbers(_tokenAmount, _mintPurpose);
   }
 
 }
