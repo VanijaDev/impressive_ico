@@ -4,16 +4,13 @@ pragma solidity ^0.4.24;
 import "./IMP_DiscountCrowdsale.sol";
 import "./IMP_CrowdsaleSharedLedger.sol";
 
-import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
-import "../node_modules/openzeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
-import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
-contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, TimedCrowdsale, WhitelistedCrowdsale, IMP_DiscountCrowdsale {
+contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Pausable, TimedCrowdsale, IMP_DiscountCrowdsale {
   using SafeMath for uint256;  
 
   enum MintPurpose {preICO, ico, team, platform, airdrops} // Supplier.State.inactive

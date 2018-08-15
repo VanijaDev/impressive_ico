@@ -132,7 +132,7 @@ contract("IMP_Crowdsale", (accounts) => {
         });
 
         it("wei should be transferred to vault contract", async () => {
-            let vault = await sharedLedger.vault.call();
+            let escrow = await sharedLedger.escrow.call();
 
             // 1
             await crowdsale.sendTransaction({
@@ -140,8 +140,8 @@ contract("IMP_Crowdsale", (accounts) => {
                 value: ether(1)
             });
 
-            let balance = new BigNumber(await web3.eth.getBalance(vault)).toNumber();
-            assert.equal(balance, new BigNumber(ether(1)).toNumber(), "wrong vault balance after purchase 1 ETH");
+            let balance = new BigNumber(await web3.eth.getBalance(escrow)).toNumber();
+            assert.equal(balance, new BigNumber(ether(1)).toNumber(), "wrong escrow balance after purchase 1 ETH");
 
             //  2
             await crowdsale.sendTransaction({
@@ -149,8 +149,8 @@ contract("IMP_Crowdsale", (accounts) => {
                 value: ether(2.5)
             });
 
-            balance = new BigNumber(await web3.eth.getBalance(vault)).toNumber();
-            assert.equal(balance, new BigNumber(ether(3.5)).toNumber(), "wrong vault balance after purchase 2.5 ETH");
+            balance = new BigNumber(await web3.eth.getBalance(escrow)).toNumber();
+            assert.equal(balance, new BigNumber(ether(3.5)).toNumber(), "wrong escrow balance after purchase 2.5 ETH");
 
             let crowdsaleWeiRaised = new BigNumber(await crowdsale.crowdsaleWeiRaised.call()).toNumber();
             assert.equal(crowdsaleWeiRaised, new BigNumber(ether(3.5)).toNumber(), "wrong crowdsaleWeiRaised value");

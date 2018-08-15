@@ -125,6 +125,7 @@ contract("MP_Crowdsale - soft cap REACHED", (accounts) => {
         let closing = new BigNumber(await crowdsale.closingTime.call());
         await increaseTimeTo(closing.plus(duration.minutes(1)));
 
+        console.log("0: ", await crowdsale.hasClosed.call());
         //  tx to finish preICO
         await crowdsale.sendTransaction({
             from: ACC_1,
@@ -148,7 +149,7 @@ contract("MP_Crowdsale - soft cap REACHED", (accounts) => {
         await increaseTimeTo(closing.plus(duration.minutes(1)));
     });
 
-    describe("tests for soft cap reached", () => {
+    describe.only("tests for soft cap reached", () => {
         it("should check crowdsale and sharedLedged were destroyed", async () => {
             //  tx to finish preICO
             await crowdsale.sendTransaction({
