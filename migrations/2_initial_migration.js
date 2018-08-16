@@ -1,11 +1,7 @@
 let IMP_Token = artifacts.require("./IMP_Token.sol");
 let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale.sol");
-let IMP_CrowdsaleSharedLedger = artifacts.require("IMP_CrowdsaleSharedLedger");
 let IncreaseTime = require("../test/helpers/increaseTime.js");
 
-/**
- * IMPORTANT: 
- */
 
 module.exports = (deployer, network, accounts) => {
     //  TODO: change before deploy -- START --
@@ -32,7 +28,7 @@ module.exports = (deployer, network, accounts) => {
 
     deployer.deploy(IMP_Token).then(async () => {
         let token = await IMP_Token.deployed();
-        //  "token_address", "0xdd870fa1b7c4700f2bd7f44238821c26f7392148", [_preICOTimings], [_icoTimings], [20, 10], [10, 9]
+
         await deployer.deploy(IMP_Crowdsale, token.address, CROWDSALE_WALLET, preICOTimings, icoTimings, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
         let crowdsale = await IMP_Crowdsale.deployed();
 
