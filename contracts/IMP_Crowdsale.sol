@@ -6,9 +6,10 @@ import "./IMP_MintWithPurpose.sol";
 
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
+import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 
 
-contract IMP_Crowdsale is Pausable, TimedCrowdsale, IMP_Stages, IMP_MintWithPurpose {
+contract IMP_Crowdsale is TimedCrowdsale, WhitelistedCrowdsale, IMP_Stages, IMP_MintWithPurpose, Pausable {
 
   uint256 crowdsaleSoftCap = uint256(15000).mul(10**18);  //  15 000 ETH
   uint256 preICORate = 100; //  tokens per ETH, TODO: change before deploy
@@ -63,6 +64,22 @@ contract IMP_Crowdsale is Pausable, TimedCrowdsale, IMP_Stages, IMP_MintWithPurp
   /**
    * OVERRIDEN
    */
+
+  //  /**
+  //  * @dev Extend parent behavior requiring beneficiary to be in whitelist.
+  //  * @param _beneficiary Token beneficiary
+  //  * @param _weiAmount Amount of wei contributed
+  //  */
+  // function _preValidatePurchase(
+  //   address _beneficiary,
+  //   uint256 _weiAmount
+  // )
+  //   internal
+  //   onlyIfWhitelisted(_beneficiary)
+  // {
+  //   super._preValidatePurchase(_beneficiary, _weiAmount);
+  // }
+
   /**
    * @dev Source of tokens. Override this method to modify the way in which the crowdsale ultimately gets and sends its tokens.
    * @param _beneficiary Address performing the token purchase

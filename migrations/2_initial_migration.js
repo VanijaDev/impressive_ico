@@ -19,26 +19,23 @@ module.exports = (deployer, network, accounts) => {
 
     let preICOOpening = web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1);
     let preICOTimings = []; //  [opening, stageEdges]
-    for (i = 0; i < PRE_ICO_DISCOUNTS + 1; i++) {
+    for (i = 0; i < PRE_ICO_DISCOUNTS.length + 1; i++) {
         preICOTimings[i] = preICOOpening + IncreaseTime.duration.weeks(i);
     }
 
     let icoOpening = preICOTimings[preICOTimings.length - 1] + IncreaseTime.duration.weeks(2);
     let icoTimings = []; //  [opening, stageEdges]
-    for (i = 0; i < ICO_DISCOUNTS + 1; i++) {
+    for (i = 0; i < ICO_DISCOUNTS.length + 1; i++) {
         icoTimings[i] = icoOpening + IncreaseTime.duration.weeks(i);
     }
     //  TODO: change before deploy -- END --
 
-
-
-    deployer.deploy(IMP_Token, TOKEN_NAME, TOKEN_SYMBOL, TOKEN_DECIMALS).then(async () => {
+    deployer.deploy(IMP_Token).then(async () => {
         let token = await IMP_Token.deployed();
-
-        await deployer.deploy(IMP_Crowdsale, token.address, CROWDSALE_WALLET, PRE_ICO_RATE, preICOTimings, icoTimings, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
+        //  "token_address", "0xdd870fa1b7c4700f2bd7f44238821c26f7392148", [_preICOTimings], [_icoTimings], [20, 10], [10, 9]
+        await deployer.deploy(IMP_Crowdsale, token.address, CROWDSALE_WALLET, preICOTimings, icoTimings, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
         let crowdsale = await IMP_Crowdsale.deployed();
 
-        //  transfer ownership to crowdsale contract
         await token.transferOwnership(crowdsale.address);
     });
 }
