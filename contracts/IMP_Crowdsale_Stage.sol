@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 import "./IMP_TokenNumbersManagedCrowdsale.sol";
 
 
-contract IMP_Crowdsale is IMP_TokenNumbersManagedCrowdsale {
+contract IMP_Crowdsale_Stage is IMP_TokenNumbersManagedCrowdsale {
 
   /**
    * @dev Constructor function.

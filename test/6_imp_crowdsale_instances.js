@@ -1,5 +1,5 @@
 let IMP_Token = artifacts.require("./IMP_Token");
-let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale");
+let IMP_Crowdsale_Stage = artifacts.require("./IMP_Crowdsale_Stage");
 let IMP_sharedLedger = artifacts.require("./IMP_crowdsaleSharedLedger");
 let BigNumber = require('bignumber.js');
 
@@ -18,7 +18,7 @@ import {
     advanceBlock
 } from './helpers/advanceToBlock';
 
-contract("IMP_Crowdsale - test preICO purchase limits", (accounts) => {
+contract("IMP_Crowdsale_Stage - test preICO purchase limits", (accounts) => {
     let crowdsale;
 
     const ACC_1 = accounts[1];
@@ -42,7 +42,7 @@ contract("IMP_Crowdsale - test preICO purchase limits", (accounts) => {
 
         let token = await IMP_Token.new(mockTokenData.tokenName, mockTokenData.tokenSymbol, mockTokenData.tokenDecimals);
         let sharedLedger = await IMP_sharedLedger.new(token.address, mockCrowdsaleData.crowdsaleTotalSupplyLimit, [mockCrowdsaleData.tokenPercentageReservedPreICO, mockCrowdsaleData.tokenPercentageReservedICO, mockCrowdsaleData.tokenPercentageReservedTeam, mockCrowdsaleData.tokenPercentageReservedPlatform, mockCrowdsaleData.tokenPercentageReservedAirdrops], mockCrowdsaleData.crowdsaleSoftCapETH, CROWDSALE_WALLET);
-        crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth * 5000, timings, mockCrowdsaleData.crowdsalePreICODiscounts);
+        crowdsale = await IMP_Crowdsale_Stage.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth * 5000, timings, mockCrowdsaleData.crowdsalePreICODiscounts);
 
         await token.transferOwnership(crowdsale.address);
         await sharedLedger.transferOwnership(crowdsale.address);
@@ -108,7 +108,7 @@ contract("MP_Crowdsale - soft cap REACHED", (accounts) => {
 
         token = await IMP_Token.new(mockTokenData.tokenName, mockTokenData.tokenSymbol, mockTokenData.tokenDecimals);
         sharedLedger = await IMP_sharedLedger.new(token.address, mockCrowdsaleData.crowdsaleTotalSupplyLimit, [mockCrowdsaleData.tokenPercentageReservedPreICO, mockCrowdsaleData.tokenPercentageReservedICO, mockCrowdsaleData.tokenPercentageReservedTeam, mockCrowdsaleData.tokenPercentageReservedPlatform, mockCrowdsaleData.tokenPercentageReservedAirdrops], SOFT_CAP_ETH, CROWDSALE_WALLET);
-        crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth, timings, mockCrowdsaleData.crowdsalePreICODiscounts);
+        crowdsale = await IMP_Crowdsale_Stage.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth, timings, mockCrowdsaleData.crowdsalePreICODiscounts);
 
         await token.transferOwnership(crowdsale.address);
         await sharedLedger.transferOwnership(crowdsale.address);
@@ -139,7 +139,7 @@ contract("MP_Crowdsale - soft cap REACHED", (accounts) => {
             timings[i] = opening + duration.hours(i);
         }
 
-        crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth * 5000, timings, mockCrowdsaleData.crowdsaleICODiscounts);
+        crowdsale = await IMP_Crowdsale_Stage.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth * 5000, timings, mockCrowdsaleData.crowdsaleICODiscounts);
 
         closing = new BigNumber(await crowdsale.closingTime.call());
 

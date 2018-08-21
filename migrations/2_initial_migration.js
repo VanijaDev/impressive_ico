@@ -1,5 +1,5 @@
 let IMP_Token = artifacts.require("./IMP_Token.sol");
-let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale.sol");
+let IMP_Crowdsale_Stage = artifacts.require("./IMP_Crowdsale_Stage.sol");
 let IMP_CrowdsaleSharedLedger = artifacts.require("IMP_CrowdsaleSharedLedger");
 let IncreaseTime = require("../test/helpers/increaseTime.js");
 
@@ -39,8 +39,8 @@ module.exports = (deployer, network, accounts) => {
         await deployer.deploy(IMP_CrowdsaleSharedLedger, token.address, CROWDSALE_TOTAL_SUPPLY_LIMIT, [TOKEN_PERCENTAGE_RESERVED_PRE_ICO, TOKEN_PERCENTAGE_RESERVED_ICO, TOKEN_PERCENTAGE_RESERVED_TEAM, TOKEN_PERCENTAGE_RESERVED_PLATFORM, TOKEN_PERCENTAGE_RESERVED_AIRDROPS], CROWDSALE_SOFT_CAP_ETH, CROWDSALE_WALLET);
         let sharedLedger = await IMP_CrowdsaleSharedLedger.deployed();
 
-        await deployer.deploy(IMP_Crowdsale, token.address, sharedLedger.address, CROWDSALE_WALLET, CROWDSALE_RATE_ETH, timings, PRE_ICO_DISCOUNTS);
-        let crowdsale = await IMP_Crowdsale.deployed();
+        await deployer.deploy(IMP_Crowdsale_Stage, token.address, sharedLedger.address, CROWDSALE_WALLET, CROWDSALE_RATE_ETH, timings, PRE_ICO_DISCOUNTS);
+        let crowdsale = await IMP_Crowdsale_Stage.deployed();
 
         //  transfer ownership to crowdsale contract
         await token.transferOwnership(crowdsale.address);

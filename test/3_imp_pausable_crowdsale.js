@@ -1,5 +1,5 @@
 let IMP_Token = artifacts.require("./IMP_Token");
-let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale");
+let IMP_Crowdsale_Stage = artifacts.require("./IMP_Crowdsale_Stage");
 let IMP_CrowdsaleSharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger");
 
 import mockToken from "./helpers/mocks/mockToken";
@@ -40,7 +40,7 @@ contract("Pausable", (accounts) => {
 
         let token = await IMP_Token.new(mockTokenData.tokenName, mockTokenData.tokenSymbol, mockTokenData.tokenDecimals);
         let sharedLedger = await IMP_CrowdsaleSharedLedger.new(token.address, mockCrowdsaleData.crowdsaleTotalSupplyLimit, [mockCrowdsaleData.tokenPercentageReservedPreICO, mockCrowdsaleData.tokenPercentageReservedICO, mockCrowdsaleData.tokenPercentageReservedTeam, mockCrowdsaleData.tokenPercentageReservedPlatform, mockCrowdsaleData.tokenPercentageReservedAirdrops], mockCrowdsaleData.crowdsaleSoftCapETH, CROWDSALE_WALLET);
-        crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth, timings, mockCrowdsaleData.crowdsalePreICODiscounts);
+        crowdsale = await IMP_Crowdsale_Stage.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth, timings, mockCrowdsaleData.crowdsalePreICODiscounts);
 
         await token.transferOwnership(crowdsale.address);
         await sharedLedger.transferOwnership(crowdsale.address);

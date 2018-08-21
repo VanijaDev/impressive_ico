@@ -1,5 +1,5 @@
 let IMP_Token = artifacts.require("./IMP_Token");
-let IMP_Crowdsale = artifacts.require("./IMP_Crowdsale");
+let IMP_Crowdsale_Stage = artifacts.require("./IMP_Crowdsale_Stage");
 let IMP_CrowdsaleSharedLedger = artifacts.require("./IMP_CrowdsaleSharedLedger");
 let BigNumber = require('bignumber.js');
 
@@ -18,7 +18,7 @@ import {
   advanceBlock
 } from './helpers/advanceToBlock';
 
-contract("IMP_Crowdsale - ICO calculations", (accounts) => {
+contract("IMP_Crowdsale_Stage - ICO calculations", (accounts) => {
   let token;
   let crowdsale;
 
@@ -45,7 +45,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
 
     token = await IMP_Token.new(mockTokenData.tokenName, mockTokenData.tokenSymbol, mockTokenData.tokenDecimals);
     sharedLedger = await IMP_CrowdsaleSharedLedger.new(token.address, mockCrowdsaleData.crowdsaleTotalSupplyLimit, [mockCrowdsaleData.tokenPercentageReservedPreICO, mockCrowdsaleData.tokenPercentageReservedICO, mockCrowdsaleData.tokenPercentageReservedTeam, mockCrowdsaleData.tokenPercentageReservedPlatform, mockCrowdsaleData.tokenPercentageReservedAirdrops], mockCrowdsaleData.crowdsaleSoftCapETH, CROWDSALE_WALLET);
-    crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth, timings, mockCrowdsaleData.crowdsalePreICODiscounts);
+    crowdsale = await IMP_Crowdsale_Stage.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth, timings, mockCrowdsaleData.crowdsalePreICODiscounts);
 
     await token.transferOwnership(crowdsale.address);
     await sharedLedger.transferOwnership(crowdsale.address);
@@ -86,7 +86,7 @@ contract("IMP_Crowdsale - ICO calculations", (accounts) => {
       }
 
       let mockCrowdsaleData = mockCrowdsale();
-      crowdsale = await IMP_Crowdsale.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth * 5000, timings, mockCrowdsaleData.crowdsaleICODiscounts);
+      crowdsale = await IMP_Crowdsale_Stage.new(token.address, sharedLedger.address, CROWDSALE_WALLET, mockCrowdsaleData.crowdsaleRateEth * 5000, timings, mockCrowdsaleData.crowdsaleICODiscounts);
 
       await sharedLedger.transferOwnership(crowdsale.address);
       await token.transferOwnership(crowdsale.address);
