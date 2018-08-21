@@ -4,9 +4,7 @@ pragma solidity ^0.4.24;
 import "./IMP_Token.sol";
 import "./IMP_TokenReservations.sol";
 
-import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
-
-contract IMP_MintWithPurpose is Ownable, IMP_TokenReservations {
+contract IMP_MintWithPurpose is IMP_TokenReservations {
 
   constructor(uint256 _decimals) IMP_TokenReservations(_decimals) 
   public {
@@ -58,14 +56,15 @@ contract IMP_MintWithPurpose is Ownable, IMP_TokenReservations {
    *  INTERNAL
    */
 
-  /**
-   * @dev Minting for purchase.
-   * @param _beneficiary Token receiver address
-   * @param _tokenAmount Number of tokens to be minted with decimals, eg. 1 token == 1 0000
-   */
-  function mint_purchase(address _beneficiary, uint256 _tokenAmount) internal {  
-    mintFor(MintReserve.purchase, _beneficiary, _tokenAmount);
-  }
+  //  TODO: implement
+  // /**
+  //  * @dev Minting for purchase.
+  //  * @param _beneficiary Token receiver address
+  //  * @param _tokenAmount Number of tokens to be minted with decimals, eg. 1 token == 1 0000
+  //  */
+  // function mint_purchase(address _beneficiary, uint256 _tokenAmount) internal {  
+  //   mintFor(MintReserve.purchase, _beneficiary, _tokenAmount);
+  // }
 
   function mintFor(MintReserve _mintReserve, address _beneficiary, uint256 _tokenAmount) internal {
     require(_beneficiary != address(0), "address can not be 0");

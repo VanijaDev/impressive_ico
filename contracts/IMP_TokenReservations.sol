@@ -2,12 +2,14 @@ pragma solidity ^0.4.24;
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
-contract IMP_TokenReservations {
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+
+contract IMP_TokenReservations is Ownable {
   using SafeMath for uint256;
 
   enum MintReserve {purchase, team, platformStart, bountiesAirdrops, companies} // Supplier.State.inactive
 
-  // uint256 tokenPercentageReserved_privatePlacement = 5; //  TODO: not finalized yet
+  uint256 tokenPercentageReserved_privatePlacement = 5;   //  % of tokens reserved for privatePlacement
   uint256 tokenPercentageReserved_preICO = 25;            //  % of tokens reserved for pre_ICO
   uint256 tokenPercentageReserved_ico = 44;               //  % of tokens reserved for ICO
   uint256 tokenPercentageReserved_team = 18;              //  % of tokens reserved for team
@@ -16,6 +18,7 @@ contract IMP_TokenReservations {
   uint256 tokenPercentageReserved_companies = 3;          //  % of tokens reserved for different companies
 
   uint256 public tokenLimitTotalSupply_crowdsale;         //  tokens total supply for entire crowdsale
+  uint256 public tokensReserved_privatePlacement;         //  tokens reserved for privatePlacement
   uint256 public tokensReserved_preICO;                   //  tokens reserved for pre_ICO
   uint256 public tokensReserved_ico;                      //  tokens reserved for ICO
   uint256 public tokensReserved_team;                     //  tokens reserved for team
@@ -23,6 +26,7 @@ contract IMP_TokenReservations {
   uint256 public tokensReserved_bountiesAirdrops;         //  tokens reserved for bounties and airdrops
   uint256 public tokensReserved_companies;                //  tokens reserved for different companies
 
+  uint256 public tokensMinted_privatePlacement;           //  tokens minted for privatePlacement
   uint256 public tokensMinted_preICO;                     //  tokens minted for pre_ICO
   uint256 public tokensMinted_ico;                        //  tokens minted for ICO
   uint256 public tokensMinted_team;                       //  tokens minted for team
@@ -90,6 +94,7 @@ contract IMP_TokenReservations {
    */
 // TODO: test
   function calculateTokenLimits() private {
+    tokensReserved_privatePlacement = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_privatePlacement).div(100);
     tokensReserved_preICO = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_preICO).div(100);
     tokensReserved_ico = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_ico).div(100);
     tokensReserved_team = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_team).div(100);
