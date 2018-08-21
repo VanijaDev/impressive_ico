@@ -13,7 +13,7 @@ import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/Whi
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
-contract IMP_TokenNumbersManagedCrowdsale is Crowdsale, Ownable, Pausable, TimedCrowdsale, WhitelistedCrowdsale, IMP_DiscountCrowdsale {
+contract IMP_TokenNumbersManagedCrowdsale is Ownable, Pausable, IMP_DiscountCrowdsale, TimedCrowdsale, WhitelistedCrowdsale {
   using SafeMath for uint256;  
 
   enum MintPurpose {preICO, ico, team, platform, airdrops} // Supplier.State.inactive
