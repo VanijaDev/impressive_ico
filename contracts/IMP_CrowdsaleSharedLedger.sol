@@ -4,7 +4,6 @@ pragma solidity ^0.4.24;
 import "./IMP_Token.sol";
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 // import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/utils/RefundVault.sol";
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Destructible.sol";
 
@@ -14,7 +13,7 @@ import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Destructible.s
  * @dev IMP_CrowdsaleSharedLedger is used to keep shared data between preICO and ICO contracts.
  */
 
-contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
+contract IMP_CrowdsaleSharedLedger is Destructible {
   using SafeMath for uint256;
 
   enum CrowdsaleType {preICO, ico}
