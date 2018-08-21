@@ -5,7 +5,7 @@ import "./IMP_Token.sol";
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/utils/RefundVault.sol";
+// import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/utils/RefundVault.sol";
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Destructible.sol";
 
 
@@ -27,7 +27,7 @@ contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
   uint256 public crowdsaleWeiRaised;
 
   // refund vault used to hold funds while crowdsale is running
-  RefundVault public vault;
+  // RefundVault public vault;
 
   mapping(address => bool) public whitelist;
 
@@ -73,7 +73,7 @@ contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
 
     calculatePreICOLimits(_tokenPercentageReservations);
 
-    vault = new RefundVault(_wallet);
+    // vault = new RefundVault(_wallet);
   }
 
   function getTokenReservedLimits() public view returns(uint256 purchase, uint256 team, uint256 platform, uint256 airdrops) {
@@ -100,7 +100,7 @@ contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
    * @dev Forwards purchase funds to vault.
    */
   function forwardFundsToVault(address _investor) public payable onlyOwner {
-    vault.deposit.value(msg.value)(_investor);
+    // vault.deposit.value(msg.value)(_investor);
     crowdsaleWeiRaised = crowdsaleWeiRaised.add(msg.value);
   }
 
@@ -127,7 +127,7 @@ contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
     require(refundsEnabled(), "vault should be in Refunding state for refunds enabled");
     require(!goalReached(), "goal was reached, so no refunds enabled");
 
-    vault.refund(msg.sender);
+    // vault.refund(msg.sender);
   }
 
   /**
@@ -168,12 +168,12 @@ contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
    * @dev Transfers the current balance to the owner and terminates the contract.
    */
   function destroy() onlyOwner public {
-    require(vault.state() == RefundVault.State.Closed, "destoy can be done after crowdsale is finished");
+    // require(vault.state() == RefundVault.State.Closed, "destoy can be done after crowdsale is finished");
     selfdestruct(owner);
   }
 
   function destroyAndSend(address _recipient) onlyOwner public {
-    require(vault.state() == RefundVault.State.Closed, "destoy can be done after crowdsale is finished");
+    // require(vault.state() == RefundVault.State.Closed, "destoy can be done after crowdsale is finished");
     selfdestruct(_recipient);
   }
 
@@ -206,7 +206,8 @@ contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
   }
 
   function refundsEnabled() public view returns(bool) {
-    return vault.state() == RefundVault.State.Refunding;
+    // return vault.state() == RefundVault.State.Refunding;
+    return true;
   }
 
 /**
@@ -233,10 +234,10 @@ contract IMP_CrowdsaleSharedLedger is Ownable, Destructible {
  * @dev ICO finalization logic
  */
   function finalizeICO() private {
-    if (goalReached()) {
-      vault.close();
-    } else {
-      vault.enableRefunds();
-    }
+    // if (goalReached()) {
+    //   vault.close();
+    // } else {
+    //   vault.enableRefunds();
+    // }
   }
 }
