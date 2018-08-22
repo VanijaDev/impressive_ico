@@ -7,11 +7,12 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 contract IMP_TokenReservations is Ownable {
   using SafeMath for uint256;
 
-  enum MintReserve {purchase, team, platformStart, bountiesAirdrops, companies} // Supplier.State.inactive
+  enum MintReserve {privatePlacement, preICO, ico, team, platformStart, bountiesAirdrops, companies} // Supplier.State.inactive
 
+  //  IMPORTANT: purchase reservations, minted amounts include previous stage (e.g. preICO == preICO + privatePlacement, ico == ico + preICO)
   uint256 tokenPercentageReserved_privatePlacement = 5;   //  % of tokens reserved for privatePlacement
-  uint256 tokenPercentageReserved_preICO = 25;            //  % of tokens reserved for pre_ICO
-  uint256 tokenPercentageReserved_ico = 44;               //  % of tokens reserved for ICO
+  uint256 tokenPercentageReserved_preICO = 30;            //  % of tokens reserved for pre_ICO = 25 + 5
+  uint256 tokenPercentageReserved_ico = 74;               //  % of tokens reserved for ICO = 44 + 30
   uint256 tokenPercentageReserved_team = 18;              //  % of tokens reserved for team
   uint256 tokenPercentageReserved_platformStart = 3;      //  % of tokens reserved for platform start
   uint256 tokenPercentageReserved_bountiesAirdrops = 2;   //  % of tokens reserved for bounties and airdrops
@@ -61,8 +62,24 @@ contract IMP_TokenReservations is Ownable {
     else if (_mintReserve == MintReserve.companies) {
       require(tokensMinted_companies.add(_tokenAmount) <= tokensReserved_companies, "not enough tokens for airdrops");
     }
-    else {
-      // require(tokensAvailableToMint_purchase() >= _tokenAmount, "not enough tokens for tokensAvailableToMint_purchase");
+    else if (_mintReserve == MintReserve.privatePlacement) {
+      require(tokensMinted_privatePlacement.add(_tokenAmount) <= tokensReserved_privatePlacement, "not enough tokens for privatePlacement");
+    }
+    else if (_mintReserve == MintReserve.preICO) {
+      if (tokensMinted_preICO == 0) {
+        //  first purchase in stage
+        require(tokensMinted_privatePlacement.add(_tokenAmount) <= tokensReserved_preICO, "not enough tokens for preICO");
+      } else {
+        require(tokensMinted_preICO.add(_tokenAmount) <= tokensReserved_preICO, "not enough tokens for preICO");
+      }
+    }
+    else if (_mintReserve == MintReserve.ico) {
+      if (tokensMinted_ico == 0) {
+        //  first purchase in stage
+        require(tokensMinted_preICO.add(_tokenAmount) <= tokensReserved_ico, "not enough tokens for ICO");
+      } else {
+        require(tokensMinted_ico.add(_tokenAmount) <= tokensReserved_ico, "not enough tokens for ICO");
+      }
     }
   }
 
@@ -84,8 +101,20 @@ contract IMP_TokenReservations is Ownable {
     else if (_mintReserve == MintReserve.companies) {
       tokensMinted_companies = tokensMinted_companies.add(_tokenAmount);
     }
-    else {
-      // require(tokensAvailableToMint_purchase() >= _tokenAmount, "not enough tokens for tokensAvailableToMint_purchase");
+    else if (_mintReserve == MintReserve.privatePlacement) {
+      tokensMinted_privatePlacement = tokensMinted_privatePlacement.add(_tokenAmount);
+    }
+    else if (_mintReserve == MintReserve.preICO) {
+      if (tokensMinted_preICO == 0) {
+        tokensMinted_preICO = tokensMinted_privatePlacement;
+      }
+      tokensMinted_preICO = tokensMinted_preICO.add(_tokenAmount);
+    }
+    else if (_mintReserve == MintReserve.ico) {
+      if (tokensMinted_ico == 0) {
+        tokensMinted_ico = tokensMinted_preICO;
+      }
+      tokensMinted_ico = tokensMinted_ico.add(_tokenAmount);
     }
   }
 

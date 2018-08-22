@@ -78,7 +78,7 @@ contract IMP_Stages is Ownable {
  * @return Discount for current stage
  */
  // TEST
-  function currentDiscount() public view onlyWhileAnyStageOpen returns(uint256) {
+  function currentDiscount() public view returns(uint256) {
     if(currentStage_privatePlacement(privatePlacementTimings)) {
       for(uint256 i = 1; i < privatePlacementTimings.length; i ++) {
         if(now < privatePlacementTimings[i]) {
@@ -97,9 +97,9 @@ contract IMP_Stages is Ownable {
           return icoDiscounts[k-1];
         }
       }
-    } else {
-      revert("Error in currentDiscount()");
     }
+    
+    return 0;
   }
   
 
