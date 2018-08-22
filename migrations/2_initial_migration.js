@@ -16,16 +16,14 @@ module.exports = (deployer, network, accounts) => {
 
     let privatePlacementTimings = [web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1), web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1) + IncreaseTime.duration.weeks(1)];
 
-    let preICOOpening = privatePlacementTimings[privatePlacementTimings.length - 1] + IncreaseTime.duration.minutes(1);
-    let preICOTimings = []; //  [opening, stageEdges]
+    let preICOTimings = [privatePlacementTimings[privatePlacementTimings.length - 1] + IncreaseTime.duration.minutes(1)]; //  [opening, stageEdges]
     for (i = 0; i < PRE_ICO_DISCOUNTS.length + 1; i++) {
-        preICOTimings[i] = preICOOpening + IncreaseTime.duration.weeks(i);
+        preICOTimings[i] = preICOTimings[0] + IncreaseTime.duration.weeks(i);
     }
 
-    let icoOpening = preICOTimings[preICOTimings.length - 1] + IncreaseTime.duration.weeks(2);
-    let icoTimings = []; //  [opening, stageEdges]
+    let icoTimings = [preICOTimings[preICOTimings.length - 1] + IncreaseTime.duration.weeks(2)]; //  [opening, stageEdges]
     for (i = 0; i < ICO_DISCOUNTS.length + 1; i++) {
-        icoTimings[i] = icoOpening + IncreaseTime.duration.weeks(i);
+        icoTimings[i] = icoTimings[0] + IncreaseTime.duration.weeks(i);
     }
     //  TODO: change before deploy -- END --
 
@@ -38,7 +36,7 @@ module.exports = (deployer, network, accounts) => {
 
         await crowdsale.initialSetup(privatePlacementTimings, preICOTimings, icoTimings, PRIVATE_PLACEMENT_DISCOUNTS, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
 
-        // buildTimings(1534926512);
+        //     buildTimings(1534926512);
     });
 
     function buildTimings(startTime) {
