@@ -9,7 +9,10 @@ import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/Whi
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/payment/RefundEscrow.sol";
 
-
+/**
+ * @title IMP_Crowdsale
+ * @dev Contract used for crowdsale.
+ */
 contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, IMP_Stages, IMP_MintWithPurpose, Pausable {
 
   uint256 public crowdsaleSoftCap = uint256(15000).mul(10**18);  //  15 000 ETH
@@ -19,11 +22,20 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   address public unsoldTokenEscrow;
   uint256 public unsoldTokenEscrowPercent = 2;  //  % from unsold tokens
 
+  /**
+   * @dev Reverts if not less than minimum purchase.
+   */
   modifier minimumPurchase() {
     require(msg.value >= minimumPurchaseWei, "wei value is < minimum purchase");
     _;
   }
 
+  /**
+   * @dev Constructor.
+   * @param _token Token address.
+   * @param _wallet Wallet address.
+   * @param _unsoldTokenEscrow Address used as temporary deposit for unsold tokens.
+   */
   constructor(ERC20 _token, address _wallet, address _unsoldTokenEscrow)
     Crowdsale(1, _wallet, _token) //  rate in base Crowdsale is unused. Use custom rates in IMP_Stages.sol instead;
     CappedCrowdsale(crowdsaleHardCap)
@@ -45,7 +57,6 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
    * @param _beneficiary Token receiver address
    * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
    */
-
   function mintFor(IMP_TokenReservations.MintReserve _mintReserve, address _beneficiary, uint256 _tokenAmount) internal whenNotPaused {
     require(anyStageOpen(), "None of stages is currently open");
     
@@ -57,11 +68,18 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   /**
    * PRIVATE
    */
+  /**
+   * @dev Finalizing crowdsale.
+   */
+   // TEST
   function finalizeCrowdsale() private {
     finalizeRefundEscrow();
     depositUnsoldTokenEscrow();
   }
 
+  /**
+   * @dev Enables refunds if needed, closes otherwise.
+   */
   function finalizeRefundEscrow() private {
     if (capReached()) {
       close();
@@ -71,7 +89,9 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   }
 
   //  Test
-  
+  /**
+   * @dev Transfer tokens for unsold token escrow.
+   */
   function depositUnsoldTokenEscrow() private {
     uint256 tokens = unsoldTokens().div(100).mul(unsoldTokenEscrowPercent);
 
