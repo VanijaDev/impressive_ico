@@ -17,7 +17,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   uint256 public minimumPurchaseWei = 100000000000000000;
 
   address public unsoldTokenEscrow;
-  uint256 public unsoldTokenEscrowPercent = 2;
+  uint256 public unsoldTokenEscrowPercent = 2;  //  % from unsold tokens
 
   modifier minimumPurchase() {
     require(msg.value >= minimumPurchaseWei, "wei value is < minimum purchase");
