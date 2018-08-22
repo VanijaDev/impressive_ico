@@ -38,7 +38,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
    */
   constructor(ERC20 _token, address _wallet, address _unsoldTokenEscrow)
     Crowdsale(1, _wallet, _token) //  rate in base Crowdsale is unused. Use custom rates in IMP_Stages.sol instead;
-    CappedCrowdsale(crowdsaleSoftCap)
+    CappedCrowdsale(crowdsaleHardCap)
     IMP_Stages()
     IMP_MintWithPurpose(IMP_Token(_token).decimals())
     RefundEscrow(_wallet)
@@ -65,8 +65,8 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
     _deliverTokens(_beneficiary, _tokenAmount);
   }
 
-  function hardCapReached() public view returns (bool) {
-    return weiRaised >= crowdsaleHardCap;
+  function softCapReached() public view returns (bool) {
+    return weiRaised >= crowdsaleSoftCap;
   }
 
   /**
@@ -85,7 +85,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
    * @dev Enables refunds if needed, closes otherwise.
    */
   function finalizeRefundEscrow() private {
-    if (capReached()) {
+    if (softCapReached()) {
       close();
     } else {
       enableRefunds();
