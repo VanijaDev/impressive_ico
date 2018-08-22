@@ -34,8 +34,37 @@ module.exports = (deployer, network, accounts) => {
 
         await deployer.deploy(IMP_Crowdsale, token.address, CROWDSALE_WALLET);
         let crowdsale = await IMP_Crowdsale.deployed();
+        await token.transferOwnership(crowdsale.address);
+
         await crowdsale.initialSetup(privatePlacementTimings, preICOTimings, icoTimings, PRIVATE_PLACEMENT_DISCOUNTS, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
 
-        await token.transferOwnership(crowdsale.address);
+        // buildTimings(1534920255);
     });
+
+    function buildTimings(startTime) {
+        let increasePeriod = 100;
+
+        let privatePlacementTimings = [startTime + IncreaseTime.duration.seconds(100), startTime + IncreaseTime.duration.seconds(30) + increasePeriod];
+        console.log("privatePlacement: ", privatePlacementTimings);
+
+        let preICOTimings = []; //  [opening, stageEdges]
+        for (i = 0; i < 6 + 1; i++) {
+            if (i == 0) {
+                preICOTimings[i] = privatePlacementTimings[privatePlacementTimings.length - 1] + IncreaseTime.duration.seconds(1);
+            } else {
+                preICOTimings[i] = preICOTimings[i - 1] + increasePeriod;
+            }
+        }
+        console.log("preICOTimings: \n", preICOTimings);
+
+        let icoTimings = []; //  [opening, stageEdges]
+        for (i = 0; i < 10 + 1; i++) {
+            if (i == 0) {
+                icoTimings[i] = preICOTimings[preICOTimings.length - 1] + IncreaseTime.duration.seconds(1);
+            } else {
+                icoTimings[i] = icoTimings[i - 1] + increasePeriod;
+            }
+        }
+        console.log("icoTimings: \n", icoTimings);
+    }
 }
