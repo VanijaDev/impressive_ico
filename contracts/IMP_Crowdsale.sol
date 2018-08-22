@@ -16,18 +16,23 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   uint256 public crowdsaleHardCap = uint256(50000).mul(10**18);  //  50 000 ETH
   uint256 public minimumPurchaseWei = 100000000000000000;
 
+  address public unsoldTokenEscrow;
+  uint256 public unsoldTokenEscrowPercent = 2;
+
   modifier minimumPurchase() {
     require(msg.value >= minimumPurchaseWei, "wei value is < minimum purchase");
     _;
   }
 
-  constructor(ERC20 _token, address _wallet)
+  constructor(ERC20 _token, address _wallet, address _unsoldTokenEscrow)
     Crowdsale(1, _wallet, _token) //  rate in base Crowdsale is unused. Use custom rates in IMP_Stages.sol instead;
     CappedCrowdsale(crowdsaleHardCap)
     IMP_Stages()
     IMP_MintWithPurpose(IMP_Token(_token).decimals())
     RefundEscrow(_wallet)
   public {
+    require(_unsoldTokenEscrow != address(0));
+    unsoldTokenEscrow = _unsoldTokenEscrow;
   }
 
   /**
@@ -53,11 +58,24 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
    * PRIVATE
    */
   function finalizeCrowdsale() private {
+    finalizeRefundEscrow();
+    depositUnsoldTokenEscrow();
+  }
+
+  function finalizeRefundEscrow() private {
     if (capReached()) {
       close();
     } else {
       enableRefunds();
     }
+  }
+
+  //  Test
+  
+  function depositUnsoldTokenEscrow() private {
+    uint256 tokens = unsoldTokens().div(100).mul(unsoldTokenEscrowPercent);
+
+    unsoldTokenEscrow.transfer(tokens);
   }
 
   /**
