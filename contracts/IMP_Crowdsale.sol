@@ -15,8 +15,8 @@ import "../node_modules/openzeppelin-solidity/contracts/payment/RefundEscrow.sol
  */
 contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, IMP_Stages, IMP_MintWithPurpose, Pausable {
 
-  uint256 public crowdsaleSoftCap = uint256(15000).mul(10**18);  //  15 000 ETH
-  uint256 public crowdsaleHardCap = uint256(50000).mul(10**18);  //  50 000 ETH
+  uint256 public crowdsaleSoftCap = uint256(5).mul(10**18);  //  15 000 ETH
+  uint256 public crowdsaleHardCap = uint256(10).mul(10**18);  //  50 000 ETH
   uint256 public minimumPurchaseWei = 100000000000000000;
 
   address public unsoldTokenEscrow;
@@ -38,7 +38,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
    */
   constructor(ERC20 _token, address _wallet, address _unsoldTokenEscrow)
     Crowdsale(1, _wallet, _token) //  rate in base Crowdsale is unused. Use custom rates in IMP_Stages.sol instead;
-    CappedCrowdsale(crowdsaleHardCap)
+    CappedCrowdsale(crowdsaleSoftCap)
     IMP_Stages()
     IMP_MintWithPurpose(IMP_Token(_token).decimals())
     RefundEscrow(_wallet)
@@ -63,6 +63,10 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
     super.mintFor(_mintReserve, _beneficiary, _tokenAmount);
 
     _deliverTokens(_beneficiary, _tokenAmount);
+  }
+
+  function hardCapReached() public view returns (bool) {
+    return weiRaised >= crowdsaleHardCap;
   }
 
   /**
@@ -114,6 +118,8 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
     internal
     minimumPurchase
   {
+    require(hardCapReached() == false, "hard cap reached, no more purchase");
+
     if (anyStageOpen()) {
       super._preValidatePurchase(_beneficiary, _weiAmount);
     } else {
