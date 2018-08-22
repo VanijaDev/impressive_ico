@@ -70,7 +70,6 @@ contract IMP_MintWithPurpose is IMP_TokenReservations {
     require(_beneficiary != address(0), "address can not be 0");
     require(_tokenAmount > 0, "0 tokens not alowed for minting");
 
-    validateMintReserve(_tokenAmount, _mintReserve);
     updateMintedTokens(_tokenAmount, _mintReserve);
   }
 }

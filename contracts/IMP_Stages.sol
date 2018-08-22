@@ -16,10 +16,14 @@ contract IMP_Stages is Ownable {
   uint256[] public preICODiscounts;
   uint256[] public icoDiscounts;
 
+  uint256 privatePlacementRate = 100;
+  uint256 preICORate = 100;
+  uint256 icoRate = 100;
+
   modifier onlyWhileAnyStageOpen() {
-    require(currentStage_privatePlacement(privatePlacementTimings) ||
-            currentStage_preICO(preICOTimings) ||
-            currentStage_ico(icoTimings), "none of crowdsale stages is currently open");
+    require(currentStage_privatePlacement() ||
+            currentStage_preICO() ||
+            currentStage_ico(), "none of crowdsale stages is currently open");
     _;
   }
 
@@ -58,50 +62,53 @@ contract IMP_Stages is Ownable {
   }
 
   // use for preICO rate update
-  function updatePreICO(uint256[] _preICOTimings, uint256[] _preICODiscounts) internal {
+  function updatePreICO(uint256 _rate, uint256[] _preICOTimings, uint256[] _preICODiscounts) public onlyOwner {
+    require(_rate > 0, "preICO rate should be > 0");
     validatePreICOTimingsAndDiscounts(_preICOTimings, _preICODiscounts, privatePlacementTimings[privatePlacementTimings.length-1]);
 
+    preICORate = _rate;
     preICOTimings = _preICOTimings;
     preICODiscounts = _preICODiscounts;
   }
 
   // use for ICO rate update
-  function updateICO(uint256[] _icoTimings, uint256[] _icoDiscounts) internal {
+  function updateICO(uint256 _rate, uint256[] _icoTimings, uint256[] _icoDiscounts) public onlyOwner {
+    require(_rate > 0, "ico rate should be > 0");
     validateIcoTimingsAndDiscounts(_icoTimings, _icoDiscounts, preICOTimings[preICOTimings.length-1]);
 
+    icoRate = _rate;
     icoTimings = _icoTimings;
     icoDiscounts = _icoDiscounts;
   }
 
-/**
- * @dev Calculate crowdsale discount
- * @return Discount for current stage
- */
+  /**
+   * @dev Calculate crowdsale rate and discount for current stage
+   * @return Rate and Discount
+   */
  // TEST
-  function currentDiscount() public view returns(uint256) {
-    if(currentStage_privatePlacement(privatePlacementTimings)) {
+  function currentRateAndDiscount() public view returns(uint256 _rate, uint256 _discount) {
+    if(currentStage_privatePlacement()) {
       for(uint256 i = 1; i < privatePlacementTimings.length; i ++) {
         if(now < privatePlacementTimings[i]) {
-          return privatePlacementDiscounts[i-1];
+          return (privatePlacementRate, privatePlacementDiscounts[i-1]);
         }
       }
-    } else if(currentStage_preICO(preICOTimings)) {
+    } else if(currentStage_preICO()) {
       for(uint256 j = 1; j < preICOTimings.length; j ++) {
         if(now < preICOTimings[j]) {
-          return preICODiscounts[j-1];
+          return (preICORate, preICODiscounts[j-1]);
         }
       }
-    } else if(currentStage_ico(icoTimings)) {
+    } else if(currentStage_ico()) {
       for(uint256 k = 1; k < icoTimings.length; k ++) {
         if(now < icoTimings[k]) {
-          return icoDiscounts[k-1];
+          return (icoRate, icoDiscounts[k-1]);
         }
       }
     }
     
-    return 0;
+    return (0, 0);
   }
-  
 
   /**
    * PRIVATE
@@ -144,15 +151,15 @@ contract IMP_Stages is Ownable {
     }
   }
 
-  function currentStage_privatePlacement(uint256[] _privatePlacementTimings) private view returns(bool) {
-    return now >= _privatePlacementTimings[0] && now <= _privatePlacementTimings[_privatePlacementTimings.length-1];
+  function currentStage_privatePlacement() internal view returns(bool) {
+    return now >= privatePlacementTimings[0] && now <= privatePlacementTimings[privatePlacementTimings.length-1];
   }
 
-  function currentStage_preICO(uint256[] _preICOTimings) private view returns(bool) {
-    return now >= _preICOTimings[0] && now <= _preICOTimings[_preICOTimings.length-1];
+  function currentStage_preICO() internal view returns(bool) {
+    return now >= preICOTimings[0] && now <= preICOTimings[preICOTimings.length-1];
   }
 
-  function currentStage_ico(uint256[] _icoTimings) private view returns(bool) {
-    return now >= _icoTimings[0] && now <= _icoTimings[_icoTimings.length-1];
+  function currentStage_ico() internal view returns(bool) {
+    return now >= icoTimings[0] && now <= icoTimings[icoTimings.length-1];
   }
 }

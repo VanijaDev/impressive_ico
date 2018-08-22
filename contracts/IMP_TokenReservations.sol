@@ -45,75 +45,43 @@ contract IMP_TokenReservations is Ownable {
    */
 
   /**
-   * @dev Validation of crowdsale reservations.
-   * @param _tokenAmount Number of tokens which are going to be purchased
-   * @param _mintReserve Reserve of minting
-   */
-  function validateMintReserve(uint256 _tokenAmount, MintReserve _mintReserve) internal view {      
-    if (_mintReserve == MintReserve.team) {
-      require(tokensMinted_team.add(_tokenAmount) <= tokensReserved_team, "not enough tokens for team");
-    }
-    else if (_mintReserve == MintReserve.platformStart) {
-      require(tokensMinted_platformStart.add(_tokenAmount) <= tokensReserved_platformStart, "not enough tokens for platformStart");
-    }
-    else if (_mintReserve == MintReserve.bountiesAirdrops) {
-      require(tokensMinted_bountiesAirdrops.add(_tokenAmount) <= tokensReserved_bountiesAirdrops, "not enough tokens for airdrops");
-    }
-    else if (_mintReserve == MintReserve.companies) {
-      require(tokensMinted_companies.add(_tokenAmount) <= tokensReserved_companies, "not enough tokens for airdrops");
-    }
-    else if (_mintReserve == MintReserve.privatePlacement) {
-      require(tokensMinted_privatePlacement.add(_tokenAmount) <= tokensReserved_privatePlacement, "not enough tokens for privatePlacement");
-    }
-    else if (_mintReserve == MintReserve.preICO) {
-      if (tokensMinted_preICO == 0) {
-        //  first purchase in stage
-        require(tokensMinted_privatePlacement.add(_tokenAmount) <= tokensReserved_preICO, "not enough tokens for preICO");
-      } else {
-        require(tokensMinted_preICO.add(_tokenAmount) <= tokensReserved_preICO, "not enough tokens for preICO");
-      }
-    }
-    else if (_mintReserve == MintReserve.ico) {
-      if (tokensMinted_ico == 0) {
-        //  first purchase in stage
-        require(tokensMinted_preICO.add(_tokenAmount) <= tokensReserved_ico, "not enough tokens for ICO");
-      } else {
-        require(tokensMinted_ico.add(_tokenAmount) <= tokensReserved_ico, "not enough tokens for ICO");
-      }
-    }
-  }
-
-  /**
    * @dev Update token mined amount after minting.
    * @param _tokenAmount Number of tokens were minted
    * @param _mintReserve Reserve of minting
    */
   function updateMintedTokens(uint256 _tokenAmount, MintReserve _mintReserve) internal {
     if (_mintReserve == MintReserve.team) {
+      require(tokensMinted_team.add(_tokenAmount) <= tokensReserved_team, "not enough tokens for team");
       tokensMinted_team = tokensMinted_team.add(_tokenAmount);
     }
     else if (_mintReserve == MintReserve.platformStart) {
+      require(tokensMinted_platformStart.add(_tokenAmount) <= tokensReserved_platformStart, "not enough tokens for platformStart");
       tokensMinted_platformStart = tokensMinted_platformStart.add(_tokenAmount);
     }
     else if (_mintReserve == MintReserve.bountiesAirdrops) {
+      require(tokensMinted_bountiesAirdrops.add(_tokenAmount) <= tokensReserved_bountiesAirdrops, "not enough tokens for airdrops");
       tokensMinted_bountiesAirdrops = tokensMinted_bountiesAirdrops.add(_tokenAmount);
     }
     else if (_mintReserve == MintReserve.companies) {
+      require(tokensMinted_companies.add(_tokenAmount) <= tokensReserved_companies, "not enough tokens for companies");
       tokensMinted_companies = tokensMinted_companies.add(_tokenAmount);
     }
     else if (_mintReserve == MintReserve.privatePlacement) {
+      require(tokensMinted_privatePlacement.add(_tokenAmount) <= tokensReserved_privatePlacement, "not enough tokens for privatePlacement");
       tokensMinted_privatePlacement = tokensMinted_privatePlacement.add(_tokenAmount);
     }
     else if (_mintReserve == MintReserve.preICO) {
       if (tokensMinted_preICO == 0) {
         tokensMinted_preICO = tokensMinted_privatePlacement;
       }
+      require(tokensMinted_preICO.add(_tokenAmount) <= tokensReserved_preICO, "not enough tokens for preICO");
       tokensMinted_preICO = tokensMinted_preICO.add(_tokenAmount);
     }
     else if (_mintReserve == MintReserve.ico) {
       if (tokensMinted_ico == 0) {
         tokensMinted_ico = tokensMinted_preICO;
       }
+      require(tokensMinted_ico.add(_tokenAmount) <= tokensReserved_ico, "not enough tokens for ICO");
       tokensMinted_ico = tokensMinted_ico.add(_tokenAmount);
     }
   }

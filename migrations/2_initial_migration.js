@@ -38,7 +38,7 @@ module.exports = (deployer, network, accounts) => {
 
         await crowdsale.initialSetup(privatePlacementTimings, preICOTimings, icoTimings, PRIVATE_PLACEMENT_DISCOUNTS, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
 
-        // buildTimings(1534920255);
+        // buildTimings(1534926512);
     });
 
     function buildTimings(startTime) {
