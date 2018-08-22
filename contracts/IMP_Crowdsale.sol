@@ -7,9 +7,10 @@ import "./IMP_MintWithPurpose.sol";
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
+import "../node_modules/openzeppelin-solidity/contracts/payment/RefundEscrow.sol";
 
 
-contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, IMP_Stages, IMP_MintWithPurpose, Pausable {
+contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, IMP_Stages, IMP_MintWithPurpose, Pausable {
 
   uint256 public crowdsaleSoftCap = uint256(15000).mul(10**18);  //  15 000 ETH
   uint256 public crowdsaleHardCap = uint256(50000).mul(10**18);  //  50 000 ETH
@@ -25,12 +26,9 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, IMP_Stages, IMP
     CappedCrowdsale(crowdsaleHardCap)
     IMP_Stages()
     IMP_MintWithPurpose(IMP_Token(_token).decimals())
+    RefundEscrow(_wallet)
   public {
   }
-
-  /** 
-   * PUBLIC 
-   */
 
   /**
    * INTERNAL
@@ -43,10 +41,23 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, IMP_Stages, IMP
    * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
    */
 
-  function mintFor(IMP_TokenReservations.MintReserve _mintReserve, address _beneficiary, uint256 _tokenAmount) internal whenNotPaused onlyWhileAnyStageOpen {
+  function mintFor(IMP_TokenReservations.MintReserve _mintReserve, address _beneficiary, uint256 _tokenAmount) internal whenNotPaused {
+    require(anyStageOpen(), "None of stages is currently open");
+    
     super.mintFor(_mintReserve, _beneficiary, _tokenAmount);
 
     _deliverTokens(_beneficiary, _tokenAmount);
+  }
+
+  /**
+   * PRIVATE
+   */
+  function finalizeCrowdsale() private {
+    if (capReached()) {
+      close();
+    } else {
+      enableRefunds();
+    }
   }
 
   /**
@@ -63,10 +74,15 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, IMP_Stages, IMP
     uint256 _weiAmount
   )
     internal
-    onlyWhileAnyStageOpen
     minimumPurchase
   {
-    super._preValidatePurchase(_beneficiary, _weiAmount);
+    if (anyStageOpen()) {
+      super._preValidatePurchase(_beneficiary, _weiAmount);
+    } else {
+      msg.sender.transfer(msg.value);
+
+      finalizeCrowdsale();
+    }
   }
 
   /**

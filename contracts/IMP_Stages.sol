@@ -20,13 +20,6 @@ contract IMP_Stages is Ownable {
   uint256 preICORate = 100;
   uint256 icoRate = 100;
 
-  modifier onlyWhileAnyStageOpen() {
-    require(currentStage_privatePlacement() ||
-            currentStage_preICO() ||
-            currentStage_ico(), "none of crowdsale stages is currently open");
-    _;
-  }
-
   constructor() public {
   }
 
@@ -41,6 +34,19 @@ contract IMP_Stages is Ownable {
    */
   function crowdsaleRunning() public view returns (bool) {
     return block.timestamp >= privatePlacementTimings[0] && block.timestamp <= icoTimings[icoTimings.length-1];
+  }
+
+//  TEST
+  /**
+   * @dev Checks whether now is more than ico last period, thus crowdsale campaign is finished.
+   * @return Whether crowdsale is finished
+   */
+  function crowdsaleFinished() public view returns (bool) {
+    return block.timestamp > icoTimings[icoTimings.length-1];
+  }
+
+  function anyStageOpen() public view returns (bool) {
+    return(currentStage_privatePlacement() == true || currentStage_preICO() == true || currentStage_ico() == true);
   }
 
   // TODO: test
