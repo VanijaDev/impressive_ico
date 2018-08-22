@@ -118,14 +118,13 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
     internal
     minimumPurchase
   {
-    require(hardCapReached() == false, "hard cap reached, no more purchase");
-
     if (anyStageOpen()) {
       super._preValidatePurchase(_beneficiary, _weiAmount);
-    } else {
+    } else if (crowdsaleFinished()) {
       msg.sender.transfer(msg.value);
-
       finalizeCrowdsale();
+    } else {
+      revert("purchase not allowed");
     }
   }
 
