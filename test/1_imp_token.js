@@ -9,11 +9,11 @@ contract("IMP_Token", (accounts) => {
   });
 
   it("should validate token name after migration", async () => {
-    assert.equal(await token.name.call(), "Impressive Token", "wrong token name");
+    assert.equal(await token.name.call(), "Impresso", "wrong token name");
   });
 
   it("should validate token symbol after migration", async () => {
-    assert.equal(await token.symbol.call(), "IMP", "wrong token symbol");
+    assert.equal(await token.symbol.call(), "XIM", "wrong token symbol");
   });
 
   it("should validate token decimals after migration", async () => {
