@@ -25,15 +25,6 @@ contract IMP_MintWithPurpose is IMP_TokenReservations {
   }
 
   /**
-   * @dev Manually token minting for platformStart.
-   * @param _beneficiary Token receiver address
-   * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
-   */
-  function mint_platformStart(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
-    mintFor(MintReserve.platformStart, _beneficiary, _tokenAmount);
-  }
-
-  /**
    * @dev Manually token minting for bountiesAirdrops.
    * @param _beneficiary Token receiver address
    * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000

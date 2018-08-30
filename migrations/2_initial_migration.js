@@ -9,7 +9,7 @@ module.exports = (deployer, network, accounts) => {
     // 1. TOKEN name, symbol, decimals
 
     const CROWDSALE_WALLET = accounts[9];
-    const UNSOLD_TOKEN_ESCROW = accounts[8];
+    const UNSOLD_TOKEN_ESCROW_WALLET = accounts[8];
 
     const PRIVATE_PLACEMENT_DISCOUNTS = [30];
     const PRE_ICO_DISCOUNTS = [20, 18, 16, 14, 12, 10]; //  including each edge
@@ -31,7 +31,7 @@ module.exports = (deployer, network, accounts) => {
     deployer.deploy(IMP_Token).then(async () => {
         let token = await IMP_Token.deployed();
 
-        await deployer.deploy(IMP_Crowdsale, token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW);
+        await deployer.deploy(IMP_Crowdsale, token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW_WALLET);
         let crowdsale = await IMP_Crowdsale.deployed();
         await token.transferOwnership(crowdsale.address);
 
