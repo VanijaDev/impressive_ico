@@ -36,7 +36,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
    * @param _unsoldTokenEscrow Address used as temporary deposit for unsold tokens.
    */
   constructor(ERC20 _token, address _wallet, address _unsoldTokenEscrow)
-    Crowdsale(1, _wallet, _token) //  rate in base Crowdsale is unused. Use custom rates in IMP_Stages.sol instead;
+    Crowdsale(1, _wallet, _token) //  rate in base Crowdsale is not used. Use custom rates in IMP_Stages.sol instead;
     CappedCrowdsale(crowdsaleHardCap)
     IMP_Stages()
     IMP_MintWithPurpose(IMP_Token(_token).decimals())
@@ -179,7 +179,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
     internal
   {
     MintReserve mintReserve = MintReserve.privatePlacement;
-    
+
     if(currentStage_preICO()) {
       mintReserve = MintReserve.preICO;
     } else if(currentStage_ico()) {
