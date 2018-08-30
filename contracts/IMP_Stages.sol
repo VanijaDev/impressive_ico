@@ -46,7 +46,7 @@ contract IMP_Stages is Ownable {
   }
 
   function anyStageOpen() public view returns (bool) {
-    return(currentStage_privatePlacement() == true || currentStage_preICO() == true || currentStage_ico() == true);
+    return(currentStage_privatePlacement() || currentStage_preICO() || currentStage_ico());
   }
 
   // TODO: test
