@@ -203,6 +203,6 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
    * @dev Determines how ETH is stored/forwarded on purchases.
    */
   function _forwardFunds() internal {
-    wallet.transfer(msg.value);
+    deposit(msg.sender);
   }
 }
