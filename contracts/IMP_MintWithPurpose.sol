@@ -20,7 +20,7 @@ contract IMP_MintWithPurpose is IMP_TokenReservations {
    * @param _beneficiary Token receiver address
    * @param _tokenAmount Number of tokens to be minted with decimals, eg. 1 token == 1 0000
    */
-  function mint_team(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
+  function manuallyMint_team(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
     mintFor(MintReserve.team, _beneficiary, _tokenAmount);
   }
 
@@ -29,7 +29,7 @@ contract IMP_MintWithPurpose is IMP_TokenReservations {
    * @param _beneficiary Token receiver address
    * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
    */
-  function mint_bountiesAirdrops(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
+  function manuallyMint_bountiesAirdrops(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
     mintFor(MintReserve.bountiesAirdrops, _beneficiary, _tokenAmount);
   }
   
@@ -38,7 +38,7 @@ contract IMP_MintWithPurpose is IMP_TokenReservations {
    * @param _beneficiary Token receiver address
    * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
    */
-  function mint_companies(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
+  function manuallyMint_companies(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
     mintFor(MintReserve.companies, _beneficiary, _tokenAmount);
   }
 
