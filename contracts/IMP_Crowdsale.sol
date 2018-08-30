@@ -50,20 +50,6 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
    * INTERNAL
    */
 
-  /**
-   * @dev Token minting with purpose.
-   * @param _mintReserve Reserve of minting
-   * @param _beneficiary Token receiver address
-   * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
-   */
-  function mintFor(IMP_TokenReservations.MintReserve _mintReserve, address _beneficiary, uint256 _tokenAmount) internal whenNotPaused {
-    require(anyStageOpen(), "None of stages is currently open");
-    
-    super.mintFor(_mintReserve, _beneficiary, _tokenAmount);
-
-    _deliverTokens(_beneficiary, _tokenAmount);
-  }
-
   function softCapReached() public view returns (bool) {
     return weiRaised >= crowdsaleSoftCap;
   }
@@ -104,6 +90,39 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   /**
    * OVERRIDEN
    */
+
+   /**
+   * @dev Manually token minting for team.
+   * @param _beneficiary Token receiver address
+   * @param _tokenAmount Number of tokens to be minted with decimals, eg. 1 token == 1 0000
+   */
+  function manuallyMint_team(address _beneficiary, uint256 _tokenAmount) public onlyOwner {
+    super.manuallyMint_team(_beneficiary, _tokenAmount);
+
+    _deliverTokens(_beneficiary, _tokenAmount);
+  }
+
+  /**
+   * @dev Manually token minting for bountiesAirdrops.
+   * @param _beneficiary Token receiver address
+   * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
+   */
+  function manuallyMint_bountiesAirdrops(address _beneficiary, uint256 _tokenAmount) public onlyOwner {
+    super.manuallyMint_bountiesAirdrops(_beneficiary, _tokenAmount);
+
+    _deliverTokens(_beneficiary, _tokenAmount);
+  }
+  
+  /**
+   * @dev Manually token minting for companies.
+   * @param _beneficiary Token receiver address
+   * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
+   */
+  function manuallyMint_companies(address _beneficiary, uint256 _tokenAmount) public onlyOwner {
+    super.manuallyMint_companies(_beneficiary, _tokenAmount);
+
+    _deliverTokens(_beneficiary, _tokenAmount);
+  }
 
   /**
    * @dev Extend parent behavior requiring to be within contributing period
@@ -160,13 +179,14 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
     internal
   {
     MintReserve mintReserve = MintReserve.privatePlacement;
+    
     if(currentStage_preICO()) {
       mintReserve = MintReserve.preICO;
     } else if(currentStage_ico()) {
       mintReserve = MintReserve.ico;
     }
 
-    updateMintedTokens(_tokenAmount, mintReserve);
+    updateMintedTokensFor(mintReserve, _beneficiary, _tokenAmount);
     _deliverTokens(_beneficiary, _tokenAmount);
   }
 

@@ -47,6 +47,8 @@ contract IMP_TokenReservations is Ownable {
    * @param _mintReserve Reserve of minting
    */
   function updateMintedTokens(uint256 _tokenAmount, MintReserve _mintReserve) internal {
+    require(_tokenAmount > 0, "0 tokens not alowed for minting");
+    
     if (_mintReserve == MintReserve.team) {
       require(tokensMinted_team.add(_tokenAmount) <= tokensReserved_team, "not enough tokens for team");
       tokensMinted_team = tokensMinted_team.add(_tokenAmount);

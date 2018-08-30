@@ -14,14 +14,13 @@ contract IMP_MintWithPurpose is IMP_TokenReservations {
    *  PUBLIC
    */ 
 
-  // TODO: test all below
   /**
    * @dev Manually token minting for team.
    * @param _beneficiary Token receiver address
    * @param _tokenAmount Number of tokens to be minted with decimals, eg. 1 token == 1 0000
    */
   function manuallyMint_team(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
-    mintFor(MintReserve.team, _beneficiary, _tokenAmount);
+    updateMintedTokensFor(MintReserve.team, _beneficiary, _tokenAmount);
   }
 
   /**
@@ -30,7 +29,7 @@ contract IMP_MintWithPurpose is IMP_TokenReservations {
    * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
    */
   function manuallyMint_bountiesAirdrops(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
-    mintFor(MintReserve.bountiesAirdrops, _beneficiary, _tokenAmount);
+    updateMintedTokensFor(MintReserve.bountiesAirdrops, _beneficiary, _tokenAmount);
   }
   
   /**
@@ -39,7 +38,7 @@ contract IMP_MintWithPurpose is IMP_TokenReservations {
    * @param _tokenAmount Number of tokens to be minted, eg. 1 token == 1 0000
    */
   function manuallyMint_companies(address _beneficiary, uint256 _tokenAmount) public onlyOwner {  
-    mintFor(MintReserve.companies, _beneficiary, _tokenAmount);
+    updateMintedTokensFor(MintReserve.companies, _beneficiary, _tokenAmount);
   }
 
 
@@ -47,19 +46,8 @@ contract IMP_MintWithPurpose is IMP_TokenReservations {
    *  INTERNAL
    */
 
-  //  TODO: implement
-  // /**
-  //  * @dev Minting for purchase.
-  //  * @param _beneficiary Token receiver address
-  //  * @param _tokenAmount Number of tokens to be minted with decimals, eg. 1 token == 1 0000
-  //  */
-  // function mint_purchase(address _beneficiary, uint256 _tokenAmount) internal {  
-  //   mintFor(MintReserve.purchase, _beneficiary, _tokenAmount);
-  // }
-
-  function mintFor(MintReserve _mintReserve, address _beneficiary, uint256 _tokenAmount) internal {
+  function updateMintedTokensFor(MintReserve _mintReserve, address _beneficiary, uint256 _tokenAmount) internal {
     require(_beneficiary != address(0), "address can not be 0");
-    require(_tokenAmount > 0, "0 tokens not alowed for minting");
 
     updateMintedTokens(_tokenAmount, _mintReserve);
   }
