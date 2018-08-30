@@ -115,6 +115,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
     uint256 _weiAmount
   )
     internal
+    whenNotPaused
     minimumPurchase
   {
     if (anyStageOpen()) {
