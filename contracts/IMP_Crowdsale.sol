@@ -19,7 +19,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   uint256 public minimumPurchaseWei = 100000000000000000; //  0.1 ETH
 
   address public unsoldTokenEscrow;
-  uint256 public unsoldTokenEscrowPercent = 2;  //  % from unsold tokens
+  uint256 public unsoldTokenEscrowPercent = 1;  //  % from unsold tokens
 
   /**
    * @dev Reverts if not less than minimum purchase.
