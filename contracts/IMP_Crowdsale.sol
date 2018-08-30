@@ -16,7 +16,7 @@ import "../node_modules/openzeppelin-solidity/contracts/payment/RefundEscrow.sol
 contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, IMP_Stages, IMP_MintWithPurpose, Pausable {
   uint256 public crowdsaleSoftCap = uint256(5000).mul(10**18);  //  5 000 ETH
   uint256 public crowdsaleHardCap = uint256(180000).mul(10**18);  //  180 000 ETH
-  uint256 public minimumPurchaseWei = 100000000000000000;
+  uint256 public minimumPurchaseWei = 100000000000000000; //  0.1 ETH
 
   address public unsoldTokenEscrow;
   uint256 public unsoldTokenEscrowPercent = 2;  //  % from unsold tokens
