@@ -9,16 +9,16 @@ contract IMP_Stages is Ownable {
   using SafeMath for uint256;
 
   uint256[] public privatePlacementTimings;
-  uint256[] public preICOTimings;
-  uint256[] public icoTimings;
-
   uint256[] public privatePlacementDiscounts;
-  uint256[] public preICODiscounts;
-  uint256[] public icoDiscounts;
+  uint256 public privatePlacementRate = 100;
 
-  uint256 privatePlacementRate = 100;
-  uint256 preICORate = 100;
-  uint256 icoRate = 100;
+  uint256[] public preICOTimings;
+  uint256[] public preICODiscounts;
+  uint256 public preICORate = 100;
+
+  uint256[] public icoTimings;
+  uint256[] public icoDiscounts;
+  uint256 public icoRate = 100;
 
   constructor() public {
   }
