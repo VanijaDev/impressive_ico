@@ -11,59 +11,91 @@ module.exports = (deployer, network, accounts) => {
     const CROWDSALE_WALLET = accounts[9];
     const UNSOLD_TOKEN_ESCROW_WALLET = accounts[8];
 
-    const PRIVATE_PLACEMENT_DISCOUNTS = [30];
+    const PRIVATE_PLACEMENT_DISCOUNTS = [50];
     const PRE_ICO_DISCOUNTS = [20, 18, 16, 14, 12, 10]; //  including each edge
     const ICO_DISCOUNTS = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]; //  including each edge
 
-    let privatePlacementTimings = [web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1), web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1) + IncreaseTime.duration.weeks(1)];
+    // let timings = buildTimings(web3.eth.getBlock("latest").timestamp + IncreaseTime.duration.minutes(1));
+    // let openingTimings = timings[0];
+    // let closingTimings = timings[1];
 
-    let preICOTimings = [privatePlacementTimings[privatePlacementTimings.length - 1] + IncreaseTime.duration.minutes(1)]; //  [opening, stageEdges]
-    for (i = 0; i < PRE_ICO_DISCOUNTS.length + 1; i++) {
-        preICOTimings[i] = preICOTimings[0] + IncreaseTime.duration.weeks(i);
-    }
+    buildTimings(1000000000);
 
-    let icoTimings = [preICOTimings[preICOTimings.length - 1] + IncreaseTime.duration.weeks(2)]; //  [opening, stageEdges]
-    for (i = 0; i < ICO_DISCOUNTS.length + 1; i++) {
-        icoTimings[i] = icoTimings[0] + IncreaseTime.duration.weeks(i);
-    }
     //  TODO: change before deploy -- END --
 
-    deployer.deploy(IMP_Token).then(async () => {
-        let token = await IMP_Token.deployed();
+    // deployer.deploy(IMP_Token).then(async () => {
+    // let token = await IMP_Token.deployed();
 
-        await deployer.deploy(IMP_Crowdsale, token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW_WALLET);
-        let crowdsale = await IMP_Crowdsale.deployed();
-        await token.transferOwnership(crowdsale.address);
+    // await deployer.deploy(IMP_Crowdsale, token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW_WALLET);
+    // let crowdsale = await IMP_Crowdsale.deployed();
+    // await token.transferOwnership(crowdsale.address);
 
-        await crowdsale.initialSetup(privatePlacementTimings, preICOTimings, icoTimings, PRIVATE_PLACEMENT_DISCOUNTS, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
+    // // function initialSetup(uint256[] _openingTimings, uint256[] _closingTimings, uint256[] _ratesETH, uint256[] _discounts) public onlyOwner {
+    // await crowdsale.initialSetup();
 
-        //     buildTimings(1534926512);
-    });
+    // buildTimings(1534926512);
+    // });
 
     function buildTimings(startTime) {
-        let increasePeriod = 100;
+        let increasePeriod = 200;
+        const WEEKS_PRIVATE_PLACEMENT = 2;
+        const WEEKS_PRE_ICO = 5;
+        const WEEKS_ICO = 10;
 
-        let privatePlacementTimings = [startTime + IncreaseTime.duration.seconds(100), startTime + IncreaseTime.duration.seconds(30) + increasePeriod];
-        console.log("privatePlacement: ", privatePlacementTimings);
+        let openings = [
+            [],
+            [],
+            []
+        ];
+        let closings = [
+            [],
+            [],
+            []
+        ];
 
-        let preICOTimings = []; //  [opening, stageEdges]
-        for (i = 0; i < 6 + 1; i++) {
+        //  privatePlacement
+        for (let i = 0; i < WEEKS_PRIVATE_PLACEMENT; i++) {
             if (i == 0) {
-                preICOTimings[i] = privatePlacementTimings[privatePlacementTimings.length - 1] + IncreaseTime.duration.seconds(1);
+                openings[0][i] = startTime;
             } else {
-                preICOTimings[i] = preICOTimings[i - 1] + increasePeriod;
+                openings[0][i] = closings[0][i - 1] + 1;
             }
+            closings[0][i] = openings[0][i] + increasePeriod;
         }
-        console.log("preICOTimings: \n", preICOTimings);
 
-        let icoTimings = []; //  [opening, stageEdges]
-        for (i = 0; i < 10 + 1; i++) {
+        console.log("privatePlacement");
+        console.log(openings);
+        console.log(closings);
+        console.log("\n");
+
+        //  preICO
+        for (let i = 0; i < WEEKS_PRE_ICO; i++) {
             if (i == 0) {
-                icoTimings[i] = preICOTimings[preICOTimings.length - 1] + IncreaseTime.duration.seconds(1);
+                openings[1][i] = closings[0][WEEKS_PRIVATE_PLACEMENT - 1] + 1;
             } else {
-                icoTimings[i] = icoTimings[i - 1] + increasePeriod;
+                openings[1][i] = closings[1][i - 1] + 1;
             }
+            closings[1][i] = openings[1][i] + increasePeriod;
         }
-        console.log("icoTimings: \n", icoTimings);
+
+        console.log("preICO");
+        console.log(openings);
+        console.log(closings);
+        console.log("\n");
+
+        //  ICO
+        for (let i = 0; i < WEEKS_ICO; i++) {
+            if (i == 0) {
+                openings[2][i] = closings[1][WEEKS_PRE_ICO - 1] + 1;
+            } else {
+                openings[2][i] = closings[2][i - 1] + 1;
+            }
+            closings[2][i] = openings[2][i] + increasePeriod;
+        }
+
+        console.log("ICO");
+        console.log(openings);
+        console.log(closings);
+        console.log("\n");
     }
 }
