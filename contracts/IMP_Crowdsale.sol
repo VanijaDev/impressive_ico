@@ -137,14 +137,14 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
     whenNotPaused
     minimumPurchase
   {
-    if (anyStageOpen()) {
-      super._preValidatePurchase(_beneficiary, _weiAmount);
-    } else if (crowdsaleFinished()) {
-      msg.sender.transfer(msg.value);
-      finalizeCrowdsale();
-    } else {
-      revert("purchase not allowed");
-    }
+    // if (currentStage()[0]) {
+    //   super._preValidatePurchase(_beneficiary, _weiAmount);
+    // } else if (crowdsaleFinished()) {
+    //   msg.sender.transfer(msg.value);
+    //   finalizeCrowdsale();
+    // } else {
+    //   revert("purchase not allowed");
+    // }
   }
 
   /**
@@ -157,7 +157,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   {
     uint256 rate;
     uint256 discount;
-    (rate, discount) = currentRateAndDiscount();
+    // (rate, discount) = currentRateAndDiscount();
 
     require(rate > 0, "rate cannot be 0");
 
@@ -178,13 +178,18 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   )
     internal
   {
+    bool stageFound;
+    uint256 stageIdx;
+    (stageFound, stageIdx) = currentStage();
+    require(stageFound, "no stage currently running");
+
     MintReserve mintReserve = MintReserve.privatePlacement;
 
-    if(currentStage_preICO()) {
-      mintReserve = MintReserve.preICO;
-    } else if(currentStage_ico()) {
-      mintReserve = MintReserve.ico;
-    }
+    // if(stageIdx == Stage.preICO) {
+    //   mintReserve = MintReserve.preICO;
+    // } else if(stageIdx == Stage.ico) {
+    //   mintReserve = MintReserve.ico;
+    // }
 
     updateMintedTokensFor(mintReserve, _beneficiary, _tokenAmount);
     _deliverTokens(_beneficiary, _tokenAmount);
