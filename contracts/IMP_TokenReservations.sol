@@ -94,7 +94,7 @@ contract IMP_TokenReservations is Ownable {
     tokensReserved_companies = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_companies).div(100);
   }
 
-  function unsoldTokens() internal view returns (uint256) {
+  function unsoldTokens() public view returns (uint256) {
     return tokenLimitTotalSupply_crowdsale.sub(tokensMinted_ico).sub(tokensMinted_team).sub(tokensMinted_bountiesAirdrops).sub(tokensMinted_companies);
   }
 }
