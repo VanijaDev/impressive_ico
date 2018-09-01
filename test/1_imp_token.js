@@ -1,8 +1,7 @@
 let IMP_Token = artifacts.require("./IMP_Token.sol");
 
-let token;
-
 contract("IMP_Token", (accounts) => {
+  let token;
 
   before("setup", async () => {
     token = await IMP_Token.deployed();
