@@ -139,7 +139,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   {
     if (anyStageOpen()) {
       super._preValidatePurchase(_beneficiary, _weiAmount);
-    } else if (crowdsaleFinished()) {
+    } else if (crowdsaleFinished() && state == State.Active) {
       msg.sender.transfer(msg.value);
       finalizeCrowdsale();
     } else {
