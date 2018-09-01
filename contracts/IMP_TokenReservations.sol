@@ -84,7 +84,6 @@ contract IMP_TokenReservations is Ownable {
   /**
    * PRIVATE
    */
-// TODO: test
   function calculateTokenLimits() private {
     tokensReserved_privatePlacement = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_privatePlacement).div(100);
     tokensReserved_preICO = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_preICO).div(100);
@@ -94,6 +93,10 @@ contract IMP_TokenReservations is Ownable {
     tokensReserved_companies = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_companies).div(100);
   }
 
+  /**
+   * @dev Calculates amount of unsold tokens.
+   * @return Amount of unsold tokens
+   */
   function unsoldTokens() public view returns (uint256) {
     return tokenLimitTotalSupply_crowdsale.sub(tokensMinted_ico).sub(tokensMinted_team).sub(tokensMinted_bountiesAirdrops).sub(tokensMinted_companies);
   }
