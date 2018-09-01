@@ -4,16 +4,15 @@ let mock = {
     crowdsaleSoftCapETH: 15, //  in ETH
     crowdsaleHardCapETH: 50, //  in ETH
     crowdsaleTotalSupplyLimit: 100000000, //  no decimals
-    crowdsalePrivatePlacmentDiscounts: [30], //  including each edge
-    crowdsalePreICODiscounts: [20, 18, 16, 14], //  including each edge
-    crowdsaleICODiscounts: [10, 9, 8], //  including each edge
-    tokenPercentageReservedPrivatePlacement: 5,
-    tokenPercentageReservedPreICO: 30,
-    tokenPercentageReservedICO: 74,
-    tokenPercentageReservedTeam: 18,
-    tokenPercentageReservedPlatformStart: 3,
-    tokenPercentageReservedBountiesAirdrops: 2,
-    tokenPercentageReservedCompanies: 3
+    crowdsalePrivatePlacmentDiscounts: [50], //  including each edge
+    crowdsalePreICODiscounts: [20, 18, 16, 14, 12], //  including each edge
+    crowdsaleICODiscounts: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1], //  including each edge
+    tokenPercentageReserved_privatePlacement: 5,
+    tokenPercentageReserved_preICO: 30,
+    tokenPercentageReserved_ico: 74,
+    tokenPercentageReserved_team: 18,
+    tokenPercentageReserved_bountiesAirdrops: 3,
+    tokenPercentageReserved_companies: 5
 };
 
 export default function mockCrowdsale() {
