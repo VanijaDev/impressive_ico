@@ -32,6 +32,9 @@ contract IMP_TokenReservations is Ownable {
   uint256 public tokensMinted_bountiesAirdrops;           //  tokens minted for airdrops
   uint256 public tokensMinted_companies;                  //  tokens minted for different companies
 
+  /**
+   * @param _decimals Number of token decimals
+   */
   constructor(uint256 _decimals) public {
     tokenLimitTotalSupply_crowdsale = uint256(100000000).mul(uint256(10) ** _decimals); //  100 000 000 * 10000
     calculateTokenLimits();
@@ -83,6 +86,10 @@ contract IMP_TokenReservations is Ownable {
 
   /**
    * PRIVATE
+   */
+
+  /**
+   * @dev Calculates limits for reservations.
    */
   function calculateTokenLimits() private {
     tokensReserved_privatePlacement = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_privatePlacement).div(100);
