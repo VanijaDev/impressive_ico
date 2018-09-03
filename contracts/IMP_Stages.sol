@@ -36,12 +36,23 @@ contract IMP_Stages is Ownable {
     return block.timestamp >= privatePlacementTimings[0];
   }
 
+  /**
+   * @dev Checks whether any stage of crowdsale is currently open.
+   * @return Whether any stage is open
+   */
   function anyStageOpen() public view returns (bool) {
     return(currentStage_privatePlacement() || currentStage_preICO() || currentStage_ico());
   }
 
-  // TODO: test
-
+  /**
+   * @dev Initializes timimng and discounts for the crowdsale.
+   * @param _privatePlacementTimings private placement timings
+   * @param _preICOTimings preICO timings
+   * @param _icoTimings ico timings
+   * @param _privatePlacementDiscounts private placement discounts
+   * @param _preICODiscounts preICO discounts
+   * @param _icoDiscounts ico discounts
+   */
   function initialSetup(uint256[] _privatePlacementTimings, uint256[] _preICOTimings, uint256[] _icoTimings, uint256[] _privatePlacementDiscounts, uint256[] _preICODiscounts, uint256[] _icoDiscounts) public onlyOwner {
     require(privatePlacementTimings.length == 0, "initial setup already done");
 
@@ -82,7 +93,6 @@ contract IMP_Stages is Ownable {
    * @dev Calculate crowdsale rate and discount for current stage
    * @return Rate and Discount
    */
- // TEST
   function currentRateAndDiscount() public view returns(uint256 _rate, uint256 _discount) {
     if(currentStage_privatePlacement()) {
       for(uint256 i = 1; i < privatePlacementTimings.length; i ++) {
@@ -110,7 +120,12 @@ contract IMP_Stages is Ownable {
   /**
    * PRIVATE
    */
-// TODO: test
+
+  /**
+   * @dev Validates private placement timings and discounts
+   * @param _privatePlacementTimings private placement timings
+   * @param _privatePlacementDiscounts private placement discounts
+   */
   function validatePrivatePlacementTimingsAndDiscounts(uint256[] _privatePlacementTimings, uint256[] _privatePlacementDiscounts) private view {
     require(_privatePlacementDiscounts.length == _privatePlacementTimings.length-1, "wrong privatePlacementDiscounts count");
 
@@ -123,7 +138,13 @@ contract IMP_Stages is Ownable {
     }
   }
 
-// TODO: test
+
+  /**
+   * @dev Validates preICO timings and discounts
+   * @param _preICOTimings preICO timings
+   * @param _preICODiscounts preICO discounts
+   * @param _privatePlacementFinish private placement closing time
+   */
   function validatePreICOTimingsAndDiscounts(uint256[] _preICOTimings, uint256[] _preICODiscounts, uint256 _privatePlacementFinish) private pure {
     require(_preICODiscounts.length == _preICOTimings.length-1, "wrong preICODiscounts count");
 
@@ -135,7 +156,13 @@ contract IMP_Stages is Ownable {
       }
     }
   }
-// TODO: test
+
+  /**
+   * @dev Validates ICO timings and discounts
+   * @param _icoTimings ICO timings
+   * @param _icoDiscounts ICO discounts
+   * @param _preICOFinish preICO closing time
+   */
   function validateIcoTimingsAndDiscounts(uint256[] _icoTimings, uint256[] _icoDiscounts, uint256 _preICOFinish) private pure {
     require(_icoDiscounts.length == _icoTimings.length-1, "wrong icoDiscounts count");
 
@@ -148,14 +175,26 @@ contract IMP_Stages is Ownable {
     }
   }
 
+  /**
+   * @dev Check whether current stage is private placement
+   * @return is current stage a private placement
+   */
   function currentStage_privatePlacement() internal view returns(bool) {
     return now >= privatePlacementTimings[0] && now <= privatePlacementTimings[privatePlacementTimings.length-1];
   }
 
+  /**
+   * @dev Check whether current stage is preICO
+   * @return is current stage a preICO
+   */
   function currentStage_preICO() internal view returns(bool) {
     return now >= preICOTimings[0] && now <= preICOTimings[preICOTimings.length-1];
   }
 
+  /**
+   * @dev Check whether current stage is ICO
+   * @return is current stage a ICO
+   */
   function currentStage_ico() internal view returns(bool) {
     return now >= icoTimings[0] && now <= icoTimings[icoTimings.length-1];
   }
