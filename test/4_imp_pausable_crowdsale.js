@@ -56,7 +56,7 @@ contract("Manual transfers", (accounts) => {
         assert.isTrue(await crowdsale.hasOpened.call(), "crowdsale should be running in beforeEach");
     });
 
-    describe.only("pausable functional", () => {
+    describe("pausable functional", () => {
         it("should allow owner to pause / unpause crowdsale", async () => {
             await crowdsale.pause();
             await crowdsale.unpause();
