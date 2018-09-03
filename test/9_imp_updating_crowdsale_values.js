@@ -67,7 +67,7 @@ contract("Reservations", (accounts) => {
       await crowdsale.updatePreICOAndICO(111, preICOTimings, PRE_ICO_DISCOUNTS_UPDATED, 222, icoTimings, ICO_DISCOUNTS_UPDATED);
 
       //  preICO
-      assert.equal(111, new BigNumber(await crowdsale.preICORate.call()).toNumber(), "wrond preICO rate after update");
+      assert.equal(111, new BigNumber(await crowdsale.preICORateEth.call()).toNumber(), "wrond preICO rate after update");
 
       assert.equal(preICOTimings[0], new BigNumber(await crowdsale.preICOTimings.call(0)).toNumber(), "wrond preICOTimings[0] after update");
       assert.equal(preICOTimings[1], new BigNumber(await crowdsale.preICOTimings.call(1)).toNumber(), "wrond preICOTimings[1] after update");
@@ -82,7 +82,7 @@ contract("Reservations", (accounts) => {
       assert.equal(PRE_ICO_DISCOUNTS_UPDATED[4], new BigNumber(await crowdsale.preICODiscounts.call(4)).toNumber(), "wrond preICODiscounts[4] after update");
 
       //  ICO
-      assert.equal(222, new BigNumber(await crowdsale.icoRate.call()).toNumber(), "wrond ICO rate after update");
+      assert.equal(222, new BigNumber(await crowdsale.icoRateEth.call()).toNumber(), "wrond ICO rate after update");
 
       assert.equal(icoTimings[0], new BigNumber(await crowdsale.icoTimings.call(0)).toNumber(), "wrond icoTimings[0] after update");
       assert.equal(icoTimings[1], new BigNumber(await crowdsale.icoTimings.call(1)).toNumber(), "wrond icoTimings[1] after update");
