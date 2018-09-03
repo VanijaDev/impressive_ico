@@ -10,15 +10,15 @@ contract IMP_Stages is Ownable {
 
   uint256[] public privatePlacementTimings;
   uint256[] public privatePlacementDiscounts;
-  uint256 public privatePlacementRate = 300;
+  uint256 public privatePlacementRateEth = 300;
 
   uint256[] public preICOTimings;
   uint256[] public preICODiscounts;
-  uint256 public preICORate = 200;
+  uint256 public preICORateEth = 200;
 
   uint256[] public icoTimings;
   uint256[] public icoDiscounts;
-  uint256 public icoRate = 100;
+  uint256 public icoRateEth = 100;
 
   constructor() public {
   }
@@ -69,45 +69,53 @@ contract IMP_Stages is Ownable {
     icoDiscounts = _icoDiscounts;
   }
 
-  // use for preICO rate update
-  function updatePreICOAndICO(uint256 _preICORate, uint256[] _preICOTimings, uint256[] _preICODiscounts, 
-                              uint256 _icoRate, uint256[] _icoTimings, uint256[] _icoDiscounts) public onlyOwner {
-    require(_preICORate > 0, "preICO rate should be > 0");
-    require(_icoRate > 0, "ico rate should be > 0");
+  /**
+   * @dev updates preICO and ICO parameters.
+   * @param _preICORateEth preICO rate 
+   * @param _preICOTimings preICO timings
+   * @param _preICODiscounts preICO discounts
+   * @param _icoRateEth ICO rate 
+   * @param _icoTimings ico timings
+   * @param _icoDiscounts ico discounts
+   */
+  function updatePreICOAndICO(uint256 _preICORateEth, uint256[] _preICOTimings, uint256[] _preICODiscounts, 
+                              uint256 _icoRateEth, uint256[] _icoTimings, uint256[] _icoDiscounts) public onlyOwner {
+    require(_preICORateEth > 0, "preICO rate should be > 0");
+    require(_icoRateEth > 0, "ico rate should be > 0");
 
     validatePreICOTimingsAndDiscounts(_preICOTimings, _preICODiscounts, privatePlacementTimings[privatePlacementTimings.length-1]);
     validateIcoTimingsAndDiscounts(_icoTimings, _icoDiscounts, preICOTimings[preICOTimings.length-1]);
 
-    preICORate = _preICORate;
+    preICORateEth = _preICORateEth;
     preICOTimings = _preICOTimings;
     preICODiscounts = _preICODiscounts;
 
-    icoRate = _icoRate;
+    icoRateEth = _icoRateEth;
     icoTimings = _icoTimings;
     icoDiscounts = _icoDiscounts;
   }
 
   /**
    * @dev Calculate crowdsale rate and discount for current stage
-   * @return Rate and Discount
+   * @return RateEth and Discount
    */
   function currentRateAndDiscount() public view returns(uint256 _rate, uint256 _discount) {
     if(currentStage_privatePlacement()) {
       for(uint256 i = 1; i < privatePlacementTimings.length; i ++) {
         if(now < privatePlacementTimings[i]) {
-          return (privatePlacementRate, privatePlacementDiscounts[i-1]);
+          return (privatePlacementRateEth, privatePlacementDiscounts[i-1]);
         }
       }
     } else if(currentStage_preICO()) {
       for(uint256 j = 1; j < preICOTimings.length; j ++) {
         if(now < preICOTimings[j]) {
-          return (preICORate, preICODiscounts[j-1]);
+          return (preICORateEth, preICODiscounts[j-1]);
         }
       }
     } else if(currentStage_ico()) {
       for(uint256 k = 1; k < icoTimings.length; k ++) {
         if(now < icoTimings[k]) {
-          return (icoRate, icoDiscounts[k-1]);
+          return (icoRateEth, icoDiscounts[k-1]);
         }
       }
     }
