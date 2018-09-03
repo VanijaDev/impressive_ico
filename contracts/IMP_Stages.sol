@@ -10,11 +10,11 @@ contract IMP_Stages is Ownable {
 
   uint256[] public privatePlacementTimings;
   uint256[] public privatePlacementDiscounts;
-  uint256 public privatePlacementRate = 100;
+  uint256 public privatePlacementRate = 300;
 
   uint256[] public preICOTimings;
   uint256[] public preICODiscounts;
-  uint256 public preICORate = 100;
+  uint256 public preICORate = 200;
 
   uint256[] public icoTimings;
   uint256[] public icoDiscounts;
