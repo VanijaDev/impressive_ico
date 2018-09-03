@@ -63,8 +63,6 @@ contract("Reservations", (accounts) => {
     const PRE_ICO_DISCOUNTS_UPDATED = [21, 19, 17, 15, 13]; //  including each edge
     const ICO_DISCOUNTS_UPDATED = [30, 29, 28, 27, 26, 25, 24, 23, 22, 21]; //  including each edge
 
-    // uint256 _preICORate, uint256[] _preICOTimings, uint256[] _preICODiscounts, 
-    // uint256 _icoRate, uint256[] _icoTimings, uint256[] _icoDiscounts
     it("should validate preICO rate, timings and discounts are being updated", async () => {
       await crowdsale.updatePreICOAndICO(111, preICOTimings, PRE_ICO_DISCOUNTS_UPDATED, 222, icoTimings, ICO_DISCOUNTS_UPDATED);
 
@@ -109,32 +107,34 @@ contract("Reservations", (accounts) => {
       assert.equal(ICO_DISCOUNTS_UPDATED[9], new BigNumber(await crowdsale.icoDiscounts.call(9)).toNumber(), "wrond icoDiscounts[9] after update");
     });
 
-    // it("should validate not owner cannot update", async () => {
+    it("should validate not owner cannot update", async () => {
+      await expectThrow(crowdsale.updatePreICOAndICO(111, preICOTimings, PRE_ICO_DISCOUNTS_UPDATED, 222, icoTimings, ICO_DISCOUNTS_UPDATED, {
+        from: ACC_1
+      }), "should throw if not owner tries to update crowdsale");
+    });
 
-    // });
+    it("should validate cannot update with invalid preICO rate", async () => {
+      await expectThrow(crowdsale.updatePreICOAndICO(0, preICOTimings, PRE_ICO_DISCOUNTS_UPDATED, 222, icoTimings, ICO_DISCOUNTS_UPDATED), "should throw if tries to update crowdsale with invalid preICO rate");
+    });
 
-    // it("should validate cannot update with invalid preICO rate", async () => {
+    it("should validate cannot update with invalid ICO rate", async () => {
+      await expectThrow(crowdsale.updatePreICOAndICO(111, preICOTimings, PRE_ICO_DISCOUNTS_UPDATED, 0, icoTimings, ICO_DISCOUNTS_UPDATED), "should throw if tries to update crowdsale with invalid ICO rate");
+    });
 
-    // });
+    it("should validate cannot update with invalid preICO timings", async () => {
+      await expectThrow(crowdsale.updatePreICOAndICO(111, privatePlacementTimings, PRE_ICO_DISCOUNTS_UPDATED, 222, icoTimings, ICO_DISCOUNTS_UPDATED), "should throw if tries to update crowdsale with with invalid preICO timings");
+    });
 
-    // it("should validate cannot update with invalid ICO rate", async () => {
+    it("should validate cannot update with invalid ICO timings", async () => {
+      await expectThrow(crowdsale.updatePreICOAndICO(111, preICOTimings, PRE_ICO_DISCOUNTS_UPDATED, 222, privatePlacementTimings, ICO_DISCOUNTS_UPDATED), "should throw if tries to update crowdsale with with invalid ICO timings");
+    });
 
-    // });
+    it("should validate cannot update with invalid preICO discounts", async () => {
+      await expectThrow(crowdsale.updatePreICOAndICO(111, preICOTimings, [21, 19, 17, 15], 222, icoTimings, ICO_DISCOUNTS_UPDATED), "should throw if tries to update crowdsale with invalid preICO discounts");
+    });
 
-    // it("should validate cannot update with invalid preICO timimgs", async () => {
-
-    // });
-
-    // it("should validate cannot update with invalid ICO timings", async () => {
-
-    // });
-
-    // it("should validate cannot update with invalid preICO discounts", async () => {
-
-    // });
-
-    // it("should validate cannot update with invalid ICO discounts", async () => {
-
-    // });
+    it("should validate cannot update with invalid ICO discounts", async () => {
+      await expectThrow(crowdsale.updatePreICOAndICO(111, preICOTimings, PRE_ICO_DISCOUNTS_UPDATED, 222, icoTimings, [30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 22]), "should throw if tries to update crowdsale with invalid ICO rate");
+    });
   });
 });
