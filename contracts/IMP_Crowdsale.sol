@@ -6,14 +6,13 @@ import "./IMP_MintWithPurpose.sol";
 
 import "../node_modules/openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
-import "../node_modules/openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
-import "../node_modules/openzeppelin-solidity/contracts/payment/RefundEscrow.sol";
+import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/RefundableCrowdsale.sol";
 
 /**
  * @title IMP_Crowdsale
  * @dev Contract used for crowdsale.
  */
-contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, IMP_Stages, IMP_MintWithPurpose, Pausable {
+contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages, IMP_MintWithPurpose, Pausable {
   uint256 public crowdsaleSoftCap = uint256(5000).mul(10**18);  //  5 000 ETH
   uint256 public crowdsaleHardCap = uint256(180000).mul(10**18);  //  180 000 ETH
   uint256 public minimumPurchaseWei = 100000000000000000; //  0.1 ETH
@@ -34,13 +33,14 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
    * @param _token Token address.
    * @param _wallet Wallet address.
    * @param _unsoldTokenEscrow Address used as temporary deposit for unsold tokens.
+   * @param _openingClosingTiming Opening and closing time of the entire crowdsale.
    */
-  constructor(ERC20 _token, address _wallet, address _unsoldTokenEscrow)
+  constructor(ERC20 _token, address _wallet, address _unsoldTokenEscrow, uint256[] _openingClosingTiming)
     Crowdsale(1, _wallet, _token) //  rate in base Crowdsale is not used. Use custom rates in IMP_Stages.sol instead;
-    CappedCrowdsale(crowdsaleHardCap)
     IMP_Stages()
     IMP_MintWithPurpose(IMP_Token(_token).decimals())
-    RefundEscrow(_wallet)
+    RefundableCrowdsale(crowdsaleSoftCap)
+    TimedCrowdsale(_openingClosingTiming[0], _openingClosingTiming[1])
   public {
     require(_unsoldTokenEscrow != address(0));
     unsoldTokenEscrow = _unsoldTokenEscrow;
@@ -57,25 +57,6 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   /**
    * PRIVATE
    */
-  /**
-   * @dev Finalizing crowdsale.
-   */
-   // TEST
-  function finalizeCrowdsale() private {
-    finalizeRefundEscrow();
-    depositUnsoldTokenEscrow();
-  }
-
-  /**
-   * @dev Enables refunds if needed, closes otherwise.
-   */
-  function finalizeRefundEscrow() private {
-    if (softCapReached()) {
-      close();
-    } else {
-      enableRefunds();
-    }
-  }
 
   //  Test
   /**
@@ -125,7 +106,7 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   }
 
   /**
-   * @dev Extend parent behavior requiring to be within contributing period
+   * @dev Extend parent behavior requiring to be within contributing period. Can be called after crowdsale has closed to reach decentralized finalization.
    * @param _beneficiary Token purchaser
    * @param _weiAmount Amount of wei contributed
    */
@@ -139,11 +120,8 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   {
     if (anyStageOpen()) {
       super._preValidatePurchase(_beneficiary, _weiAmount);
-    } else if (crowdsaleFinished() && state == State.Active) {
-      msg.sender.transfer(msg.value);
-      finalizeCrowdsale();
     } else {
-      revert("purchase not allowed");
+      finalize();
     }
   }
 
@@ -202,9 +180,14 @@ contract IMP_Crowdsale is WhitelistedCrowdsale, CappedCrowdsale, RefundEscrow, I
   }
 
   /**
-   * @dev Determines how ETH is stored/forwarded on purchases.
+   * @dev Can be overridden to add finalization logic. The overriding function
+   * should call super.finalization() to ensure the chain of finalization is
+   * executed entirely.
    */
-  function _forwardFunds() internal {
-    deposit(msg.sender);
+  function finalization() internal {
+    super.finalization();
+
+    msg.sender.transfer(msg.value);
+    depositUnsoldTokenEscrow();
   }
 }

@@ -25,11 +25,11 @@ module.exports = (deployer, network, accounts) => {
     deployer.deploy(IMP_Token).then(async () => {
         let token = await IMP_Token.deployed();
 
-        await deployer.deploy(IMP_Crowdsale, token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW_WALLET);
+        await deployer.deploy(IMP_Crowdsale, token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW_WALLET, [privatePlacementTimings[0], icoTimings[icoTimings.length - 1]]);
         let crowdsale = await IMP_Crowdsale.deployed();
         await token.transferOwnership(crowdsale.address);
         await crowdsale.initialSetup(privatePlacementTimings, preICOTimings, icoTimings, PRIVATE_PLACEMENT_DISCOUNTS, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
     });
 
-    // buildTimings(1000000000, true);
+    // buildTimings.default(1535832999, true);
 }

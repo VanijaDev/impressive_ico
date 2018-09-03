@@ -29,20 +29,11 @@ contract IMP_Stages is Ownable {
 
   // TODO: test
   /**
-   * @dev Checks whether now is more than private placement period beginning and less than ICO period finish.
-   * @return Whether crowdsale period is running
+   * @dev Checks whether now is more than private placement period beginning.
+   * @return Whether crowdsale has started
    */
-  function crowdsaleRunning() public view returns (bool) {
-    return block.timestamp >= privatePlacementTimings[0] && block.timestamp <= icoTimings[icoTimings.length-1];
-  }
-
-//  TEST
-  /**
-   * @dev Checks whether now is more than ico last period, thus crowdsale campaign is finished.
-   * @return Whether crowdsale is finished
-   */
-  function crowdsaleFinished() public view returns (bool) {
-    return block.timestamp > icoTimings[icoTimings.length-1];
+  function hasOpened() public view returns (bool) {
+    return block.timestamp >= privatePlacementTimings[0];
   }
 
   function anyStageOpen() public view returns (bool) {
