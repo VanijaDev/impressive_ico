@@ -17,7 +17,7 @@ import {
   advanceBlock
 } from './helpers/advanceToBlock';
 
-contract("Reservations", (accounts) => {
+contract("Updating crowdsale values", (accounts) => {
   let token;
   let crowdsale;
 
