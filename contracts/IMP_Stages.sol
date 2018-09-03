@@ -70,21 +70,19 @@ contract IMP_Stages is Ownable {
   }
 
   // use for preICO rate update
-  function updatePreICO(uint256 _rate, uint256[] _preICOTimings, uint256[] _preICODiscounts) public onlyOwner {
-    require(_rate > 0, "preICO rate should be > 0");
+  function updatePreICOAndICO(uint256 _preICORate, uint256[] _preICOTimings, uint256[] _preICODiscounts, 
+                              uint256 _icoRate, uint256[] _icoTimings, uint256[] _icoDiscounts) public onlyOwner {
+    require(_preICORate > 0, "preICO rate should be > 0");
+    require(_icoRate > 0, "ico rate should be > 0");
+
     validatePreICOTimingsAndDiscounts(_preICOTimings, _preICODiscounts, privatePlacementTimings[privatePlacementTimings.length-1]);
-
-    preICORate = _rate;
-    preICOTimings = _preICOTimings;
-    preICODiscounts = _preICODiscounts;
-  }
-
-  // use for ICO rate update
-  function updateICO(uint256 _rate, uint256[] _icoTimings, uint256[] _icoDiscounts) public onlyOwner {
-    require(_rate > 0, "ico rate should be > 0");
     validateIcoTimingsAndDiscounts(_icoTimings, _icoDiscounts, preICOTimings[preICOTimings.length-1]);
 
-    icoRate = _rate;
+    preICORate = _preICORate;
+    preICOTimings = _preICOTimings;
+    preICODiscounts = _preICODiscounts;
+
+    icoRate = _icoRate;
     icoTimings = _icoTimings;
     icoDiscounts = _icoDiscounts;
   }
