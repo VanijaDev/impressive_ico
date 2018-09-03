@@ -26,11 +26,9 @@ contract("Manual transfers", (accounts) => {
 
   const CROWDSALE_WALLET = accounts[9];
 
-  before("setup", async () => {
-    await advanceBlock();
-  });
-
   beforeEach("create crowdsale inst", async () => {
+    await advanceBlock();
+
     let mockCrowdsaleData = mockCrowdsale();
 
     const CROWDSALE_WALLET = accounts[9];

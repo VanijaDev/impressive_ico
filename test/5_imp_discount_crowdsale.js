@@ -29,11 +29,9 @@ contract("Manual transfers", (accounts) => {
     const PRE_ICO_DISCOUNTS = [20, 18, 16, 14, 12]; //  including each edge
     const ICO_DISCOUNTS = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]; //  including each edge
 
-    before("setup", async () => {
-        await advanceBlock();
-    });
-
     beforeEach("create crowdsale inst", async () => {
+        await advanceBlock();
+
         let mockCrowdsaleData = mockCrowdsale();
 
         const CROWDSALE_WALLET = accounts[9];
