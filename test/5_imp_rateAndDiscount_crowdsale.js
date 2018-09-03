@@ -17,7 +17,7 @@ import {
     advanceBlock
 } from './helpers/advanceToBlock';
 
-contract("Manual transfers", (accounts) => {
+contract("Rate and discount", (accounts) => {
     let token;
     let crowdsale;
 
