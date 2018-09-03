@@ -47,13 +47,13 @@ contract("Manual transfers", (accounts) => {
 
 
     token = await IMP_Token.new();
-    crowdsale = await IMP_Crowdsale.new(token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW_WALLET);
+    crowdsale = await IMP_Crowdsale.new(token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW_WALLET, [privatePlacementTimings[0], icoTimings[icoTimings.length - 1]]);
     await token.transferOwnership(crowdsale.address);
     await crowdsale.initialSetup(privatePlacementTimings, preICOTimings, icoTimings, PRIVATE_PLACEMENT_DISCOUNTS, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
 
     //  increase to openingTime
     increaseTimeTo(privatePlacementTimings[0]);
-    assert.isTrue(await crowdsale.crowdsaleRunning.call(), "crowdsale should be running in beforeEach");
+    assert.isTrue(await crowdsale.hasOpened.call(), "crowdsale should be running in beforeEach");
   });
 
   describe("test team manual transfers", () => {
@@ -132,6 +132,25 @@ contract("Manual transfers", (accounts) => {
       let totalTokens = new BigNumber(await crowdsale.tokenLimitTotalSupply_crowdsale.call());
       let unsoldTokens = new BigNumber(await crowdsale.unsoldTokens.call());
       assert.equal(unsoldTokens.toNumber(), totalTokens.minus(new BigNumber(teamTokens + bountiesAirdropsTokens + companiesTokens)).toNumber(), "wrong unsoldTokens tokens");
+    });
+  });
+
+  describe("test team manual transfers", () => {
+    const MANUAL_MINT_ACC = accounts[8];
+
+    it("should test team manual transfer limit", async () => {
+      let tokensReserved_team = new BigNumber(await crowdsale.tokensReserved_team.call());
+      await expectThrow(crowdsale.manuallyMint_team(MANUAL_MINT_ACC, tokensReserved_team.plus(new BigNumber(1)).toNumber()), "should throw if trying to send > team limit");
+    });
+
+    it("should test bountiesAirdrops manual transfer limit", async () => {
+      let tokensReserved_bountiesAirdrops = new BigNumber(await crowdsale.tokensReserved_bountiesAirdrops.call());
+      await expectThrow(crowdsale.manuallyMint_bountiesAirdrops(MANUAL_MINT_ACC, tokensReserved_bountiesAirdrops.plus(new BigNumber(1)).toNumber()), "should throw if trying to send > bountiesAirdrops limit");
+    });
+
+    it("should test companies manual transfer limit", async () => {
+      let tokensReserved_companies = new BigNumber(await crowdsale.tokensReserved_companies.call());
+      await expectThrow(crowdsale.manuallyMint_companies(MANUAL_MINT_ACC, tokensReserved_companies.plus(new BigNumber(1)).toNumber()), "should throw if trying to send > companies limit");
     });
   });
 });
