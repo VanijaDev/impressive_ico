@@ -47,13 +47,13 @@ contract("Reservations", (accounts) => {
 
 
         token = await IMP_Token.new();
-        crowdsale = await IMP_Crowdsale.new(token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW_WALLET);
+        crowdsale = await IMP_Crowdsale.new(token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW_WALLET, [privatePlacementTimings[0], icoTimings[icoTimings.length - 1]]);
         await token.transferOwnership(crowdsale.address);
         await crowdsale.initialSetup(privatePlacementTimings, preICOTimings, icoTimings, PRIVATE_PLACEMENT_DISCOUNTS, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
 
         //  increase to openingTime
         increaseTimeTo(privatePlacementTimings[0]);
-        assert.isTrue(await crowdsale.crowdsaleRunning.call(), "crowdsale should be running in beforeEach");
+        assert.isTrue(await crowdsale.hasOpened.call(), "crowdsale should be running in beforeEach");
     });
 
     describe("test reservation values", () => {
