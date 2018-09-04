@@ -27,10 +27,10 @@ contract("Purchase", (accounts) => {
 
   const CROWDSALE_WALLET = accounts[9];
 
-  let timings = buildTimings(web3.eth.getBlock("latest").timestamp + duration.minutes(1));
-  let privatePlacementTimings = timings[0];
-  let preICOTimings = timings[1];
-  let icoTimings = timings[2];
+  let timings;
+  let privatePlacementTimings;
+  let preICOTimings;
+  let icoTimings;
 
   beforeEach("create crowdsale inst", async () => {
     await advanceBlock();
@@ -42,20 +42,25 @@ contract("Purchase", (accounts) => {
     const PRE_ICO_DISCOUNTS = [20, 18, 16, 14, 12]; //  including each edge
     const ICO_DISCOUNTS = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]; //  including each edge
 
+    timings = buildTimings(web3.eth.getBlock("latest").timestamp + duration.minutes(1));
+    privatePlacementTimings = timings[0];
+    preICOTimings = timings[1];
+    icoTimings = timings[2];
+
     token = await IMP_Token.new();
     crowdsale = await IMP_Crowdsale.new(token.address, CROWDSALE_WALLET, UNSOLD_TOKEN_ESCROW_WALLET, [privatePlacementTimings[0], icoTimings[icoTimings.length - 1]]);
     await token.transferOwnership(crowdsale.address);
     await crowdsale.initialSetup(privatePlacementTimings, preICOTimings, icoTimings, PRIVATE_PLACEMENT_DISCOUNTS, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
 
     //  increase to openingTime
-    increaseTimeTo(privatePlacementTimings[0]);
+    await increaseTimeTo(privatePlacementTimings[0]);
     assert.isTrue(await crowdsale.hasOpened.call(), "crowdsale should be running in beforeEach");
 
     //  add to whitelist
     await crowdsale.addAddressesToWhitelist([ACC_1, ACC_2]);
   });
 
-  describe.only("purchase flow", () => {
+  describe("purchase flow", () => {
     it("should validate correct token calculations balances, reservations updates for private placement", async () => {
       let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
       let tokensMinted_privatePlacement_before = new BigNumber(await crowdsale.tokensMinted_privatePlacement.call());
@@ -158,7 +163,7 @@ contract("Purchase", (accounts) => {
       assert.equal(tokensMinted_preICO_after.minus(tokensMinted_preICO_before).toNumber(), 2280000, "wrong tokensMinted_preICO after purchase");
     });
 
-    it.only("should validate correct token calculations balances, reservations updates for preICO[4]", async () => {
+    it("should validate correct token calculations balances, reservations updates for preICO[4]", async () => {
       //  increase time
       await increaseTimeTo(preICOTimings[4]);
 
@@ -179,8 +184,8 @@ contract("Purchase", (accounts) => {
       assert.equal(tokensMinted_preICO_after.minus(tokensMinted_preICO_before).toNumber(), 2240000, "wrong tokensMinted_preICO after purchase");
     });
 
-    // it("should validate cannot purchase more than any stage limit", async () => {
+    it("should validate cannot purchase more than any stage limit", async () => {
 
-    // });
+    });
   });
 });
