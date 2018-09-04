@@ -60,7 +60,7 @@ contract("Purchase", (accounts) => {
     await crowdsale.addAddressesToWhitelist([ACC_1, ACC_2]);
   });
 
-  describe("purchase flow", () => {
+  describe("private placement purchase flow", () => {
     it("should validate correct token calculations balances, reservations updates for private placement", async () => {
       let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
       let tokensMinted_privatePlacement_before = new BigNumber(await crowdsale.tokensMinted_privatePlacement.call());
@@ -78,7 +78,9 @@ contract("Purchase", (accounts) => {
       let tokensMinted_privatePlacement_after = new BigNumber(await crowdsale.tokensMinted_privatePlacement.call());
       assert.equal(tokensMinted_privatePlacement_after.minus(tokensMinted_privatePlacement_before).toNumber(), 4500000, "wrong tokensMinted_privatePlacement after purchase");
     });
+  });
 
+  describe("preICO purchase flow", () => {
     it("should validate correct token calculations balances, reservations updates for preICO[0]", async () => {
       //  increase time
       await increaseTimeTo(preICOTimings[0]);
@@ -182,6 +184,218 @@ contract("Purchase", (accounts) => {
       //  reservations updated
       let tokensMinted_preICO_after = new BigNumber(await crowdsale.tokensMinted_preICO.call());
       assert.equal(tokensMinted_preICO_after.minus(tokensMinted_preICO_before).toNumber(), 2240000, "wrong tokensMinted_preICO after purchase");
+    });
+  });
+
+  describe("ICO purchase flow", () => {
+    it("should validate correct token calculations balances, reservations updates for ICO[0]", async () => {
+      //  increase time
+      await increaseTimeTo(icoTimings[0]);
+
+      let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
+      let tokensMinted_ico_before = new BigNumber(await crowdsale.tokensMinted_ico.call());
+
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1)
+      });
+      let ACC_1_after = new BigNumber(await token.balanceOf(ACC_1));
+
+      //  ACC_1 balance: 1000000 + (1000000 * 0.1)
+      assert.equal(ACC_1_after.minus(ACC_1_before).toNumber(), 1100000, "wrong ACC_1 balance after purchase");
+
+      //  reservations updated
+      let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
+      assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1100000, "wrong tokensMinted_ico after purchase");
+    });
+
+    it("should validate correct token calculations balances, reservations updates for ICO[1]", async () => {
+      //  increase time
+      await increaseTimeTo(icoTimings[1]);
+
+      let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
+      let tokensMinted_ico_before = new BigNumber(await crowdsale.tokensMinted_ico.call());
+
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1)
+      });
+      let ACC_1_after = new BigNumber(await token.balanceOf(ACC_1));
+
+      //  ACC_1 balance: 1000000 + (1000000 * 0.09)
+      assert.equal(ACC_1_after.minus(ACC_1_before).toNumber(), 1090000, "wrong ACC_1 balance after purchase");
+
+      //  reservations updated
+      let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
+      assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1090000, "wrong tokensMinted_ico after purchase");
+    });
+
+    it("should validate correct token calculations balances, reservations updates for ICO[2]", async () => {
+      //  increase time
+      await increaseTimeTo(icoTimings[2]);
+
+      let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
+      let tokensMinted_ico_before = new BigNumber(await crowdsale.tokensMinted_ico.call());
+
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1)
+      });
+      let ACC_1_after = new BigNumber(await token.balanceOf(ACC_1));
+
+      //  ACC_1 balance: 1000000 + (1000000 * 0.08)
+      assert.equal(ACC_1_after.minus(ACC_1_before).toNumber(), 1080000, "wrong ACC_1 balance after purchase");
+
+      //  reservations updated
+      let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
+      assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1080000, "wrong tokensMinted_ico after purchase");
+    });
+
+    it("should validate correct token calculations balances, reservations updates for ICO[3]", async () => {
+      //  increase time
+      await increaseTimeTo(icoTimings[3]);
+
+      let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
+      let tokensMinted_ico_before = new BigNumber(await crowdsale.tokensMinted_ico.call());
+
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1)
+      });
+      let ACC_1_after = new BigNumber(await token.balanceOf(ACC_1));
+
+      //  ACC_1 balance: 1000000 + (1000000 * 0.07)
+      assert.equal(ACC_1_after.minus(ACC_1_before).toNumber(), 1070000, "wrong ACC_1 balance after purchase");
+
+      //  reservations updated
+      let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
+      assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1070000, "wrong tokensMinted_ico after purchase");
+    });
+
+    it("should validate correct token calculations balances, reservations updates for ICO[4]", async () => {
+      //  increase time
+      await increaseTimeTo(icoTimings[4]);
+
+      let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
+      let tokensMinted_ico_before = new BigNumber(await crowdsale.tokensMinted_ico.call());
+
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1)
+      });
+      let ACC_1_after = new BigNumber(await token.balanceOf(ACC_1));
+
+      //  ACC_1 balance: 1000000 + (1000000 * 0.06)
+      assert.equal(ACC_1_after.minus(ACC_1_before).toNumber(), 1060000, "wrong ACC_1 balance after purchase");
+
+      //  reservations updated
+      let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
+      assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1060000, "wrong tokensMinted_ico after purchase");
+    });
+
+    it("should validate correct token calculations balances, reservations updates for ICO[5]", async () => {
+      //  increase time
+      await increaseTimeTo(icoTimings[5]);
+
+      let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
+      let tokensMinted_ico_before = new BigNumber(await crowdsale.tokensMinted_ico.call());
+
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1)
+      });
+      let ACC_1_after = new BigNumber(await token.balanceOf(ACC_1));
+
+      //  ACC_1 balance: 1000000 + (1000000 * 0.05)
+      assert.equal(ACC_1_after.minus(ACC_1_before).toNumber(), 1050000, "wrong ACC_1 balance after purchase");
+
+      //  reservations updated
+      let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
+      assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1050000, "wrong tokensMinted_ico after purchase");
+    });
+
+    it("should validate correct token calculations balances, reservations updates for ICO[6]", async () => {
+      //  increase time
+      await increaseTimeTo(icoTimings[6]);
+
+      let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
+      let tokensMinted_ico_before = new BigNumber(await crowdsale.tokensMinted_ico.call());
+
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1)
+      });
+      let ACC_1_after = new BigNumber(await token.balanceOf(ACC_1));
+
+      //  ACC_1 balance: 1000000 + (1000000 * 0.04)
+      assert.equal(ACC_1_after.minus(ACC_1_before).toNumber(), 1040000, "wrong ACC_1 balance after purchase");
+
+      //  reservations updated
+      let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
+      assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1040000, "wrong tokensMinted_ico after purchase");
+    });
+
+    it("should validate correct token calculations balances, reservations updates for ICO[7]", async () => {
+      //  increase time
+      await increaseTimeTo(icoTimings[7]);
+
+      let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
+      let tokensMinted_ico_before = new BigNumber(await crowdsale.tokensMinted_ico.call());
+
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1)
+      });
+      let ACC_1_after = new BigNumber(await token.balanceOf(ACC_1));
+
+      //  ACC_1 balance: 1000000 + (1000000 * 0.03)
+      assert.equal(ACC_1_after.minus(ACC_1_before).toNumber(), 1030000, "wrong ACC_1 balance after purchase");
+
+      //  reservations updated
+      let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
+      assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1030000, "wrong tokensMinted_ico after purchase");
+    });
+
+    it("should validate correct token calculations balances, reservations updates for ICO[8]", async () => {
+      //  increase time
+      await increaseTimeTo(icoTimings[8]);
+
+      let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
+      let tokensMinted_ico_before = new BigNumber(await crowdsale.tokensMinted_ico.call());
+
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1)
+      });
+      let ACC_1_after = new BigNumber(await token.balanceOf(ACC_1));
+
+      //  ACC_1 balance: 1000000 + (1000000 * 0.02)
+      assert.equal(ACC_1_after.minus(ACC_1_before).toNumber(), 1020000, "wrong ACC_1 balance after purchase");
+
+      //  reservations updated
+      let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
+      assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1020000, "wrong tokensMinted_ico after purchase");
+    });
+
+    it("should validate correct token calculations balances, reservations updates for ICO[9]", async () => {
+      //  increase time
+      await increaseTimeTo(icoTimings[9]);
+
+      let ACC_1_before = new BigNumber(await token.balanceOf(ACC_1));
+      let tokensMinted_ico_before = new BigNumber(await crowdsale.tokensMinted_ico.call());
+
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1)
+      });
+      let ACC_1_after = new BigNumber(await token.balanceOf(ACC_1));
+
+      //  ACC_1 balance: 1000000 + (1000000 * 0.01)
+      assert.equal(ACC_1_after.minus(ACC_1_before).toNumber(), 1010000, "wrong ACC_1 balance after purchase");
+
+      //  reservations updated
+      let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
+      assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1010000, "wrong tokensMinted_ico after purchase");
     });
 
     it("should validate cannot purchase more than any stage limit", async () => {
