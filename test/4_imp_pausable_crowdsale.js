@@ -50,7 +50,7 @@ contract("Pausable", (accounts) => {
         await crowdsale.initialSetup(privatePlacementTimings, preICOTimings, icoTimings, PRIVATE_PLACEMENT_DISCOUNTS, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
 
         //  increase to openingTime
-        increaseTimeTo(privatePlacementTimings[0]);
+        await increaseTimeTo(privatePlacementTimings[0]);
         assert.isTrue(await crowdsale.hasOpened.call(), "crowdsale should be running in beforeEach");
     });
 
