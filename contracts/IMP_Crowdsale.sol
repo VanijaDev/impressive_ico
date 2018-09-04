@@ -20,6 +20,8 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
   address public unsoldTokenEscrow;
   uint256 public unsoldTokenEscrowPercent = 1;  //  % from unsold tokens
 
+  uint256 private tokenDecimals = 4;
+
   /**
    * @dev Reverts if not less than minimum purchase.
    */
@@ -38,7 +40,7 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
   constructor(ERC20 _token, address _wallet, address _unsoldTokenEscrow, uint256[] _openingClosingTiming)
     Crowdsale(1, _wallet, _token) //  rate in base Crowdsale is not used. Use custom rates in IMP_Stages.sol instead;
     IMP_Stages()
-    IMP_MintWithPurpose(IMP_Token(_token).decimals())
+    IMP_MintWithPurpose(tokenDecimals)
     RefundableCrowdsale(crowdsaleSoftCap)
     TimedCrowdsale(_openingClosingTiming[0], _openingClosingTiming[1])
   public {
@@ -139,7 +141,7 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
 
     require(rate > 0, "rate cannot be 0");
 
-    uint256 baseTokens = _weiAmount.mul(rate).div(10**18);
+    uint256 baseTokens = _weiAmount.mul(rate).div(10**18).mul(uint256(10**tokenDecimals));
     uint256 bonusTokens = baseTokens.mul(discount).div(100);
 
     return baseTokens.add(bonusTokens);
