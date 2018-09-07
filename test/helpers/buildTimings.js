@@ -5,9 +5,12 @@ import {
 
 import mockCrowdsale from "./mocks/MockCrowdsale";
 
-export default function buildTimings(startTime, log) {
+export default function buildTimings(startTime, _periodDuration, log) {
     let mockCrowdsaleData = mockCrowdsale();
     let periodDuration = 200;
+    if (_periodDuration > 0) {
+        periodDuration = _periodDuration;
+    }
 
     //  privatePlacement
     let privatePlacementTimings = []; //  [opening, stageEdges]
