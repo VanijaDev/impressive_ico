@@ -185,7 +185,7 @@ contract IMP_Stages is Ownable {
    * @dev Check whether current stage is private placement
    * @return is current stage a private placement
    */
-  function currentStage_privatePlacement() internal view returns(bool) {
+  function currentStage_privatePlacement() public view returns(bool) {
     return now >= privatePlacementTimings[0] && now <= privatePlacementTimings[privatePlacementTimings.length-1];
   }
 
@@ -193,7 +193,7 @@ contract IMP_Stages is Ownable {
    * @dev Check whether current stage is preICO
    * @return is current stage a preICO
    */
-  function currentStage_preICO() internal view returns(bool) {
+  function currentStage_preICO() public view returns(bool) {
     return now >= preICOTimings[0] && now <= preICOTimings[preICOTimings.length-1];
   }
 
@@ -201,7 +201,7 @@ contract IMP_Stages is Ownable {
    * @dev Check whether current stage is ICO
    * @return is current stage a ICO
    */
-  function currentStage_ico() internal view returns(bool) {
+  function currentStage_ico() public view returns(bool) {
     return now >= icoTimings[0] && now <= icoTimings[icoTimings.length-1];
   }
 }

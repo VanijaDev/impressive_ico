@@ -192,4 +192,20 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
     msg.sender.transfer(msg.value);
     depositUnsoldTokenEscrow();
   }
+
+  /**
+   * @dev Extend parent behavior updating preICO and ICO parameters
+   * @param _preICORateEth preICO rate 
+   * @param _preICOTimings preICO timings
+   * @param _preICODiscounts preICO discounts
+   * @param _icoRateEth ICO rate 
+   * @param _icoTimings ico timings
+   * @param _icoDiscounts ico discounts
+   */
+  function updatePreICOAndICO(uint256 _preICORateEth, uint256[] _preICOTimings, uint256[] _preICODiscounts, 
+                              uint256 _icoRateEth, uint256[] _icoTimings, uint256[] _icoDiscounts) public onlyOwner {
+    super.updatePreICOAndICO(_preICORateEth, _preICOTimings, _preICODiscounts, _icoRateEth, _icoTimings, _icoDiscounts);
+
+    closingTime = _icoTimings[_icoTimings.length-1];
+  }
 }
