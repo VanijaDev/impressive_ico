@@ -27,7 +27,6 @@ contract IMP_Stages is Ownable {
  *  PUBLIC
  */
 
-  // TODO: test
   /**
    * @dev Checks whether now is more than private placement period beginning.
    * @return Whether crowdsale has started
@@ -40,7 +39,7 @@ contract IMP_Stages is Ownable {
    * @dev Checks whether any stage of crowdsale is currently open.
    * @return Whether any stage is open
    */
-  function anyStageOpen() public view returns (bool) {
+  function anyStageOpen() public view returns (bool) { //  - TEST
     return(currentStage_privatePlacement() || currentStage_preICO() || currentStage_ico());
   }
 
