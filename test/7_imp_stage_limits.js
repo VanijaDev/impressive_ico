@@ -30,11 +30,9 @@ contract("Stage limits", (accounts) => {
   const PRE_ICO_DISCOUNTS = [20, 18, 16, 14, 12]; //  including each edge
   const ICO_DISCOUNTS = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]; //  including each edge
 
-  before("setup", async () => {
-    await advanceBlock();
-  });
-
   beforeEach("create crowdsale inst", async () => {
+    await advanceBlock();
+
     const CROWDSALE_WALLET = accounts[9];
     const UNSOLD_TOKEN_ESCROW_WALLET = accounts[8];
 
@@ -57,7 +55,7 @@ contract("Stage limits", (accounts) => {
     await crowdsale.addAddressesToWhitelist([ACC_1, ACC_2]);
   });
 
-  describe.only("validate cannot purchase more than any stage limit", () => {
+  describe("validate cannot purchase more than any stage limit", () => {
     // it("should validate cannot purchase more than private placement limit", async () => {
     //   //  IMPORTANT: need to update privatePlacementRateEth to 3000000 for this test
     //   await crowdsale.sendTransaction({
