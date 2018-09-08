@@ -6,8 +6,7 @@ import "./IMP_TokenReservations.sol";
 
 contract IMP_MintWithPurpose is IMP_TokenReservations {
 
-  constructor(uint256 _decimals) IMP_TokenReservations(_decimals) 
-  public {
+  constructor(uint256 _decimals) IMP_TokenReservations(_decimals) public {
   }
 
   /**
