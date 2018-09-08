@@ -397,5 +397,19 @@ contract("Purchase", (accounts) => {
             let tokensMinted_ico_after = new BigNumber(await crowdsale.tokensMinted_ico.call());
             assert.equal(tokensMinted_ico_after.minus(tokensMinted_ico_before).toNumber(), 1010000, "wrong tokensMinted_ico after purchase");
         });
+
+        it("should validate value less < minimumPurchase not allowed", async () => {
+            //  allowed
+            await crowdsale.sendTransaction({
+                from: ACC_1,
+                value: 100000000000000000
+            })
+
+            //  throw
+            await expectThrow(crowdsale.sendTransaction({
+                from: ACC_1,
+                value: 10000000000000000
+            }), "should throw because value < minimumPurchase");
+        });
     });
 });
