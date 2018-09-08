@@ -26,11 +26,9 @@ contract("Updating crowdsale values", (accounts) => {
 
   const CROWDSALE_WALLET = accounts[9];
 
-  before("setup", async () => {
-    await advanceBlock();
-  });
-
   beforeEach("create crowdsale inst", async () => {
+    await advanceBlock();
+
     const CROWDSALE_WALLET = accounts[9];
     const UNSOLD_TOKEN_ESCROW_WALLET = accounts[8];
 
@@ -63,10 +61,15 @@ contract("Updating crowdsale values", (accounts) => {
     const PRE_ICO_DISCOUNTS_UPDATED = [21, 19, 17, 15, 13]; //  including each edge
     const ICO_DISCOUNTS_UPDATED = [30, 29, 28, 27, 26, 25, 24, 23, 22, 21]; //  including each edge
 
-    it("should validate preICO rate, timings and discounts are being updated", async () => {
+    it("should validate both preICO and ICO rate, timings and discounts are being updated", async () => {
+      let timings = buildTimings(web3.eth.getBlock("latest").timestamp + duration.weeks(1));
+      let privatePlacementTimings = timings[0];
+      let preICOTimings = timings[1];
+      let icoTimings = timings[2];
+
       await crowdsale.updatePreICOAndICO(111, preICOTimings, PRE_ICO_DISCOUNTS_UPDATED, 222, icoTimings, ICO_DISCOUNTS_UPDATED);
 
-      //  preICO
+      // preICO
       assert.equal(111, new BigNumber(await crowdsale.preICORateEth.call()).toNumber(), "wrond preICO rate after update");
 
       assert.equal(preICOTimings[0], new BigNumber(await crowdsale.preICOTimings.call(0)).toNumber(), "wrond preICOTimings[0] after update");
@@ -81,8 +84,42 @@ contract("Updating crowdsale values", (accounts) => {
       assert.equal(PRE_ICO_DISCOUNTS_UPDATED[3], new BigNumber(await crowdsale.preICODiscounts.call(3)).toNumber(), "wrond preICODiscounts[3] after update");
       assert.equal(PRE_ICO_DISCOUNTS_UPDATED[4], new BigNumber(await crowdsale.preICODiscounts.call(4)).toNumber(), "wrond preICODiscounts[4] after update");
 
-      //  ICO
+      // ICO
       assert.equal(222, new BigNumber(await crowdsale.icoRateEth.call()).toNumber(), "wrond ICO rate after update");
+
+      assert.equal(icoTimings[0], new BigNumber(await crowdsale.icoTimings.call(0)).toNumber(), "wrond icoTimings[0] after update");
+      assert.equal(icoTimings[1], new BigNumber(await crowdsale.icoTimings.call(1)).toNumber(), "wrond icoTimings[1] after update");
+      assert.equal(icoTimings[2], new BigNumber(await crowdsale.icoTimings.call(2)).toNumber(), "wrond icoTimings[2] after update");
+      assert.equal(icoTimings[3], new BigNumber(await crowdsale.icoTimings.call(3)).toNumber(), "wrond icoTimings[3] after update");
+      assert.equal(icoTimings[4], new BigNumber(await crowdsale.icoTimings.call(4)).toNumber(), "wrond icoTimings[4] after update");
+      assert.equal(icoTimings[5], new BigNumber(await crowdsale.icoTimings.call(5)).toNumber(), "wrond icoTimings[5] after update");
+      assert.equal(icoTimings[6], new BigNumber(await crowdsale.icoTimings.call(6)).toNumber(), "wrond icoTimings[6] after update");
+      assert.equal(icoTimings[7], new BigNumber(await crowdsale.icoTimings.call(7)).toNumber(), "wrond icoTimings[7] after update");
+      assert.equal(icoTimings[8], new BigNumber(await crowdsale.icoTimings.call(8)).toNumber(), "wrond icoTimings[8] after update");
+      assert.equal(icoTimings[9], new BigNumber(await crowdsale.icoTimings.call(9)).toNumber(), "wrond icoTimings[9] after update");
+
+      assert.equal(ICO_DISCOUNTS_UPDATED[0], new BigNumber(await crowdsale.icoDiscounts.call(0)).toNumber(), "wrond icoDiscounts[0] after update");
+      assert.equal(ICO_DISCOUNTS_UPDATED[1], new BigNumber(await crowdsale.icoDiscounts.call(1)).toNumber(), "wrond icoDiscounts[1] after update");
+      assert.equal(ICO_DISCOUNTS_UPDATED[2], new BigNumber(await crowdsale.icoDiscounts.call(2)).toNumber(), "wrond icoDiscounts[2] after update");
+      assert.equal(ICO_DISCOUNTS_UPDATED[3], new BigNumber(await crowdsale.icoDiscounts.call(3)).toNumber(), "wrond icoDiscounts[3] after update");
+      assert.equal(ICO_DISCOUNTS_UPDATED[4], new BigNumber(await crowdsale.icoDiscounts.call(4)).toNumber(), "wrond icoDiscounts[4] after update");
+      assert.equal(ICO_DISCOUNTS_UPDATED[5], new BigNumber(await crowdsale.icoDiscounts.call(5)).toNumber(), "wrond icoDiscounts[5] after update");
+      assert.equal(ICO_DISCOUNTS_UPDATED[6], new BigNumber(await crowdsale.icoDiscounts.call(6)).toNumber(), "wrond icoDiscounts[6] after update");
+      assert.equal(ICO_DISCOUNTS_UPDATED[7], new BigNumber(await crowdsale.icoDiscounts.call(7)).toNumber(), "wrond icoDiscounts[7] after update");
+      assert.equal(ICO_DISCOUNTS_UPDATED[8], new BigNumber(await crowdsale.icoDiscounts.call(8)).toNumber(), "wrond icoDiscounts[8] after update");
+      assert.equal(ICO_DISCOUNTS_UPDATED[9], new BigNumber(await crowdsale.icoDiscounts.call(9)).toNumber(), "wrond icoDiscounts[9] after update");
+    });
+
+    it("should validate only ICO rate, timings and discounts are being updated", async () => {
+      let timings = buildTimings(web3.eth.getBlock("latest").timestamp + duration.minutes(10));
+      let privatePlacementTimings = timings[0];
+      let preICOTimings = timings[1];
+      let icoTimings = timings[2];
+
+      await crowdsale.updateICO(333, icoTimings, ICO_DISCOUNTS_UPDATED);
+
+      //  ICO
+      assert.equal(333, new BigNumber(await crowdsale.icoRateEth.call()).toNumber(), "wrond ICO rate after update");
 
       assert.equal(icoTimings[0], new BigNumber(await crowdsale.icoTimings.call(0)).toNumber(), "wrond icoTimings[0] after update");
       assert.equal(icoTimings[1], new BigNumber(await crowdsale.icoTimings.call(1)).toNumber(), "wrond icoTimings[1] after update");
