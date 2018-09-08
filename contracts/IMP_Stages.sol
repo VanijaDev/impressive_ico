@@ -96,6 +96,22 @@ contract IMP_Stages is Ownable {
   }
 
   /**
+   * @dev updates ICO parameters.
+   * @param _icoRateEth ICO rate 
+   * @param _icoTimings ico timings
+   * @param _icoDiscounts ico discounts
+   */
+  function updateICO(uint256 _icoRateEth, uint256[] _icoTimings, uint256[] _icoDiscounts) public onlyOwner {
+    require(_icoRateEth > 0, "ico rate should be > 0");
+
+    validateIcoTimingsAndDiscounts(_icoTimings, _icoDiscounts, preICOTimings[preICOTimings.length-1]);
+
+    icoRateEth = _icoRateEth;
+    icoTimings = _icoTimings;
+    icoDiscounts = _icoDiscounts;
+  }
+
+  /**
    * @dev Calculate crowdsale rate and discount for current stage
    * @return RateEth and Discount
    */

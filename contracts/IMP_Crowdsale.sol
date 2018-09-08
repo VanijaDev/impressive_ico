@@ -208,4 +208,18 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
 
     closingTime = _icoTimings[_icoTimings.length-1];
   }
+
+  /**
+   * @dev Extend parent behavior updating ICO parameters
+   * @param _icoRateEth ICO rate 
+   * @param _icoTimings ico timings
+   * @param _icoDiscounts ico discounts
+   */
+  function updateICO(uint256 _icoRateEth, uint256[] _icoTimings, uint256[] _icoDiscounts) public onlyOwner {
+    require(_icoRateEth > 0, "ico rate should be > 0");
+
+    super.updateICO(_icoRateEth, _icoTimings, _icoDiscounts);
+
+    closingTime = _icoTimings[_icoTimings.length-1];
+  }
 }
