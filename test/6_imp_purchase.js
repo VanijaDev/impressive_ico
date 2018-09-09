@@ -80,6 +80,20 @@ contract("Purchase", (accounts) => {
         });
     });
 
+    describe("no more than hard cap", () => {
+        it("should not allow purchace if more than hard cap", async () => {
+            await crowdsale.updateSoftAndHardCap(ether(1), ether(2));
+            await crowdsale.sendTransaction({
+                from: ACC_1,
+                value: ether(1.5)
+            });
+            await expectThrow(crowdsale.sendTransaction({
+                from: ACC_1,
+                value: ether(0.51)
+            }), "should not allow purchace if more than hard cap");
+        });
+    });
+
     describe("preICO purchase flow", () => {
         it("should validate correct token calculations balances, reservations updates for preICO[0]", async () => {
             //  increase time
