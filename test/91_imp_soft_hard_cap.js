@@ -84,9 +84,44 @@ contract("Soft and Hard caps", (accounts) => {
             await expectThrow(crowdsale.updateSoftAndHardCap(ether(0.5), 0), "soft cap can not be updated once weiRaised is more than updated softCap");
         });
 
-        it("should not allow to update softCap if more, than hardCap", async () => {
+        it("should not allow to update softCap if more than hardCap", async () => {
             let hardCap = new BigNumber(await crowdsale.crowdsaleHardCap.call());
-            await expectThrow(crowdsale.updateSoftAndHardCap(hardCap.plus(ether(1)).toNumber(), 0), "soft cap can not be updated because more, than hardCap");
+            await expectThrow(crowdsale.updateSoftAndHardCap(hardCap.plus(ether(1)).toNumber(), 0), "soft cap can not be updated because more than hardCap");
+        });
+    });
+
+    describe.only("Hard cap update", () => {
+        it("should allow to update hard cap to owner", async () => {
+            let softCap = new BigNumber(await crowdsale.goal.call());
+            let hardCap = softCap.plus(ether(1));
+
+            await crowdsale.updateSoftAndHardCap(0, hardCap.toNumber());
+            assert.equal(new BigNumber(await crowdsale.crowdsaleHardCap.call()).toNumber(), hardCap.toNumber(), "hard cap not updated correctly");
+        });
+
+        it("should not allow to update hard cap to not owner", async () => {
+            let softCap = new BigNumber(await crowdsale.goal.call());
+            let hardCap = softCap.plus(ether(1));
+
+            await expectThrow(crowdsale.updateSoftAndHardCap(0, hardCap.toNumber(), {
+                from: ACC_2
+            }), "not owner should not be able to update hard cap");
+        });
+
+        it("should not allow to update hard cap to less than softCap", async () => {
+            let softCap = new BigNumber(await crowdsale.goal.call());
+            let hardCap = softCap.minus(ether(1));
+
+            await expectThrow(crowdsale.updateSoftAndHardCap(0, hardCap.toNumber()), "should not be able to update hard cap to less than softCap");
+        });
+
+        it("should not allow to update hard cap if less than weiRaised", async () => {
+            await crowdsale.updateSoftAndHardCap(1, 0);
+            await crowdsale.sendTransaction({
+                from: ACC_1,
+                value: ether(2)
+            });
+            await expectThrow(crowdsale.updateSoftAndHardCap(0, ether(1.5)), "should not be able to update hard cap if less than weiRaised");
         });
     });
 });

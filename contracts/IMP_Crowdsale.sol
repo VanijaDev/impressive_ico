@@ -30,6 +30,14 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
   }
 
   /**
+   * @dev Reverts if hard cap is bein reached.
+   */
+  modifier withinHardCap() {
+    require(weiRaised.add(msg.value) <= crowdsaleHardCap, "can not be more than hard cap");
+    _;
+  }
+
+  /**
    * @dev Constructor.
    * @param _token Token address.
    * @param _wallet Wallet address.
@@ -52,7 +60,6 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
    * @param _softCap Updated soft cap value. Set 0 if not needed.
    * @param _hardCap Updated hard cap value. Set 0 if not needed.
    */
-   // TEST
   function updateSoftAndHardCap(uint256 _softCap, uint256 _hardCap) public onlyOwner {
     if (_softCap > 0) {
       require(!goalReached(), "soft cap should not be reached");
@@ -134,6 +141,7 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
     internal
     whenNotPaused
     minimumPurchase
+    withinHardCap
   {
     if (anyStageOpen()) {
       super._preValidatePurchase(_beneficiary, _weiAmount);
