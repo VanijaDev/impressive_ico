@@ -73,7 +73,7 @@ contract("Soft and Hard caps", (accounts) => {
                 from: ACC_1,
                 value: ether(1)
             });
-            await expectThrow(crowdsale.updateSoftAndHardCap(ether(2), 0), "soft cap can not be updated once current soft cap is being reached");
+            await expectThrow(crowdsale.updateSoftAndHardCap(ether(2), 0), "soft cap can not be updated once current soft cap is been reached");
         });
 
         it("should not allow to update soft cap if weiRaised is more than updated softCap", async () => {
@@ -148,7 +148,7 @@ contract("Soft and Hard caps", (accounts) => {
                 from: ACC_1,
                 value: ether(1)
             });
-            await expectThrow(crowdsale.updateSoftAndHardCap(ether(2), ether(2)), "both caps can not be updated once current soft cap is being reached");
+            await expectThrow(crowdsale.updateSoftAndHardCap(ether(2), ether(2)), "both caps can not be updated once current soft cap is been reached");
         });
 
         it("should not allow to update both caps if weiRaised is more than updated softCap", async () => {

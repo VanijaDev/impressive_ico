@@ -30,7 +30,7 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
   }
 
   /**
-   * @dev Reverts if hard cap is bein reached.
+   * @dev Reverts if hard cap is been reached.
    */
   modifier withinHardCap() {
     require(weiRaised.add(msg.value) <= crowdsaleHardCap, "can not be more than hard cap");

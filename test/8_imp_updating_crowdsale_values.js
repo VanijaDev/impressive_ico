@@ -61,7 +61,7 @@ contract("Updating crowdsale values", (accounts) => {
     const PRE_ICO_DISCOUNTS_UPDATED = [21, 19, 17, 15, 13]; //  including each edge
     const ICO_DISCOUNTS_UPDATED = [30, 29, 28, 27, 26, 25, 24, 23, 22, 21]; //  including each edge
 
-    it("should validate both preICO and ICO rate, timings and discounts are being updated", async () => {
+    it("should validate both preICO and ICO rate, timings and discounts are been updated", async () => {
       let timings = buildTimings(web3.eth.getBlock("latest").timestamp + duration.weeks(1));
       let privatePlacementTimings = timings[0];
       let preICOTimings = timings[1];
@@ -110,7 +110,7 @@ contract("Updating crowdsale values", (accounts) => {
       assert.equal(ICO_DISCOUNTS_UPDATED[9], new BigNumber(await crowdsale.icoDiscounts.call(9)).toNumber(), "wrond icoDiscounts[9] after update");
     });
 
-    it("should validate only ICO rate, timings and discounts are being updated", async () => {
+    it("should validate only ICO rate, timings and discounts are been updated", async () => {
       let timings = buildTimings(web3.eth.getBlock("latest").timestamp + duration.minutes(10));
       let privatePlacementTimings = timings[0];
       let preICOTimings = timings[1];
