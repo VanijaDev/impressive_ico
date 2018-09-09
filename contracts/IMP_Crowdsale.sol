@@ -13,7 +13,6 @@ import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/R
  * @dev Contract used for crowdsale.
  */
 contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages, IMP_MintWithPurpose, Pausable {
-  uint256 public crowdsaleSoftCap = uint256(5000).mul(10**18);  //  5 000 ETH
   uint256 public crowdsaleHardCap = uint256(180000).mul(10**18);  //  180 000 ETH
   uint256 public minimumPurchaseWei = 100000000000000000; //  0.1 ETH
 
@@ -41,7 +40,7 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
     Crowdsale(1, _wallet, _token) //  rate in base Crowdsale is not used. Use custom rates in IMP_Stages.sol instead;
     IMP_Stages()
     IMP_MintWithPurpose(tokenDecimals)
-    RefundableCrowdsale(crowdsaleSoftCap)
+    RefundableCrowdsale(uint256(5000).mul(10**18))  //  crowdsaleSoftCap = 5 000 ETH
     TimedCrowdsale(_openingClosingTiming[0], _openingClosingTiming[1])
   public {
     require(_unsoldTokenEscrow != address(0));
@@ -49,11 +48,27 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
   }
 
   /**
-   * INTERNAL
+   * @dev Updates soft and hard cap.
+   * @param _softCap Updated soft cap value. Set 0 if not needed.
+   * @param _hardCap Updated hard cap value. Set 0 if not needed.
    */
+   // TEST
+  function updateSoftAndHardCap(uint256 _softCap, uint256 _hardCap) public onlyOwner {
+    if (_softCap > 0) {
+      require(!goalReached(), "soft cap should not be reached");
+      require(_softCap > weiRaised, "soft cap must be > weiRaised");
+      require(_softCap < crowdsaleHardCap, "soft cap must be < crowdsaleHardCap");
 
-  function softCapReached() public view returns (bool) {
-    return weiRaised >= crowdsaleSoftCap;
+      goal = _softCap;
+    }
+
+    if (_hardCap > 0) {
+      require(crowdsaleHardCap > weiRaised, "hard cap should not be reached");
+      require(_hardCap > weiRaised, "hard cap must be > weiRaised");
+      require(_hardCap > goal, "hard cap should be > soft cap");
+
+      crowdsaleHardCap = _hardCap;
+    }
   }
 
   /**
