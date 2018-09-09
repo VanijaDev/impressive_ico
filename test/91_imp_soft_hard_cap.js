@@ -47,7 +47,7 @@ contract("Soft and Hard caps", (accounts) => {
         await token.transferOwnership(crowdsale.address);
         await crowdsale.initialSetup(privatePlacementTimings, preICOTimings, icoTimings, PRIVATE_PLACEMENT_DISCOUNTS, PRE_ICO_DISCOUNTS, ICO_DISCOUNTS);
 
-        // //  increase to openingTime
+        //  increase to openingTime
         await increaseTimeTo(privatePlacementTimings[0]);
         assert.isTrue(await crowdsale.hasOpened.call(), "crowdsale should be running in beforeEach");
 
