@@ -61,15 +61,22 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
    * @param _hardCap Updated hard cap value. Set 0 if not needed.
    */
   function updateSoftAndHardCap(uint256 _softCap, uint256 _hardCap) public onlyOwner {
-    if (_softCap > 0) {
+    if (_softCap > 0 && _hardCap > 0) {
+      require(_softCap < _hardCap, "_softCap must be < _hardCap for both update");
+      require(!goalReached(), "soft cap should not be reached for both update");
+      require(_softCap > weiRaised, "soft cap must be > weiRaised for both update");
+
+      goal = _softCap;
+      crowdsaleHardCap = _hardCap;
+    }
+    else if (_softCap > 0) {
       require(!goalReached(), "soft cap should not be reached");
       require(_softCap > weiRaised, "soft cap must be > weiRaised");
       require(_softCap < crowdsaleHardCap, "soft cap must be < crowdsaleHardCap");
 
       goal = _softCap;
     }
-
-    if (_hardCap > 0) {
+    else if (_hardCap > 0) {
       require(crowdsaleHardCap > weiRaised, "hard cap should not be reached");
       require(_hardCap > weiRaised, "hard cap must be > weiRaised");
       require(_hardCap > goal, "hard cap should be > soft cap");
