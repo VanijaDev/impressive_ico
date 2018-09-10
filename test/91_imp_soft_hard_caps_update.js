@@ -17,7 +17,7 @@ import {
     advanceBlock
 } from './helpers/advanceToBlock';
 
-contract("Soft and Hard caps", (accounts) => {
+contract("Soft and Hard caps update", (accounts) => {
     let token;
     let crowdsale;
 
