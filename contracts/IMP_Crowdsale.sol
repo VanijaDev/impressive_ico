@@ -89,7 +89,6 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
    * PRIVATE
    */
 
-  //  Test
   /**
    * @dev Transfer tokens for unsold token escrow.
    */
@@ -148,7 +147,7 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
     internal
     whenNotPaused
     minimumPurchase
-    withinHardCap // Test
+    withinHardCap
   {
     require(anyStageOpen(), "no stage currently open");
     super._preValidatePurchase(_beneficiary, _weiAmount);
@@ -213,7 +212,6 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
    * should call super.finalization() to ensure the chain of finalization is
    * executed entirely.
    */
-   // Test
   function finalization() internal {
     super.finalization();
 
