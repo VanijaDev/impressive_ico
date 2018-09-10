@@ -66,7 +66,7 @@ contract("Timed crowdsale", (accounts) => {
 
     describe("validate anyStageOpen function", () => {
         it("should validate anyStageOpen is false if no stage is currently open", async () => {
-            let timings = buildTimings(web3.eth.getBlock("latest").timestamp + duration.minutes(10));
+            let timings = buildTimings(web3.eth.getBlock("latest").timestamp + duration.hours(10));
             let privatePlacementTimings = timings[0];
             let preICOTimings = timings[1];
             let icoTimings = timings[2];
