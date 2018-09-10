@@ -39,7 +39,7 @@ contract IMP_Stages is Ownable {
    * @dev Checks whether any stage of crowdsale is currently open.
    * @return Whether any stage is open
    */
-  function anyStageOpen() public view returns (bool) { //  - TEST
+  function anyStageOpen() public view returns (bool) {
     return(currentStage_privatePlacement() || currentStage_preICO() || currentStage_ico());
   }
 
