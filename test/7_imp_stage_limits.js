@@ -112,4 +112,21 @@ contract("Stage limits", (accounts) => {
       }), "should throw, because more than limit");
     });
   });
+
+  describe("Hard cap limit for purchase", () => {
+    it("should validate no more than hard cap can be purchased", async () => {
+      await crowdsale.updateSoftAndHardCap(ether(1), ether(2));
+
+      //  almost hard cap
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(1.52)
+      });
+
+      await expectThrow(crowdsale.sendTransaction({
+        from: ACC_2,
+        value: ether(0.5)
+      }), "should throw, because more than hard cap");
+    });
+  });
 });
