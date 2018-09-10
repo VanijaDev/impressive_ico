@@ -96,7 +96,7 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
   function depositUnsoldTokenEscrow() private {
     uint256 tokens = unsoldTokens().div(100).mul(unsoldTokenEscrowPercent);
 
-    unsoldTokenEscrow.transfer(tokens);
+    _deliverTokens(unsoldTokenEscrow, tokens);
   }
 
   /**
@@ -148,13 +148,10 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
     internal
     whenNotPaused
     minimumPurchase
-    withinHardCap
+    withinHardCap // Test
   {
-    if (anyStageOpen()) {
-      super._preValidatePurchase(_beneficiary, _weiAmount);
-    } else {
-      finalize();
-    }
+    require(anyStageOpen(), "no stage currently open");
+    super._preValidatePurchase(_beneficiary, _weiAmount);
   }
 
   /**
@@ -216,11 +213,13 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
    * should call super.finalization() to ensure the chain of finalization is
    * executed entirely.
    */
+   // Test
   function finalization() internal {
     super.finalization();
 
-    msg.sender.transfer(msg.value);
-    depositUnsoldTokenEscrow();
+    if (goalReached()) {
+      depositUnsoldTokenEscrow();
+    }
   }
 
   /**
