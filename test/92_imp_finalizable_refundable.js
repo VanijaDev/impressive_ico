@@ -113,4 +113,90 @@ contract("Finalizable Refundable", (accounts) => {
 
     });
   });
+
+  describe("refunds", () => {
+    it("should validate refunds can not be claimed while crowdsale open", async () => {
+      //  purchase ACC_2
+      await crowdsale.sendTransaction({
+        from: ACC_2,
+        value: ether(1)
+      });
+
+      //  increase to ICO[0]
+      await increaseTimeTo(icoTimings[0] + 1);
+      assert.isTrue(await crowdsale.currentStage_ico.call());
+
+      //  claim refund ACC_2
+      await expectThrow(crowdsale.claimRefund({
+        from: ACC_2
+      }), "should not allow refund before close");
+    });
+
+    it("should validate refunds can not be claimed if nothing was purchased", async () => {
+      //  purchase ACC_1
+      let acc1_purchase = new BigNumber(2);
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: ether(acc1_purchase.toNumber())
+      });
+
+      //  increase to closingTime
+      await increaseTimeTo(icoTimings[icoTimings.length - 1] + 1);
+      assert.isTrue(await crowdsale.hasClosed.call(), "crowdsale should be closed");
+
+      //  claim refund ACC_2
+      await expectThrow(crowdsale.claimRefund({
+        from: ACC_2
+      }), "should not allow refund because nothing was purchased");
+    });
+
+    it("should validate refunds after crowdsale closed", async () => {
+      //  purchase ACC_1
+      let acc1_purchase = ether(6);
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: acc1_purchase
+      });
+
+      //  purchase ACC_2
+      let acc2_purchase = ether(16);
+      await crowdsale.sendTransaction({
+        from: ACC_2,
+        value: acc2_purchase
+      });
+
+      //  increase to closingTime
+      await increaseTimeTo(icoTimings[icoTimings.length - 1] + 1);
+      assert.isTrue(await crowdsale.hasClosed.call(), "crowdsale should be closed");
+
+      //  finalize
+      await crowdsale.finalize();
+
+      let acc1_balance_before = new BigNumber(await web3.eth.getBalance(ACC_1));
+      let acc2_balance_before = new BigNumber(await web3.eth.getBalance(ACC_2));
+
+      //  claim ACC_1
+      let txInfo_1 = await crowdsale.claimRefund({
+        from: ACC_1
+      });
+
+      const tx_1 = await web3.eth.getTransaction(txInfo_1.tx);
+      const gasCost_1 = new BigNumber(tx_1.gasPrice.mul(txInfo_1.receipt.gasUsed));
+
+      let acc1_balance_after = new BigNumber(await web3.eth.getBalance(ACC_1));
+      assert.equal(acc1_balance_after.toNumber(), acc1_balance_before.plus(acc1_purchase).minus(gasCost_1).toNumber(), "wrong ACC_1 balance after purchase");
+
+      //  claim ACC_2
+      let txInfo_2 = await crowdsale.claimRefund({
+        from: ACC_2
+      });
+
+      const tx_2 = await web3.eth.getTransaction(txInfo_2.tx);
+      const gasCost_2 = new BigNumber(tx_2.gasPrice.mul(txInfo_2.receipt.gasUsed));
+
+      let acc2_balance_after = new BigNumber(await web3.eth.getBalance(ACC_2));
+      assert.equal(acc2_balance_after.toNumber(), acc2_balance_before.plus(acc2_purchase).minus(gasCost_2).toNumber(), "wrong ACC_2 balance after purchase");
+
+    });
+  });
 });
