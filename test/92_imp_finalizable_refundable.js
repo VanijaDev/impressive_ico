@@ -198,7 +198,7 @@ contract("Finalizable Refundable", (accounts) => {
       assert.equal(acc2_balance_after.toNumber(), acc2_balance_before.plus(acc2_purchase).minus(gasCost_2).toNumber(), "wrong ACC_2 balance after purchase");
     });
 
-    it.only("should validate token owner has been transferred to crowdsale owner", async () => {
+    it("should validate token owner has been transferred to crowdsale owner", async () => {
       //  purchase ACC_1
       let acc1_purchase = ether(6);
       await crowdsale.sendTransaction({
