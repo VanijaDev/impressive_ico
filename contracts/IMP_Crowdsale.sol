@@ -218,6 +218,8 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
     if (goalReached()) {
       depositUnsoldTokenEscrow();
     }
+
+    Ownable(token).transferOwnership(owner);
   }
 
   /**

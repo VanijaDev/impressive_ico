@@ -196,7 +196,31 @@ contract("Finalizable Refundable", (accounts) => {
 
       let acc2_balance_after = new BigNumber(await web3.eth.getBalance(ACC_2));
       assert.equal(acc2_balance_after.toNumber(), acc2_balance_before.plus(acc2_purchase).minus(gasCost_2).toNumber(), "wrong ACC_2 balance after purchase");
+    });
 
+    it.only("should validate token owner has been transferred to crowdsale owner", async () => {
+      //  purchase ACC_1
+      let acc1_purchase = ether(6);
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: acc1_purchase
+      });
+
+      //  purchase ACC_2
+      let acc2_purchase = ether(16);
+      await crowdsale.sendTransaction({
+        from: ACC_2,
+        value: acc2_purchase
+      });
+
+      //  increase to closingTime
+      await increaseTimeTo(icoTimings[icoTimings.length - 1] + 1);
+      assert.isTrue(await crowdsale.hasClosed.call(), "crowdsale should be closed");
+
+      //  finalize
+      await crowdsale.finalize();
+
+      assert.equal(await token.owner.call(), await crowdsale.owner.call(), "token owner should be crowdsale owner");
     });
   });
 });
