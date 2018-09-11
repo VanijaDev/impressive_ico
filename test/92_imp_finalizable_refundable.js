@@ -196,7 +196,91 @@ contract("Finalizable Refundable", (accounts) => {
 
       let acc2_balance_after = new BigNumber(await web3.eth.getBalance(ACC_2));
       assert.equal(acc2_balance_after.toNumber(), acc2_balance_before.plus(acc2_purchase).minus(gasCost_2).toNumber(), "wrong ACC_2 balance after purchase");
+    });
+  });
 
+  describe("token ownership after finalize", () => {
+    it("should validate token owner has been transferred to crowdsale owner", async () => {
+      //  purchase ACC_1
+      let acc1_purchase = ether(6);
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: acc1_purchase
+      });
+
+      //  purchase ACC_2
+      let acc2_purchase = ether(16);
+      await crowdsale.sendTransaction({
+        from: ACC_2,
+        value: acc2_purchase
+      });
+
+      //  increase to closingTime
+      await increaseTimeTo(icoTimings[icoTimings.length - 1] + 1);
+      assert.isTrue(await crowdsale.hasClosed.call(), "crowdsale should be closed");
+
+      //  finalize
+      await crowdsale.finalize();
+
+      assert.equal(await token.owner.call(), await crowdsale.owner.call(), "token owner should be crowdsale owner");
+    });
+  });
+
+  describe("transfer tokens to wallet provided in constructor", () => {
+    it("should not transfer tokens to wallet provided in constructor if soft cap not reached", async () => {
+      let walletAddress = await crowdsale.wallet.call();
+      let walletBalanceBefore = new BigNumber(await web3.eth.getBalance(walletAddress));
+
+      //  purchase ACC_1
+      let acc1_purchase = ether(6);
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: acc1_purchase
+      });
+
+      //  purchase ACC_2
+      let acc2_purchase = ether(16);
+      await crowdsale.sendTransaction({
+        from: ACC_2,
+        value: acc2_purchase
+      });
+
+      //  increase to closingTime
+      await increaseTimeTo(icoTimings[icoTimings.length - 1] + 1);
+      assert.isTrue(await crowdsale.hasClosed.call(), "crowdsale should be closed");
+
+      //  finalize
+      await crowdsale.finalize();
+
+      //  check wallet balance
+      let walletBalanceAfter = new BigNumber(await web3.eth.getBalance(walletAddress));
+      assert.equal(walletBalanceBefore.toNumber(), walletBalanceAfter.toNumber(), "no crowdsale funds should be transferred");
+    });
+
+    it("should transfer tokens to wallet provided in constructor if soft cap was reached", async () => {
+      let walletAddress = await crowdsale.wallet.call();
+      let walletBalanceBefore = new BigNumber(await web3.eth.getBalance(walletAddress));
+
+      //  update softCap
+      await crowdsale.updateSoftAndHardCap(ether(2), 0);
+
+      //  purchase ACC_1
+      let acc1_purchase = ether(3);
+      await crowdsale.sendTransaction({
+        from: ACC_1,
+        value: acc1_purchase
+      });
+
+      //  increase to closingTime
+      await increaseTimeTo(icoTimings[icoTimings.length - 1] + 1);
+      assert.isTrue(await crowdsale.hasClosed.call(), "crowdsale should be closed");
+
+      //  finalize
+      await crowdsale.finalize();
+
+      //  check wallet balance
+      let walletBalanceAfter = new BigNumber(await web3.eth.getBalance(walletAddress));
+      assert.equal(walletBalanceAfter.minus(walletBalanceBefore).toNumber(), new BigNumber(ether(3)).toNumber(), "wrong wallet balance after finalize");
     });
   });
 });
