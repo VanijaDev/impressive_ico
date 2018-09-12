@@ -57,8 +57,8 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
 
   /**
    * @dev Updates soft and hard cap.
-   * @param _softCap Updated soft cap value. Set 0 if not needed.
-   * @param _hardCap Updated hard cap value. Set 0 if not needed.
+   * @param _softCap Updated soft cap value. Must be with decimals (eg 1ETH = 1000000000000000000) Set 0 if not needed.
+   * @param _hardCap Updated hard cap value. Must be with decimals (eg 1ETH = 1000000000000000000) Set 0 if not needed.
    */
   function updateSoftAndHardCap(uint256 _softCap, uint256 _hardCap) public onlyOwner {
     if (_softCap > 0 && _hardCap > 0) {
