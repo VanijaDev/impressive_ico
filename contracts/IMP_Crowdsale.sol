@@ -13,7 +13,8 @@ import "../node_modules/openzeppelin-solidity/contracts/crowdsale/distribution/R
  * @dev Contract used for crowdsale.
  */
 contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages, IMP_MintWithPurpose, Pausable {
-  uint256 public crowdsaleHardCap = uint256(180000).mul(10**18);  //  180 000 ETH
+  uint256 public crowdsaleSoftCap = uint256(15000).mul(10**18);  //  15 000 ETH
+  uint256 public crowdsaleHardCap = uint256(270000).mul(10**18);  //  270 000 ETH
   uint256 public minimumPurchaseWei = 100000000000000000; //  0.1 ETH
 
   address public unsoldTokenEscrow;
@@ -48,7 +49,7 @@ contract IMP_Crowdsale is RefundableCrowdsale, WhitelistedCrowdsale, IMP_Stages,
     Crowdsale(1, _wallet, _token) //  rate in base Crowdsale is not used. Use custom rates in IMP_Stages.sol instead;
     IMP_Stages()
     IMP_MintWithPurpose(tokenDecimals)
-    RefundableCrowdsale(uint256(5000).mul(10**18))  //  crowdsaleSoftCap = 5 000 ETH
+    RefundableCrowdsale(crowdsaleSoftCap)
     TimedCrowdsale(_openingClosingTiming[0], _openingClosingTiming[1])
   public {
     require(_unsoldTokenEscrow != address(0));
