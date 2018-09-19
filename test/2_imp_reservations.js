@@ -77,7 +77,7 @@ contract("Reservations", (accounts) => {
 
         it("should test bountiesAirdrops tokens", async () => {
             let bountiesAirdropsTokens = new BigNumber(await crowdsale.tokensReserved_bountiesAirdrops.call());
-            assert.equal(bountiesAirdropsTokens.toNumber(), 30000000000, "wrong bountiesAirdrops tokens");
+            assert.equal(bountiesAirdropsTokens.toNumber(), 4000000000, "wrong bountiesAirdrops tokens");
         });
 
         it("should test companies tokens", async () => {

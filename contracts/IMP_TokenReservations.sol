@@ -13,7 +13,7 @@ contract IMP_TokenReservations is Ownable {
   uint256 tokenPercentageReserved_preICO = 30;            //  % of tokens reserved for pre_ICO = 25 + 5
   uint256 tokenPercentageReserved_ico = 74;               //  % of tokens reserved for ICO = 44 + 30
   uint256 tokenPercentageReserved_team = 18;              //  % of tokens reserved for team
-  uint256 tokenPercentageReserved_bountiesAirdrops = 3;   //  % of tokens reserved for bounties and airdrops
+  // uint256 tokenPercentageReserved_bountiesAirdrops = 3;   //  % of tokens reserved for bounties and airdrops
   uint256 tokenPercentageReserved_companies = 5;          //  % of tokens reserved for different companies
 
   uint256 public tokenLimitTotalSupply_crowdsale;         //  tokens total supply for entire crowdsale
@@ -31,10 +31,14 @@ contract IMP_TokenReservations is Ownable {
   uint256 public tokensMinted_bountiesAirdrops;           //  tokens minted for airdrops
   uint256 public tokensMinted_companies;                  //  tokens minted for different companies
 
+  uint256 private decimals;
+
   /**
    * @param _decimals Number of token decimals
    */
   constructor(uint256 _decimals) public {
+    decimals = _decimals;
+
     tokenLimitTotalSupply_crowdsale = uint256(100000000).mul(uint256(10) ** _decimals); //  100 000 000 * 10000
     calculateTokenLimits();
   }
@@ -95,7 +99,7 @@ contract IMP_TokenReservations is Ownable {
     tokensReserved_preICO = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_preICO).div(100);
     tokensReserved_ico = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_ico).div(100);
     tokensReserved_team = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_team).div(100);
-    tokensReserved_bountiesAirdrops = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_bountiesAirdrops).div(100);
+    tokensReserved_bountiesAirdrops = uint256(400000).mul(uint256(10) ** decimals); //tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_bountiesAirdrops).div(100);
     tokensReserved_companies = tokenLimitTotalSupply_crowdsale.mul(tokenPercentageReserved_companies).div(100);
   }
 
